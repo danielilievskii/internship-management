@@ -6,12 +6,15 @@ import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.Lob
 import mk.ukim.finki.soa.internshipmanagement.model.command.CreateSearchingInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.SubmitInternshipCommand
 
 import mk.ukim.finki.soa.internshipmanagement.model.common.Identifier
 import mk.ukim.finki.soa.internshipmanagement.model.common.LabeledEntity
+import mk.ukim.finki.soa.internshipmanagement.model.event.InternshipSubmittedEvent
 import mk.ukim.finki.soa.internshipmanagement.model.event.SearchingInternshipCreatedEvent
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
@@ -53,6 +56,25 @@ class Internship : LabeledEntity {
     fun on(event: SearchingInternshipCreatedEvent) {
         this.id = event.internshipId
         this.studentCV = event.studentCV
+        this.status = event.status
+    }
+
+    @CommandHandler
+    fun handle(command: SubmitInternshipCommand) {
+        val newStatus = this.status.transitionTo(StatusType.SUBMITTED)
+
+        val event = InternshipSubmittedEvent(
+            internshipId = command.internshipId,
+            description = command.description,
+            status = newStatus
+        )
+
+        this.on(event)
+        AggregateLifecycle.apply(event)
+    }
+
+    fun on(event: InternshipSubmittedEvent) {
+        this.description = event.description
         this.status = event.status
     }
 }
