@@ -1,0 +1,36 @@
+services:
+  internship_db:
+    image: postgres:16.1
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: internship
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5449:5432"
+    container_name: internship_db
+  internship_backend:
+    depends_on:
+      - internship_db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    container_name: internship_backend
+    ports:
+      - "8098:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://internship_db:5432/internship
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+      SPRING_DATASOURCE_SCHEMA: public
+      OPTIMIZE_EVENT_CONSUMPTION: "false"
+    volumes:
+      - dms-data:/opt/dms
+volumes:
+  db-data:
+  dms-data:
+  es-data:
