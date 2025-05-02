@@ -4,6 +4,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import org.apache.kafka.common.metrics.Stat
 import java.io.Serializable
 
 @Embeddable
@@ -18,8 +19,8 @@ data class InternshipStatus(
             StatusType.SUBMITTED -> newStatus == StatusType.ACCEPTED || newStatus == StatusType.REJECTED
             StatusType.ACCEPTED -> newStatus == StatusType.JOURNAL_SUBMITTED
             StatusType.JOURNAL_SUBMITTED -> newStatus == StatusType.VALIDATED_BY_COMPANY
-            StatusType.VALIDATED_BY_COMPANY -> newStatus == StatusType.VALIDATED_BY_COORDINATOR
-            StatusType.VALIDATED_BY_COORDINATOR -> newStatus == StatusType.ARCHIVED
+            StatusType.VALIDATED_BY_COMPANY -> newStatus == StatusType.VALIDATED_BY_COORDINATOR || newStatus == StatusType.ACCEPTED
+            StatusType.VALIDATED_BY_COORDINATOR -> newStatus == StatusType.ARCHIVED || newStatus == StatusType.ACCEPTED
             else -> false
         }
     }
