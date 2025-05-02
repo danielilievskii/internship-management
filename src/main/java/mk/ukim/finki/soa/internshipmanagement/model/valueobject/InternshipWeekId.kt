@@ -1,12 +1,12 @@
 package mk.ukim.finki.soa.internshipmanagement.model.valueobject
 
 import jakarta.persistence.Embeddable
+import mk.ukim.finki.soa.internshipmanagement.InternshipWeek
 import mk.ukim.finki.soa.internshipmanagement.model.common.Identifier
-import mk.ukim.finki.soa.internshipmanagement.model.snapshot.StudentSnapshot
-import java.util.UUID
+import java.util.*
 
 @Embeddable
-open class StudentId(value: String) : Identifier<StudentSnapshot>(value, StudentSnapshot::class.java) {
+open class InternshipWeekId(value: String) : Identifier<InternshipWeek>(value, InternshipWeek::class.java) {
     constructor() : this(UUID.randomUUID().toString())
 
     override fun equals(other: Any?): Boolean {
@@ -15,6 +15,7 @@ open class StudentId(value: String) : Identifier<StudentSnapshot>(value, Student
         if (!super.equals(other)) return false
         return true
     }
+
     override fun hashCode(): Int {
         return value.hashCode()
     }

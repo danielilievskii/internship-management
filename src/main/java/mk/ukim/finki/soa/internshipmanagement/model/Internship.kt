@@ -1,10 +1,7 @@
 package mk.ukim.finki.soa.internshipmanagement.model
 
-import jakarta.persistence.AttributeOverride
-import jakarta.persistence.Column
-import jakarta.persistence.EmbeddedId
-import jakarta.persistence.Entity
-import jakarta.persistence.Lob
+import jakarta.persistence.*
+import mk.ukim.finki.soa.internshipmanagement.InternshipWeek
 import mk.ukim.finki.soa.internshipmanagement.model.command.CreateSearchingInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.SubmitInternshipCommand
 
@@ -12,9 +9,7 @@ import mk.ukim.finki.soa.internshipmanagement.model.common.Identifier
 import mk.ukim.finki.soa.internshipmanagement.model.common.LabeledEntity
 import mk.ukim.finki.soa.internshipmanagement.model.event.InternshipSubmittedEvent
 import mk.ukim.finki.soa.internshipmanagement.model.event.SearchingInternshipCreatedEvent
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
@@ -29,13 +24,37 @@ class Internship : LabeledEntity {
     @AttributeOverride(name = "value", column = Column(name = "id"))
     private lateinit var id: InternshipId
 
+    @Embedded
+    @AttributeOverride(name = "value", column = Column(name = "status"))
     private lateinit var status: InternshipStatus
 
-    private lateinit var description: String
+    @Embedded
+    @AttributeOverride(name = "value", column = Column(name = "description"))
+    private lateinit var description: Description
 
     @Lob
     @Column(name = "student_cv")
     private var studentCV: ByteArray? = null
+
+    //    @Embedded
+//    @AttributeOverrides(
+//        AttributeOverride(name = "start.value", column = Column(name = "start_date")),
+//        AttributeOverride(name = "end.value", column = Column(name = "end_date"))
+//    )
+//    private lateinit var period: InternshipDateRange
+
+    //    @Embedded
+//    @AttributeOverride(name = "value", column = Column(name = "contact_email"))
+//    private lateinit var companyContantEmail: Email
+
+
+//    @Embedded
+//    @AttributeOverride(name = "value", column = Column(name = "weekly_hours"))
+//    private lateinit var weeklyHo     urs: WeeklyHours
+
+//    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
+//    @JoinColumn(name = "internship_id")
+//    private var weeks: List<InternshipWeek> = emptyList()
 
     override fun getId(): Identifier<out Any> {
         return id

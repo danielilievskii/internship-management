@@ -9,7 +9,7 @@ data class WeeklyHours(val value: Int) {
     }
 
     override fun toString(): String {
-        return value.toString();
+        return value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

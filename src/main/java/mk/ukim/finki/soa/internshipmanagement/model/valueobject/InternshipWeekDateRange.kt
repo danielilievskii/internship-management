@@ -1,8 +1,10 @@
 package mk.ukim.finki.soa.internshipmanagement.model.valueobject
 
+import jakarta.persistence.Embeddable
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
+@Embeddable
 data class InternshipWeekDateRange(val fromDate: LocalDate, val toDate: LocalDate) {
     init {
         require(fromDate.isBefore(toDate)) { "From date must be before to date." }
