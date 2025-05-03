@@ -1,10 +1,7 @@
 package mk.ukim.finki.soa.internshipmanagement.model
 
 import jakarta.persistence.*
-import mk.ukim.finki.soa.internshipmanagement.model.command.company.CompanyAddWeekCommentCommand
-import mk.ukim.finki.soa.internshipmanagement.model.command.company.InvalidateJournalByCompanyCommand
-import mk.ukim.finki.soa.internshipmanagement.model.command.company.ProposeInternshipToStudentCommand
-import mk.ukim.finki.soa.internshipmanagement.model.command.company.ValidateJournalByCompanyCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.company.*
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.ArchiveInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.CoordinatorAddWeekCommentCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.InvalidateJournalByCoordinatorCommand
@@ -12,10 +9,7 @@ import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.Validate
 import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
 import mk.ukim.finki.soa.internshipmanagement.model.common.Identifier
 import mk.ukim.finki.soa.internshipmanagement.model.common.LabeledEntity
-import mk.ukim.finki.soa.internshipmanagement.model.event.company.CompanyWeekCommentAddedEvent
-import mk.ukim.finki.soa.internshipmanagement.model.event.company.InternshipProposedToStudentEvent
-import mk.ukim.finki.soa.internshipmanagement.model.event.company.JournalInvalidatedByCompanyEvent
-import mk.ukim.finki.soa.internshipmanagement.model.event.company.JournalValidatedByCompanyEvent
+import mk.ukim.finki.soa.internshipmanagement.model.event.company.*
 import mk.ukim.finki.soa.internshipmanagement.model.event.coordinator.CoordinatorWeekCommentAddedEvent
 import mk.ukim.finki.soa.internshipmanagement.model.event.coordinator.InternshipArchivedEvent
 import mk.ukim.finki.soa.internshipmanagement.model.event.coordinator.JournalInvalidatedByCoordinatorEvent
@@ -25,8 +19,6 @@ import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
 import org.axonframework.spring.stereotype.Aggregate
-import java.time.DayOfWeek
-import java.time.temporal.TemporalAdjusters
 
 @Entity
 @Aggregate(repository = "axonInternshipRepository")
@@ -211,6 +203,23 @@ class Internship : LabeledEntity {
         AggregateLifecycle.apply(notify)
     }
 
+    fun handle(command: SubmitAgreedInternshipCommand) {
+        //TODO: Find the student by index
+        // val student = studentService.findByIndex(command.studentIndex)
+
+        val event = AgreedInternshipSubmittedEvent(
+            internshipId = InternshipId(),
+            description = command.description,
+            period = command.period,
+            weeklyHours = command.weeklyHours,
+            contactEmail = command.contactEmail,
+            status = InternshipStatus(StatusType.PROPOSED)
+        )
+
+        this.on(event)
+        AggregateLifecycle.apply(event)
+    }
+
     fun handle(command: ValidateJournalByCompanyCommand) {
         val newStatus = status.transitionTo(StatusType.VALIDATED_BY_COMPANY)
 
@@ -355,6 +364,15 @@ class Internship : LabeledEntity {
     // COMPANY
 
     fun on(event: InternshipProposedToStudentEvent) {
+        this.description = event.description
+        this.period = event.period
+        this.weeklyHours = event.weeklyHours
+        this.companyContactEmail = event.contactEmail
+        this.status = event.status
+    }
+
+    fun on(event: AgreedInternshipSubmittedEvent) {
+        this.id = event.internshipId
         this.description = event.description
         this.period = event.period
         this.weeklyHours = event.weeklyHours

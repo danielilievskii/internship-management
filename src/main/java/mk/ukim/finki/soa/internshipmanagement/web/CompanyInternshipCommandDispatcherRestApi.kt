@@ -3,12 +3,11 @@ package mk.ukim.finki.soa.internshipmanagement.web
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.ProposeInternshipToStudentCommand
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Description
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Email
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipDateRange
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.WeeklyHours
+import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitAgreedInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
 import mk.ukim.finki.soa.internshipmanagement.service.CompanyInternshipService
 import mk.ukim.finki.soa.internshipmanagement.web.dto.company.ProposeInternshipToStudentCommandDto
+import mk.ukim.finki.soa.internshipmanagement.web.dto.company.SubmitAgreedInternshipCommandDto
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -45,5 +44,27 @@ class CompanyInternshipCommandDispatcherRestApi(
         )
 
         return ResponseEntity.ok(companyInternshipService.proposeInternship(command))
+    }
+
+    @Operation(
+        summary = "Submit an agreed internship proposal to a student",
+        description = "Submits an agreed internship proposal to a student providing internship details along with the student index."
+    )
+    @PostMapping("/SubmitAgreedInternship")
+    fun submitInternship(
+        @RequestBody commandDto: SubmitAgreedInternshipCommandDto
+    ): ResponseEntity<Any> {
+        val command = SubmitAgreedInternshipCommand(
+            studentIndex = StudentIndex(commandDto.studentIndex.value),
+            description = Description(commandDto.description.value),
+            period = InternshipDateRange(
+                commandDto.internshipDateRange.fromDate,
+                commandDto.internshipDateRange.toDate
+            ),
+            weeklyHours = WeeklyHours(commandDto.weeklyHours.value),
+            contactEmail = Email(commandDto.contactEmail.value)
+        )
+
+        return ResponseEntity.ok(companyInternshipService.submitAgreedInternship(command))
     }
 }
