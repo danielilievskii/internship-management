@@ -4,16 +4,16 @@ import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
-import org.apache.kafka.common.metrics.Stat
 import java.io.Serializable
 
 @Embeddable
 data class InternshipStatus(
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    val value: StatusType) : Serializable {
+    val value: StatusType
+) : Serializable {
 
-    fun canTransitionTo(newStatus: StatusType) : Boolean {
+    private fun canTransitionTo(newStatus: StatusType): Boolean {
         return when (value) {
             StatusType.SEARCHING -> newStatus == StatusType.SUBMITTED
             StatusType.SUBMITTED -> newStatus == StatusType.ACCEPTED || newStatus == StatusType.REJECTED

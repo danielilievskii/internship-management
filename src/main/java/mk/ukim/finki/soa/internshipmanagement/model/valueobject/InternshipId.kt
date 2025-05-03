@@ -8,15 +8,4 @@ import java.util.*
 @Embeddable
 open class InternshipId(value: String) : Identifier<Internship>(value, Internship::class.java) {
     constructor() : this(UUID.randomUUID().toString())
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other?.javaClass != javaClass) return false
-
-        return this.value == (other as InternshipId).value
-    }
-
-    override fun hashCode(): Int {
-        return value.hashCode()
-    }
 }

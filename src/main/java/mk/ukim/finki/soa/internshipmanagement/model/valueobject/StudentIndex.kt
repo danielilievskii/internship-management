@@ -1,23 +1,11 @@
 package mk.ukim.finki.soa.internshipmanagement.model.valueobject
 
 import jakarta.persistence.Embeddable
+import java.io.Serializable
 
 @Embeddable
-data class StudentIndex(val value: String) {
+data class StudentIndex(val value: String) : Serializable {
     init {
         require(value.length in 3..6) { "Index $value is invalid." }
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as StudentIndex
-
-        return value == other.value
-    }
-
-    override fun hashCode(): Int {
-        return value.hashCode()
     }
 }

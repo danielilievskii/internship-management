@@ -1,6 +1,6 @@
 package mk.ukim.finki.soa.internshipmanagement.model.event
 
-import mk.ukim.finki.soa.internshipmanagement.model.command.CreateSearchingInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.student.CreateSearchingInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
