@@ -1,6 +1,6 @@
 package mk.ukim.finki.soa.internshipmanagement.service.impl.command
 
-import mk.ukim.finki.soa.internshipmanagement.model.command.CreateSearchingInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.student.CreateSearchingInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.service.StudentInternshipService
 import org.axonframework.commandhandling.gateway.CommandGateway

@@ -1,11 +1,11 @@
-package mk.ukim.finki.soa.internshipmanagement.web.dto
+package mk.ukim.finki.soa.internshipmanagement.model.command.company
 
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
 
-data class SubmitInternshipCommandDto(
+data class ProposeInternshipToStudentCommand(
     val internshipId: InternshipId,
     val description: Description,
-    val internshipDateRange: InternshipDateRange,
+    val period: InternshipDateRange,
     val weeklyHours: WeeklyHours,
     val contactEmail: Email
 )

@@ -1,10 +1,10 @@
 package mk.ukim.finki.soa.internshipmanagement.model.snapshot
 
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Email
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.ProfessorId
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CoordinatorId
 
-data class ProfessorSnapshot(
-    val id: ProfessorId,
+data class CoordinatorSnapshot(
+    val id: CoordinatorId,
     val name: String,
     val surname: String,
     val email: Email

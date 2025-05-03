@@ -8,6 +8,7 @@ import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import mk.ukim.finki.soa.internshipmanagement.model.common.Identifier
 import mk.ukim.finki.soa.internshipmanagement.model.common.LabeledEntity
+import mk.ukim.finki.soa.internshipmanagement.model.event.student.InternshipWeekEditedEvent
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
 
 @Entity
@@ -47,7 +48,31 @@ class InternshipWeek : LabeledEntity {
         return "Internship Week (${id.value}) [description: ${description}, date range: ${period}, Company comment: ${companyComment?.value}, Coordinator comment: ${coordinatorComment?.value}, working hours: ${workingHours}]"
     }
 
-    //TODO: Implement commands and events
+    fun applyEdit(event: InternshipWeekEditedEvent) {
+        this.description = event.newDescription
+        this.workingHours = event.newWorkingHours
+    }
+
+    fun addCompanyComment(comment: Comment) {
+        this.companyComment = comment
+    }
+
+    fun addCoordinatorComment(comment: Comment) {
+        this.coordinatorComment = comment
+    }
+    constructor()
+
+    constructor(
+        id: InternshipWeekId,
+        period: InternshipWeekDateRange,
+        description: Description,
+        workingHours: WeeklyHours
+    ) : this() {
+        this.id = id
+        this.period = period
+        this.description = description
+        this.workingHours = workingHours
+    }
 
 
 }

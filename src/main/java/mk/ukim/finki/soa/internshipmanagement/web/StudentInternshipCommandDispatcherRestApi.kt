@@ -1,28 +1,33 @@
 package mk.ukim.finki.soa.internshipmanagement.web
 
-import mk.ukim.finki.soa.internshipmanagement.model.command.CreateSearchingInternshipCommand
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
+import mk.ukim.finki.soa.internshipmanagement.model.command.student.CreateSearchingInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentCV
 import mk.ukim.finki.soa.internshipmanagement.service.StudentInternshipService
-import mk.ukim.finki.soa.internshipmanagement.web.dto.CreateSearchingInternshipCommandDto
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/student/internships")
 class StudentInternshipCommandDispatcherRestApi(
-    val studentInternshipService: StudentInternshipService
+    private val studentInternshipService: StudentInternshipService
 ) {
+
     @PostMapping("/create")
     fun createSearchingInternship(
-        @RequestParam("studentCV") studentCV: MultipartFile
+        @RequestParam("studentCV") studentCVFile: MultipartFile
     ): ResponseEntity<Any> {
-        return ResponseEntity.ok(
-            studentInternshipService.createSearchingInternship(
-                CreateSearchingInternshipCommand(
-                    studentCV = studentCV.bytes,
-                )
-            )
-        )}
+        val studentCV = StudentCV(studentCVFile.bytes)
+
+        val command = CreateSearchingInternshipCommand(
+            internshipId = InternshipId(),
+            studentCV = studentCV
+        )
+
+        return ResponseEntity.ok(studentInternshipService.createSearchingInternship(command))
+    }
 }

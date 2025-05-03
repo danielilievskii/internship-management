@@ -1,7 +1,7 @@
 package mk.ukim.finki.soa.internshipmanagement.service
 
-import mk.ukim.finki.soa.internshipmanagement.model.command.CreateSearchingInternshipCommand
-import mk.ukim.finki.soa.internshipmanagement.model.command.SubmitInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.student.CreateSearchingInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
