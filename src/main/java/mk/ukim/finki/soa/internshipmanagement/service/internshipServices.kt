@@ -1,7 +1,7 @@
 package mk.ukim.finki.soa.internshipmanagement.service
 
+import mk.ukim.finki.soa.internshipmanagement.model.command.company.ProposeInternshipToStudentCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.student.CreateSearchingInternshipCommand
-import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
@@ -12,7 +12,7 @@ interface StudentInternshipService {
 }
 
 interface CompanyInternshipService {
-    fun submitInternship(command: SubmitInternshipCommand): CompletableFuture<InternshipId>
+        fun submitInternship(command: ProposeInternshipToStudentCommand): CompletableFuture<InternshipId>
 }
 
 interface InternshipViewReadService {
