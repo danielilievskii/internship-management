@@ -1,7 +1,7 @@
 package mk.ukim.finki.soa.internshipmanagement.model.valueobject
 
 import jakarta.persistence.Embeddable
-import mk.ukim.finki.soa.internshipmanagement.InternshipWeek
+import mk.ukim.finki.soa.internshipmanagement.model.InternshipWeek
 import mk.ukim.finki.soa.internshipmanagement.model.common.Identifier
 import java.util.*
 

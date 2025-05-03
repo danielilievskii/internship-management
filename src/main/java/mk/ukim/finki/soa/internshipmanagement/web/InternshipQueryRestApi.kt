@@ -1,5 +1,9 @@
 package mk.ukim.finki.soa.internshipmanagement.web
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipViewReadService
@@ -8,18 +12,31 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+@Tag(
+    name = "Internship Query API",
+    description = "Handles queries related to internships."
+)
 @RestController
 @RequestMapping("/api/internships")
 class InternshipQueryRestApi(val internshipViewReadService: InternshipViewReadService) {
 
+    @Operation(
+        summary = "Get Internship by ID",
+        description = "Fetches an internship by its unique ID."
+    )
     @GetMapping("/{internshipId}")
-    fun findById(@PathVariable internshipId: InternshipId) : InternshipView {
+    fun findById(
+        @PathVariable internshipId: InternshipId
+    ): InternshipView {
         return internshipViewReadService.findById(internshipId)
     }
 
+    @Operation(
+        summary = "Get All Internships",
+        description = "Fetches a list of all internships."
+    )
     @GetMapping("/all")
-    fun findAll() : List<InternshipView> {
+    fun findAll(): List<InternshipView> {
         return internshipViewReadService.findAll()
     }
-
 }

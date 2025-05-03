@@ -1,6 +1,6 @@
 package mk.ukim.finki.soa.internshipmanagement.service.impl.query
 
-import mk.ukim.finki.soa.internshipmanagement.model.exception.InternshipNotFoundException
+import mk.ukim.finki.soa.internshipmanagement.exception.InternshipNotFoundException
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
@@ -15,7 +15,7 @@ class InternshipViewReadServiceImpl(val internshipViewJpaRepository: InternshipV
     }
 
     override fun findById(id: InternshipId): InternshipView {
-        return internshipViewJpaRepository.findById(id).orElseThrow {InternshipNotFoundException(id)}
+        return internshipViewJpaRepository.findById(id).orElseThrow { InternshipNotFoundException(id) }
     }
 
     override fun findAll(): List<InternshipView> {

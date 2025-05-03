@@ -13,7 +13,7 @@ data class InternshipWeekDateRange(val fromDate: LocalDate, val toDate: LocalDat
             ChronoUnit.DAYS.between(
                 fromDate,
                 toDate
-            ) in 5..7
-        ) { "Internship duration must be between 5 and 7 days." }
+            ) in 1..7
+        ) { "Internship duration must be between 1 and 7 days." }
     }
 }

@@ -1,4 +1,4 @@
-package mk.ukim.finki.soa.internshipmanagement.model.exception
+package mk.ukim.finki.soa.internshipmanagement.exception
 
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 

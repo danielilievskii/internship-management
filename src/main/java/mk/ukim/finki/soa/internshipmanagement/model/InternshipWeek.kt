@@ -1,4 +1,4 @@
-package mk.ukim.finki.soa.internshipmanagement
+package mk.ukim.finki.soa.internshipmanagement.model
 
 import jakarta.persistence.AttributeOverride
 import jakarta.persistence.AttributeOverrides

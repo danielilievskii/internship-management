@@ -1,5 +1,7 @@
 package mk.ukim.finki.soa.internshipmanagement.model.valueobject
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.Embeddable
 import java.io.Serializable
 

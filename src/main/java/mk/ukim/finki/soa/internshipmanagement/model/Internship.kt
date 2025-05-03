@@ -1,7 +1,6 @@
 package mk.ukim.finki.soa.internshipmanagement.model
 
 import jakarta.persistence.*
-import mk.ukim.finki.soa.internshipmanagement.InternshipWeek
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.CompanyAddWeekCommentCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.InvalidateJournalByCompanyCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.ProposeInternshipToStudentCommand
@@ -26,6 +25,8 @@ import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
 import org.axonframework.spring.stereotype.Aggregate
+import java.time.DayOfWeek
+import java.time.temporal.TemporalAdjusters
 
 @Entity
 @Aggregate(repository = "axonInternshipRepository")
@@ -63,23 +64,6 @@ class Internship : LabeledEntity {
     @AttributeOverride(name = "value", column = Column(name = "weekly_hours"))
     private lateinit var weeklyHours: WeeklyHours
 
-
-    //    @Embedded
-//    @AttributeOverrides(
-//        AttributeOverride(name = "start.value", column = Column(name = "start_date")),
-//        AttributeOverride(name = "end.value", column = Column(name = "end_date"))
-//    )
-//    private lateinit var period: InternshipDateRange
-
-    //    @Embedded
-//    @AttributeOverride(name = "value", column = Column(name = "contact_email"))
-//    private lateinit var companyContantEmail: Email
-
-
-//    @Embedded
-//    @AttributeOverride(name = "value", column = Column(name = "weekly_hours"))
-//    private lateinit var weeklyHo     urs: WeeklyHours
-
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "internship_id")
     private var weeks: MutableList<InternshipWeek> = mutableListOf()
@@ -98,7 +82,7 @@ class Internship : LabeledEntity {
 
     fun handle(command: CreateSearchingInternshipCommand) {
         val event = SearchingInternshipCreatedEvent(
-            internshipId = command.internshipId,
+            internshipId = InternshipId(),
             studentCV = command.studentCV,
         )
         this.on(event)
