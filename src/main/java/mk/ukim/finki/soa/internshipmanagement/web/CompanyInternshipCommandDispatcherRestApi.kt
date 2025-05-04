@@ -67,4 +67,9 @@ class CompanyInternshipCommandDispatcherRestApi(
 
         return ResponseEntity.ok(companyInternshipService.submitAgreedInternship(command))
     }
+
+    // TODO:
+    //  CompanyAddWeekCommentCommand
+    //  InvalidateJournalByCompanyCommand
+    //  ValidateJournalByCompanyCommand
 }

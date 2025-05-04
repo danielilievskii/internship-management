@@ -30,4 +30,20 @@ class StudentInternshipServiceImpl(
     override fun rejectInternship(command: RejectInternshipCommand): CompletableFuture<InternshipId> {
         return commandGateway.send(command)
     }
+
+    override fun createInternshipWeek(command: CreateInternshipWeekCommand): CompletableFuture<InternshipId> {
+        return commandGateway.send(command)
+    }
+
+    override fun deleteInternshipWeek(command: DeleteInternshipWeekCommand): CompletableFuture<InternshipId> {
+        return commandGateway.send(command)
+    }
+
+    override fun editInternshipWeek(command: EditInternshipWeekCommand): CompletableFuture<InternshipId> {
+        return commandGateway.send(command)
+    }
+
+    override fun submitJournal(command: SubmitJournalCommand): CompletableFuture<InternshipId> {
+        return commandGateway.send(command)
+    }
 }

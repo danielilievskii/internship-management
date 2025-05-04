@@ -6,8 +6,7 @@ import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentCV
 import mk.ukim.finki.soa.internshipmanagement.service.StudentInternshipService
-import mk.ukim.finki.soa.internshipmanagement.web.dto.student.AcceptInternshipCommandDto
-import mk.ukim.finki.soa.internshipmanagement.web.dto.student.DeleteSearchingInternshipCommandDto
+import mk.ukim.finki.soa.internshipmanagement.web.dto.student.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -99,5 +98,74 @@ class StudentInternshipCommandDispatcherRestApi(
         )
 
         return ResponseEntity.ok(studentInternshipService.rejectInternship(command))
+    }
+
+    //TODO:
+    // CreateInternshipWeekCommand
+    // DeleteInternshipWeekCommand
+    // EditInternshipWeekCommand
+    // SubmitJournalCommand
+
+    @Operation(
+        summary = "Submit a command to create an internship week for a particular internship",
+        description = "Creates an internship week for a particular internship"
+    )
+    @PostMapping("/CreateInternshipWeek")
+    fun createInternshipWeek(
+        @RequestBody commandDto: CreateInternshipWeekCommandDto
+    ): ResponseEntity<Any> {
+        val command = CreateInternshipWeekCommand(
+            internshipId = commandDto.internshipId,
+            period = commandDto.internshipWeekDateRange,
+            description = commandDto.description,
+            workingHours = commandDto.workingWeeklyHours
+        )
+        return ResponseEntity.ok(studentInternshipService.createInternshipWeek(command))
+    }
+
+    @Operation(
+        summary = "Submit a command to delete an internship week",
+        description = "Deletes an internship week by submitting the internship week's ID"
+    )
+    @DeleteMapping("/DeleteInternshipWeek")
+    fun deleteInternshipWeek(
+        @RequestBody commandDto: DeleteInternshipWeekCommandDto
+    ) : ResponseEntity<Any> {
+        val command = DeleteInternshipWeekCommand(
+            internshipId = commandDto.internshipId,
+            weekId = commandDto.internshipWeekId
+        )
+        return ResponseEntity.ok(studentInternshipService.deleteInternshipWeek(command))
+    }
+
+    @Operation(
+        summary = "Submit a command to edit a internship week",
+        description = "Edits an existing internship week by submitting the new data and the internship week ID."
+    )
+    @PostMapping("/EditInternshipWeek")
+    fun editInternshipWeek(
+        @RequestBody commandDto: EditInternshipWeekCommandDto
+    ) : ResponseEntity<Any> {
+        val command = EditInternshipWeekCommand(
+            internshipId = commandDto.internshipId,
+            weekId = commandDto.weekId,
+            newDescription = commandDto.newDescription,
+            newWorkingHours = commandDto.newWorkingHours
+        )
+        return ResponseEntity.ok(studentInternshipService.editInternshipWeek(command))
+    }
+
+    @Operation(
+        summary = "Submit a command to submit the journal for an internship",
+        description = "Submits the journal for and existing internship by sending the internship ID."
+    )
+    @PostMapping("/submitJournal")
+    fun submitJournal(
+        @RequestBody commandDto: SubmitJournalCommandDto
+    ) : ResponseEntity<Any> {
+        val command = SubmitJournalCommand(
+            internshipId = commandDto.internshipId,
+        )
+        return ResponseEntity.ok(studentInternshipService.submitJournal(command))
     }
 }

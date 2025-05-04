@@ -142,7 +142,7 @@ class Internship : LabeledEntity {
     fun handle(command: CreateInternshipWeekCommand) {
         val event = InternshipWeekCreatedEvent(
             internshipId = command.internshipId,
-            weekId = command.weekId,
+            weekId = InternshipWeekId(),
             period = command.period,
             description = command.description,
             workingHours = command.workingHours
