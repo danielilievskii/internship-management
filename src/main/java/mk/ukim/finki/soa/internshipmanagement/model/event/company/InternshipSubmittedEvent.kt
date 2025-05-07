@@ -1,11 +1,11 @@
-package mk.ukim.finki.soa.internshipmanagement.model.command.company
-
+package mk.ukim.finki.soa.internshipmanagement.model.event.company
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
 
-data class ProposeInternshipToStudentCommand(
+data class InternshipSubmittedEvent(
     val internshipId: InternshipId,
     val description: Description,
     val period: InternshipDateRange,
     val weeklyHours: WeeklyHours,
-    val contactEmail: Email
+    val contactEmail: Email,
+    val status: InternshipStatus
 )

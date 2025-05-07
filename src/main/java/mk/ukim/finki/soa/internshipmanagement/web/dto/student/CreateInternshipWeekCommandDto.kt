@@ -1,13 +1,11 @@
 package mk.ukim.finki.soa.internshipmanagement.web.dto.student
 
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Description
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipWeekDateRange
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.WeeklyHours
+import java.time.LocalDate
 
 data class CreateInternshipWeekCommandDto(
-    val internshipId: InternshipId,
-    val internshipWeekDateRange: InternshipWeekDateRange,
-    val description: Description,
-    val workingWeeklyHours: WeeklyHours
+    val internshipId: String,
+    val fromDate: LocalDate,
+    val toDate: LocalDate,
+    val description: String,
+    val workingWeeklyHours: Int
 )

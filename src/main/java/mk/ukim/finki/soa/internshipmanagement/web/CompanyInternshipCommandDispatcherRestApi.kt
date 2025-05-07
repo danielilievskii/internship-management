@@ -2,11 +2,11 @@ package mk.ukim.finki.soa.internshipmanagement.web
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import mk.ukim.finki.soa.internshipmanagement.model.command.company.ProposeInternshipToStudentCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitAgreedInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
 import mk.ukim.finki.soa.internshipmanagement.service.CompanyInternshipService
-import mk.ukim.finki.soa.internshipmanagement.web.dto.company.ProposeInternshipToStudentCommandDto
+import mk.ukim.finki.soa.internshipmanagement.web.dto.company.SubmitInternshipCommandDto
 import mk.ukim.finki.soa.internshipmanagement.web.dto.company.SubmitAgreedInternshipCommandDto
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -18,51 +18,51 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/company/submitCommand")
 @Tag(
     name = "Company Internship Command API",
-    description = "Handles company commands related to internship offers and journal management."
+    description = "Handles company commands related to internship and journal management."
 )
 class CompanyInternshipCommandDispatcherRestApi(
     val companyInternshipService: CompanyInternshipService
 ) {
 
     @Operation(
-        summary = "Submit a command to propose an internship to a student",
-        description = "Proposes an internship to a student by submitting internship details along with the internship ID."
+        summary = "Submit a command to submit internship",
+        description = "Populates the specified internship by processing the provided details and sets its status to SUBMITTED."
     )
-    @PostMapping("/ProposeInternshipToStudent")
-    fun proposeInternship(
-        @RequestBody commandDto: ProposeInternshipToStudentCommandDto
+    @PostMapping("/SubmitInternship")
+    fun submitInternship(
+        @RequestBody commandDto: SubmitInternshipCommandDto
     ): ResponseEntity<Any> {
-        val command = ProposeInternshipToStudentCommand(
-            internshipId = commandDto.internshipId,
-            description = Description(commandDto.description.value),
+        val command = SubmitInternshipCommand(
+            internshipId = InternshipId(commandDto.internshipId),
+            description = Description(commandDto.description),
             period = InternshipDateRange(
-                commandDto.internshipDateRange.fromDate,
-                commandDto.internshipDateRange.toDate
+                commandDto.fromDate,
+                commandDto.toDate
             ),
-            weeklyHours = WeeklyHours(commandDto.weeklyHours.value),
-            contactEmail = Email(commandDto.contactEmail.value)
+            weeklyHours = WeeklyHours(commandDto.weeklyHours),
+            contactEmail = Email(commandDto.contactEmail)
         )
 
-        return ResponseEntity.ok(companyInternshipService.proposeInternship(command))
+        return ResponseEntity.ok(companyInternshipService.submitInternship(command))
     }
 
     @Operation(
-        summary = "Submit an agreed internship proposal to a student",
-        description = "Submits an agreed internship proposal to a student providing internship details along with the student index."
+        summary = "Submit a command to submit an agreed internship",
+        description = "Creates a new internship entry with status SUBMITTED by processing the provided student index and details."
     )
     @PostMapping("/SubmitAgreedInternship")
     fun submitInternship(
         @RequestBody commandDto: SubmitAgreedInternshipCommandDto
     ): ResponseEntity<Any> {
         val command = SubmitAgreedInternshipCommand(
-            studentIndex = StudentIndex(commandDto.studentIndex.value),
-            description = Description(commandDto.description.value),
+            studentIndex = StudentIndex(commandDto.studentIndex),
+            description = Description(commandDto.description),
             period = InternshipDateRange(
-                commandDto.internshipDateRange.fromDate,
-                commandDto.internshipDateRange.toDate
+                commandDto.fromDate,
+                commandDto.toDate
             ),
-            weeklyHours = WeeklyHours(commandDto.weeklyHours.value),
-            contactEmail = Email(commandDto.contactEmail.value)
+            weeklyHours = WeeklyHours(commandDto.weeklyHours),
+            contactEmail = Email(commandDto.contactEmail)
         )
 
         return ResponseEntity.ok(companyInternshipService.submitAgreedInternship(command))

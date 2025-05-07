@@ -2,8 +2,8 @@ package mk.ukim.finki.soa.internshipmanagement.web.dto.company
 
 import java.time.LocalDate
 
-data class SubmitAgreedInternshipCommandDto(
-    val studentIndex: String,
+data class SubmitInternshipCommandDto(
+    val internshipId: String,
     val description: String,
     val fromDate: LocalDate,
     val toDate: LocalDate,

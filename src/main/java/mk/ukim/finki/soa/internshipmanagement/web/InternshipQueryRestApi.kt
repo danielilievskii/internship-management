@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController
 class InternshipQueryRestApi(val internshipViewReadService: InternshipViewReadService) {
 
     @Operation(
-        summary = "Get Internship by ID",
-        description = "Fetches an internship by its unique ID."
+        summary = "Fetch internship by ID",
+        description = "Retrieves the internship with the specified ID."
     )
     @GetMapping("/{internshipId}")
     fun findById(
@@ -32,8 +32,8 @@ class InternshipQueryRestApi(val internshipViewReadService: InternshipViewReadSe
     }
 
     @Operation(
-        summary = "Get All Internships",
-        description = "Fetches a list of all internships."
+        summary = "Fetch all internships",
+        description = "Retrieves a list of all internships."
     )
     @GetMapping("/all")
     fun findAll(): List<InternshipView> {

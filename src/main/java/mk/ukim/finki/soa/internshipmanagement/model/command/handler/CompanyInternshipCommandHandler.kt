@@ -12,7 +12,7 @@ class CompanyInternshipCommandHandler(
 ) {
 
     @CommandHandler
-    fun handle(command: ProposeInternshipToStudentCommand) {
+    fun handle(command: SubmitInternshipCommand) {
         repository.load(command.internshipId.toString()).execute {
             it.handle(command)
         }

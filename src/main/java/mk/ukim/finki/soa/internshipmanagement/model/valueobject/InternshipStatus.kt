@@ -15,8 +15,8 @@ data class InternshipStatus(
 
     private fun canTransitionTo(newStatus: StatusType): Boolean {
         return when (value) {
-            StatusType.SEARCHING -> newStatus == StatusType.PROPOSED
-            StatusType.PROPOSED -> newStatus == StatusType.ACCEPTED || newStatus == StatusType.REJECTED
+            StatusType.SEARCHING -> newStatus == StatusType.SUBMITTED
+            StatusType.SUBMITTED -> newStatus == StatusType.ACCEPTED || newStatus == StatusType.REJECTED
             StatusType.ACCEPTED -> newStatus == StatusType.JOURNAL_SUBMITTED
             StatusType.JOURNAL_SUBMITTED -> newStatus == StatusType.VALIDATED_BY_COMPANY
             StatusType.VALIDATED_BY_COMPANY -> newStatus == StatusType.VALIDATED_BY_COORDINATOR || newStatus == StatusType.ACCEPTED
@@ -27,7 +27,7 @@ data class InternshipStatus(
 
     fun transitionTo(newStatus: StatusType): InternshipStatus {
         require(canTransitionTo(newStatus)) {
-            "Transition from $value to $newStatus is not allowed."
+            "Internship status transition from $value to $newStatus is not allowed."
         }
 
         return InternshipStatus(newStatus)

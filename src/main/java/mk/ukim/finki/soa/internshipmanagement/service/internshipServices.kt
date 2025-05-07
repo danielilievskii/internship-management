@@ -1,12 +1,10 @@
 package mk.ukim.finki.soa.internshipmanagement.service
 
-import mk.ukim.finki.soa.internshipmanagement.model.command.company.ProposeInternshipToStudentCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitAgreedInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipWeekDateRange
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipWeekId
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
 import java.util.concurrent.CompletableFuture
 
@@ -23,7 +21,7 @@ interface StudentInternshipService {
 }
 
 interface CompanyInternshipService {
-    fun proposeInternship(command: ProposeInternshipToStudentCommand): CompletableFuture<InternshipId>
+    fun submitInternship(command: SubmitInternshipCommand): CompletableFuture<InternshipId>
     fun submitAgreedInternship(command: SubmitAgreedInternshipCommand): CompletableFuture<InternshipId>
 }
 

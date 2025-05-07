@@ -1,6 +1,8 @@
 package mk.ukim.finki.soa.internshipmanagement.model
 
 import jakarta.persistence.*
+import mk.ukim.finki.soa.internshipmanagement.exception.InternshipWeekNotFoundException
+import mk.ukim.finki.soa.internshipmanagement.exception.InvalidInternshipStateException
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.*
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.ArchiveInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.CoordinatorAddWeekCommentCommand
@@ -83,7 +85,7 @@ class Internship : LabeledEntity {
 
     fun handle(command: DeleteSearchingInternshipCommand) {
         if (status.value != StatusType.SEARCHING) {
-            throw IllegalStateException("Only internships in SEARCHING status can be deleted.")
+            throw InvalidInternshipStateException("Internships can only be deleted while in SEARCHING state.")
         }
 
         val event = SearchingInternshipDeletedEvent(command.internshipId)
@@ -94,7 +96,7 @@ class Internship : LabeledEntity {
 
     fun handle(command: EditSearchingInternshipCommand) {
         if (status.value != StatusType.SEARCHING) {
-            throw IllegalStateException("Internship can only be edited while in SEARCHING state.")
+            throw InvalidInternshipStateException("Internships can only be edited while in SEARCHING state.")
         }
 
         val event = SearchingInternshipEditedEvent(
@@ -140,6 +142,10 @@ class Internship : LabeledEntity {
     }
 
     fun handle(command: CreateInternshipWeekCommand) {
+        if (status.value != StatusType.ACCEPTED) {
+            throw InvalidInternshipStateException("Internship weeks can only be created while the internship is in ACCEPTED state.")
+        }
+
         val event = InternshipWeekCreatedEvent(
             internshipId = command.internshipId,
             weekId = InternshipWeekId(),
@@ -152,8 +158,12 @@ class Internship : LabeledEntity {
     }
 
     fun handle(command: EditInternshipWeekCommand) {
+        if (status.value != StatusType.ACCEPTED) {
+            throw InvalidInternshipStateException("Internship weeks can only be edited while the internship is in ACCEPTED state.")
+        }
+
         val week = weeks.find { it.getId() == command.weekId }
-            ?: throw IllegalArgumentException("InternshipWeek with ID ${command.weekId.value} not found.")
+            ?: throw InternshipWeekNotFoundException(command.weekId)
 
         val event = InternshipWeekEditedEvent(
             internshipId = command.internshipId,
@@ -167,8 +177,12 @@ class Internship : LabeledEntity {
     }
 
     fun handle(command: DeleteInternshipWeekCommand) {
+        if (status.value != StatusType.ACCEPTED) {
+            throw InvalidInternshipStateException("Internship weeks can only be deleted while the internship is in ACCEPTED state.")
+        }
+
         val week = weeks.find { it.getId().value == command.weekId.value }
-            ?: throw IllegalStateException("Internship week not found.")
+            ?: throw InternshipWeekNotFoundException(command.weekId)
 
         val event = InternshipWeekDeletedEvent(
             internshipId = command.internshipId,
@@ -181,14 +195,10 @@ class Internship : LabeledEntity {
 
     // COMPANY
 
-    fun handle(command: ProposeInternshipToStudentCommand) {
-        if (status.value != StatusType.SEARCHING) {
-            throw IllegalStateException("Internship can only be proposed while in SEARCHING state.")
-        }
+    fun handle(command: SubmitInternshipCommand) {
+        val newStatus = status.transitionTo(StatusType.SUBMITTED)
 
-        val newStatus = status.transitionTo(StatusType.PROPOSED)
-
-        val event = InternshipProposedToStudentEvent(
+        val event = InternshipSubmittedEvent(
             internshipId = command.internshipId,
             description = command.description,
             period = command.period,
@@ -213,7 +223,7 @@ class Internship : LabeledEntity {
             period = command.period,
             weeklyHours = command.weeklyHours,
             contactEmail = command.contactEmail,
-            status = InternshipStatus(StatusType.PROPOSED)
+            status = InternshipStatus(StatusType.SUBMITTED)
         )
 
         this.on(event)
@@ -249,8 +259,12 @@ class Internship : LabeledEntity {
     }
 
     fun handle(command: CompanyAddWeekCommentCommand) {
+        if (status.value != StatusType.JOURNAL_SUBMITTED) {
+            throw InvalidInternshipStateException("Internship week comments by company can only be added while the internship is in JOURNAL SUBMITTED state.")
+        }
+
         val week = weeks.find { it.getId() == command.weekId }
-            ?: throw IllegalArgumentException("Week not found.")
+            ?: throw throw InternshipWeekNotFoundException(command.weekId)
 
         val event = CompanyWeekCommentAddedEvent(
             internshipId = command.internshipId,
@@ -286,18 +300,13 @@ class Internship : LabeledEntity {
         AggregateLifecycle.apply(notify)
     }
 
-    fun handle(command: ArchiveInternshipCommand) {
-        val newStatus = status.transitionTo(StatusType.ARCHIVED)
-
-        val event = InternshipArchivedEvent(command.internshipId, newStatus)
-
-        on(event)
-        AggregateLifecycle.apply(event)
-    }
-
     fun handle(command: CoordinatorAddWeekCommentCommand) {
+        if (status.value != StatusType.VALIDATED_BY_COMPANY) {
+            throw InvalidInternshipStateException("Internship week comments by coordinator can only be added while the internship is in VALIDATED BY COMPANY state.")
+        }
+
         val week = weeks.find { it.getId() == command.weekId }
-            ?: throw IllegalArgumentException("Week not found.")
+            ?: throw InternshipWeekNotFoundException(command.weekId)
 
         week.addCoordinatorComment(command.comment)
 
@@ -307,6 +316,17 @@ class Internship : LabeledEntity {
             comment = command.comment
         )
 
+        AggregateLifecycle.apply(event)
+    }
+
+    // ADMIN
+
+    fun handle(command: ArchiveInternshipCommand) {
+        val newStatus = status.transitionTo(StatusType.ARCHIVED)
+
+        val event = InternshipArchivedEvent(command.internshipId, newStatus)
+
+        on(event)
         AggregateLifecycle.apply(event)
     }
 
@@ -363,7 +383,7 @@ class Internship : LabeledEntity {
 
     // COMPANY
 
-    fun on(event: InternshipProposedToStudentEvent) {
+    fun on(event: InternshipSubmittedEvent) {
         this.description = event.description
         this.period = event.period
         this.weeklyHours = event.weeklyHours
@@ -394,6 +414,7 @@ class Internship : LabeledEntity {
 
         week.addCompanyComment(event.comment)
     }
+
     // COORDINATOR
 
     fun on(event: JournalValidatedByCoordinatorEvent) {
@@ -404,15 +425,17 @@ class Internship : LabeledEntity {
         this.status = event.newStatus
     }
 
-    fun on(event: InternshipArchivedEvent) {
-        this.status = event.newStatus
-    }
-
     fun on(event: CoordinatorWeekCommentAddedEvent) {
         val week = weeks.find { it.getId() == event.weekId }
             ?: throw IllegalArgumentException("Week not found.")
 
         week.addCoordinatorComment(event.comment)
+    }
+
+    // ADMIN
+
+    fun on(event: InternshipArchivedEvent) {
+        this.status = event.newStatus
     }
 
 
