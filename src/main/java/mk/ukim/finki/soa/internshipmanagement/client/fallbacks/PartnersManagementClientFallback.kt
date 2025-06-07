@@ -13,15 +13,18 @@ class PartnersManagementClientFallback : PartnersManagementClient {
         return listOf(
             PartnerDto(
                 id = "Partner:kadbibiobjelodugme123",
-                name = "Intertec"
+                name = "Intertec",
+                email = "admin@intertec.com"
             ),
             PartnerDto(
                 id = "Partner:kadbibiobjelodugme321",
-                name = "G+D Netcetera"
+                name = "G+D Netcetera",
+                email = "admin@netcetera.com"
             ),
             PartnerDto(
                 id = "Partner:kadbibiobjelodugme333",
-                name = "Sorsix"
+                name = "Sorsix",
+                email = "admin@sorsix.com"
             )
         )
     }
