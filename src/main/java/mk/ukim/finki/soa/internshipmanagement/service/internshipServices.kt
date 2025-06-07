@@ -1,5 +1,6 @@
 package mk.ukim.finki.soa.internshipmanagement.service
 
+import mk.ukim.finki.soa.internshipmanagement.client.dto.PartnerDto
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitAgreedInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
@@ -30,5 +31,9 @@ interface InternshipViewReadService {
     fun findById(id: InternshipId): InternshipView
     fun findAll(): List<InternshipView>
     fun findAllByStatus(status: InternshipStatus): List<InternshipView>
+}
+
+interface PartnerTestService{
+    fun refreshActivePartners(): List<PartnerDto>
 }
 
