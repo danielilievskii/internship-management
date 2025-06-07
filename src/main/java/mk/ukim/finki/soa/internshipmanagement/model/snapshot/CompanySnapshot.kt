@@ -14,16 +14,18 @@ data class CompanySnapshot(
         name = "value",
         column = Column(name = "company_id")
     )
-    val id: CompanyId,
-    val name: String,
+    var id: CompanyId = CompanyId(),
+    var name: String = "",
+
     @AttributeOverride(
         name = "value",
         column = Column(name = "email")
     )
-    val email: Email,
-    val isActive: Boolean
-)
-{
+    var email: Email = Email(""),
+    var isActive: Boolean = true
+) {
+    constructor() : this(CompanyId(), "", Email(""), true)
+
     override fun toString(): String {
         return "CompanySnapshot(id=$id, name='$name', email=$email, isActive=$isActive)"
     }

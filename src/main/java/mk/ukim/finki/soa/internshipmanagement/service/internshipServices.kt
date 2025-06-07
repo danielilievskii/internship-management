@@ -1,9 +1,11 @@
 package mk.ukim.finki.soa.internshipmanagement.service
 
 import mk.ukim.finki.soa.internshipmanagement.client.dto.PartnerDto
+import mk.ukim.finki.soa.internshipmanagement.infrastructure.kafka.dto.PartnerActivationChangedEventDto
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitAgreedInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
@@ -35,5 +37,9 @@ interface InternshipViewReadService {
 
 interface PartnerTestService{
     fun refreshActivePartners(): List<PartnerDto>
+    fun changePartnerActivation(eventDto: PartnerActivationChangedEventDto): CompletableFuture<CompanyId>
+    fun createPartner(): CompletableFuture<CompanyId>
+    fun editPartner(): CompletableFuture<CompanyId>
+    fun removePartner(): CompletableFuture<CompanyId>
 }
 

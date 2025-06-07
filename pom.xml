@@ -125,6 +125,20 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 
+		<!-- Jackson Kotlin Module -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-kotlin</artifactId>
+			<version>2.13.1</version>
+		</dependency>
+
+		<!-- Jackson Java Time Module (for ZonedDateTime support) -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.18.2</version>
+		</dependency>
+
 		<!-- CloudEvents Core + JSON Support -->
 		<dependency>
 			<groupId>io.cloudevents</groupId>
