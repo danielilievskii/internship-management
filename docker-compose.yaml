@@ -11,6 +11,8 @@ services:
     ports:
       - "5449:5432"
     container_name: internship_db
+    networks:
+      - finki_services_net
   internship_backend:
     depends_on:
       - internship_db
@@ -28,9 +30,19 @@ services:
       SPRING_DATASOURCE_PASSWORD: admin
       SPRING_DATASOURCE_SCHEMA: public
       OPTIMIZE_EVENT_CONSUMPTION: "false"
+      spring.cloud.consul.host: "dev-consul"
+      spring.cloud.discovery.discovery.hostname: "internship_backend"
+      spring.cloud.discovery.discovery.prefer-ip-address=false: "false"
+
     volumes:
       - dms-data:/opt/dms
+    networks:
+      - finki_services_net
+
 volumes:
   db-data:
   dms-data:
   es-data:
+networks:
+  finki_services_net:
+    external: true
