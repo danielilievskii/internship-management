@@ -4,6 +4,9 @@ import mk.ukim.finki.soa.internshipmanagement.client.PartnersManagementClient
 import mk.ukim.finki.soa.internshipmanagement.client.dto.PartnerDto
 import mk.ukim.finki.soa.internshipmanagement.exception.PartnerNotFoundException
 import mk.ukim.finki.soa.internshipmanagement.infrastructure.kafka.dto.PartnerActivationChangedEventDto
+import mk.ukim.finki.soa.internshipmanagement.infrastructure.kafka.dto.PartnerCreatedEventDto
+import mk.ukim.finki.soa.internshipmanagement.infrastructure.kafka.dto.PartnerDeletedEventDto
+import mk.ukim.finki.soa.internshipmanagement.infrastructure.kafka.dto.PartnerEditedEventDto
 import mk.ukim.finki.soa.internshipmanagement.model.snapshot.CompanySnapshot
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Email
@@ -19,6 +22,8 @@ class PartnerTestServiceImpl (
     : PartnerTestService {
 
     override fun refreshActivePartners(): List<PartnerDto> {
+        companyRepository.deleteAll()
+
         val partners = client.getActivePartners()
         partners.forEach { partner ->
             companyRepository.save(
@@ -43,15 +48,35 @@ class PartnerTestServiceImpl (
         return CompletableFuture.completedFuture(partner.id)
     }
 
-    override fun createPartner(): CompletableFuture<CompanyId> {
-        TODO("Not yet implemented")
+    override fun createPartner(eventDto: PartnerCreatedEventDto): CompletableFuture<CompanyId> {
+        val partner = CompanySnapshot(
+            id = CompanyId(eventDto.id),
+            name = eventDto.name,
+            email = Email(eventDto.email),
+            isActive = eventDto.isActive
+        )
+        companyRepository.save(partner)
+
+        return CompletableFuture.completedFuture(partner.id)
     }
 
-    override fun editPartner(): CompletableFuture<CompanyId> {
-        TODO("Not yet implemented")
+    override fun editPartner(eventDto: PartnerEditedEventDto): CompletableFuture<CompanyId> {
+        val partner = companyRepository.findById(CompanyId(eventDto.id))
+            .orElseThrow { PartnerNotFoundException(CompanyId(eventDto.id)) }
+
+        partner.name = eventDto.name
+        partner.email = Email(eventDto.email)
+        partner.isActive = eventDto.isActive
+        companyRepository.save(partner)
+
+        return CompletableFuture.completedFuture(partner.id)
     }
 
-    override fun removePartner(): CompletableFuture<CompanyId> {
-        TODO("Not yet implemented")
+    override fun removePartner(eventDto: PartnerDeletedEventDto): CompletableFuture<CompanyId> {
+        val partnerId = CompanyId(eventDto.id)
+
+        companyRepository.deleteById(partnerId)
+
+        return CompletableFuture.completedFuture(partnerId)
     }
 }
