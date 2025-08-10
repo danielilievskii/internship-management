@@ -38,7 +38,7 @@ class KafkaEventConsumer(
     fun listenPartnerCreated(record: ConsumerRecord<String, String>) {
         try {
             val eventDto: PartnerCreatedEventDto = objectMapper.readValue(record.value())
-            partnerTestService.createPartner();
+            partnerTestService.createPartner(eventDto);
         } catch (ex: Exception) {
             println(ex.message)
         }
@@ -48,7 +48,7 @@ class KafkaEventConsumer(
     fun listenPartnerEdited(record: ConsumerRecord<String, String>) {
         try {
             val eventDto: PartnerEditedEventDto = objectMapper.readValue(record.value())
-            partnerTestService.editPartner();
+            partnerTestService.editPartner(eventDto);
         } catch (ex: Exception) {
             println(ex.message)
         }
@@ -58,7 +58,7 @@ class KafkaEventConsumer(
     fun listenPartnerRemoved(record: ConsumerRecord<String, String>) {
         try {
             val eventDto: PartnerDeletedEventDto = objectMapper.readValue(record.value())
-            partnerTestService.removePartner();
+            partnerTestService.removePartner(eventDto);
         } catch (ex: Exception) {
             println(ex.message)
         }
