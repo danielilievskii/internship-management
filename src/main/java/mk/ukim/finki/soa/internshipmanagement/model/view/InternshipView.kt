@@ -1,9 +1,8 @@
 package mk.ukim.finki.soa.internshipmanagement.model.view
 
 import jakarta.persistence.*
+import mk.ukim.finki.soa.internshipmanagement.model.InternshipStatusChange
 import mk.ukim.finki.soa.internshipmanagement.model.InternshipWeek
-import mk.ukim.finki.soa.internshipmanagement.model.common.Identifier
-import mk.ukim.finki.soa.internshipmanagement.model.common.LabeledEntity
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
 import org.hibernate.annotations.Immutable
 
@@ -41,7 +40,9 @@ data class InternshipView(
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "internship_id", referencedColumnName = "id")
-    val weeks: List<InternshipWeek> = emptyList()
+    val weeks: List<InternshipWeek> = emptyList(),
 
-
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "internship_id", referencedColumnName = "id")
+    val statusChanges: List<InternshipStatusChangeView> = emptyList()
 )

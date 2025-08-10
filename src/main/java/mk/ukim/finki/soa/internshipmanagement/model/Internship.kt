@@ -11,6 +11,7 @@ import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.Validate
 import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
 import mk.ukim.finki.soa.internshipmanagement.model.common.Identifier
 import mk.ukim.finki.soa.internshipmanagement.model.common.LabeledEntity
+import mk.ukim.finki.soa.internshipmanagement.model.event.InternshipStatusChangedEvent
 import mk.ukim.finki.soa.internshipmanagement.model.event.company.*
 import mk.ukim.finki.soa.internshipmanagement.model.event.coordinator.CoordinatorWeekCommentAddedEvent
 import mk.ukim.finki.soa.internshipmanagement.model.event.coordinator.InternshipArchivedEvent
@@ -18,9 +19,11 @@ import mk.ukim.finki.soa.internshipmanagement.model.event.coordinator.JournalInv
 import mk.ukim.finki.soa.internshipmanagement.model.event.coordinator.JournalValidatedByCoordinatorEvent
 import mk.ukim.finki.soa.internshipmanagement.model.event.student.*
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
+import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
 import org.axonframework.spring.stereotype.Aggregate
+import java.time.LocalDateTime
 
 @Entity
 @Aggregate(repository = "axonInternshipRepository")
@@ -62,6 +65,9 @@ class Internship : LabeledEntity {
     @JoinColumn(name = "internship_id")
     private var weeks: MutableList<InternshipWeek> = mutableListOf()
 
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JoinColumn(name = "internship_id")
+    private var statusChanges: MutableList<InternshipStatusChange> = mutableListOf()
 
     override fun getId(): Identifier<out Any> {
         return id
@@ -77,7 +83,10 @@ class Internship : LabeledEntity {
     fun handle(command: CreateSearchingInternshipCommand) {
         val event = SearchingInternshipCreatedEvent(
             internshipId = InternshipId(),
-            studentCV = command.studentCV,
+            previousStatus = null,
+            newStatus = InternshipStatus(StatusType.SEARCHING),
+            changedAt = LocalDateTime.now(),
+            studentCV = command.studentCV
         )
         this.on(event)
         AggregateLifecycle.apply(event)
@@ -112,7 +121,9 @@ class Internship : LabeledEntity {
 
         val event = InternshipAcceptedEvent(
             internshipId = command.internshipId,
-            status = newStatus
+            previousStatus = status,
+            newStatus = newStatus,
+            changedAt = LocalDateTime.now()
         )
         this.on(event)
         AggregateLifecycle.apply(event)
@@ -123,7 +134,9 @@ class Internship : LabeledEntity {
 
         val event = InternshipRejectedEvent(
             internshipId = command.internshipId,
-            status = newStatus
+            previousStatus = status,
+            newStatus = newStatus,
+            changedAt = LocalDateTime.now()
         )
         this.on(event)
         AggregateLifecycle.apply(event)
@@ -134,7 +147,9 @@ class Internship : LabeledEntity {
 
         val event = JournalSubmittedEvent(
             internshipId = command.internshipId,
-            status = newStatus
+            previousStatus = status,
+            newStatus = newStatus,
+            changedAt = LocalDateTime.now()
         )
 
         this.on(event)
@@ -200,11 +215,13 @@ class Internship : LabeledEntity {
 
         val event = InternshipSubmittedEvent(
             internshipId = command.internshipId,
+            previousStatus = status,
+            newStatus = newStatus,
+            changedAt = LocalDateTime.now(),
             description = command.description,
             period = command.period,
             weeklyHours = command.weeklyHours,
             contactEmail = command.contactEmail,
-            status = newStatus
         )
         val notify = StudentNotifiedOfInternshipProposalEvent(command.internshipId)
 
@@ -219,11 +236,13 @@ class Internship : LabeledEntity {
 
         val event = AgreedInternshipSubmittedEvent(
             internshipId = InternshipId(),
+            previousStatus = null,
+            newStatus = InternshipStatus(StatusType.SUBMITTED),
+            changedAt = LocalDateTime.now(),
             description = command.description,
             period = command.period,
             weeklyHours = command.weeklyHours,
-            contactEmail = command.contactEmail,
-            status = InternshipStatus(StatusType.SUBMITTED)
+            contactEmail = command.contactEmail
         )
 
         this.on(event)
@@ -235,7 +254,9 @@ class Internship : LabeledEntity {
 
         val validatedEvent = JournalValidatedByCompanyEvent(
             internshipId = command.internshipId,
-            newStatus = newStatus
+            previousStatus = status,
+            newStatus = newStatus,
+            changedAt = LocalDateTime.now()
         )
         val notifyEvent = StudentNotifiedOfJournalValidationByCompanyEvent(command.internshipId)
 
@@ -249,7 +270,9 @@ class Internship : LabeledEntity {
 
         val invalidatedEvent = JournalInvalidatedByCompanyEvent(
             internshipId = command.internshipId,
-            newStatus = newStatus
+            previousStatus = status,
+            newStatus = newStatus,
+            changedAt = LocalDateTime.now()
         )
         val notifyEvent = StudentNotifiedOfJournalInvalidationByCompanyEvent(command.internshipId)
 
@@ -281,7 +304,12 @@ class Internship : LabeledEntity {
     fun handle(command: ValidateJournalByCoordinatorCommand) {
         val newStatus = status.transitionTo(StatusType.VALIDATED_BY_COORDINATOR)
 
-        val event = JournalValidatedByCoordinatorEvent(command.internshipId, newStatus)
+        val event = JournalValidatedByCoordinatorEvent(
+            command.internshipId,
+            status,
+            newStatus,
+            LocalDateTime.now()
+        )
         val notify = StudentNotifiedOfInternshipValidationByCoordinatorEvent(command.internshipId)
 
         on(event)
@@ -292,7 +320,12 @@ class Internship : LabeledEntity {
     fun handle(command: InvalidateJournalByCoordinatorCommand) {
         val newStatus = status.transitionTo(StatusType.ACCEPTED)
 
-        val event = JournalInvalidatedByCoordinatorEvent(command.internshipId, newStatus)
+        val event = JournalInvalidatedByCoordinatorEvent(
+            command.internshipId,
+            status,
+            newStatus,
+            LocalDateTime.now()
+        )
         val notify = StudentNotifiedOfJournalInvalidationByCoordinatorEvent(command.internshipId)
 
         on(event)
@@ -324,7 +357,12 @@ class Internship : LabeledEntity {
     fun handle(command: ArchiveInternshipCommand) {
         val newStatus = status.transitionTo(StatusType.ARCHIVED)
 
-        val event = InternshipArchivedEvent(command.internshipId, newStatus)
+        val event = InternshipArchivedEvent(
+            command.internshipId,
+            status,
+            newStatus,
+            LocalDateTime.now()
+        )
 
         on(event)
         AggregateLifecycle.apply(event)
@@ -332,12 +370,23 @@ class Internship : LabeledEntity {
 
 
     // APPLY EVENTS
-    // STUDENT
+    @EventSourcingHandler
+    fun on(event: InternshipStatusChangedEvent) {
+        val statusChange = InternshipStatusChange(
+            id = InternshipStatusChangeId(),
+            internshipId = event.internshipId,
+            previousStatus = event.previousStatus,
+            newStatus = event.newStatus,
+            changedAt = event.changedAt
+        )
+        this.statusChanges.add(statusChange)
+    }
 
+    // STUDENT
     fun on(event: SearchingInternshipCreatedEvent) {
         this.id = event.internshipId
         this.studentCV = event.studentCV
-        this.status = event.status
+        this.status = event.newStatus
     }
 
     fun on(event: SearchingInternshipDeletedEvent) {
@@ -349,15 +398,15 @@ class Internship : LabeledEntity {
     }
 
     fun on(event: InternshipAcceptedEvent) {
-        this.status = event.status
+        this.status = event.newStatus
     }
 
     fun on(event: InternshipRejectedEvent) {
-        this.status = event.status
+        this.status = event.newStatus
     }
 
     fun on(event: JournalSubmittedEvent) {
-        this.status = event.status
+        this.status = event.newStatus
     }
 
     fun on(event: InternshipWeekCreatedEvent) {
@@ -388,7 +437,7 @@ class Internship : LabeledEntity {
         this.period = event.period
         this.weeklyHours = event.weeklyHours
         this.companyContactEmail = event.contactEmail
-        this.status = event.status
+        this.status = event.newStatus
     }
 
     fun on(event: AgreedInternshipSubmittedEvent) {
@@ -397,7 +446,7 @@ class Internship : LabeledEntity {
         this.period = event.period
         this.weeklyHours = event.weeklyHours
         this.companyContactEmail = event.contactEmail
-        this.status = event.status
+        this.status = event.newStatus
     }
 
     fun on(event: JournalValidatedByCompanyEvent) {

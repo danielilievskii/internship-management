@@ -11,6 +11,7 @@ import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
+import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipStatusChangeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
 import java.util.concurrent.CompletableFuture
 
@@ -36,6 +37,10 @@ interface InternshipViewReadService {
     fun findById(id: InternshipId): InternshipView
     fun findAll(): List<InternshipView>
     fun findAllByStatus(status: InternshipStatus): List<InternshipView>
+}
+
+interface InternshipStatusChangeViewReadService {
+    fun getStatusChangesForInternship(id: InternshipId): List<InternshipStatusChangeView>
 }
 
 interface PartnerTestService{
