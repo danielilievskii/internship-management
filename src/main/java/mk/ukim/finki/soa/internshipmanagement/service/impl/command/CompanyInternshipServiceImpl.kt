@@ -1,7 +1,6 @@
 package mk.ukim.finki.soa.internshipmanagement.service.impl.command
 
-import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitInternshipCommand
-import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitAgreedInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.company.*
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.service.CompanyInternshipService
 import org.axonframework.commandhandling.gateway.CommandGateway
@@ -15,6 +14,18 @@ class CompanyInternshipServiceImpl(val commandGateway: CommandGateway) : Company
     }
 
     override fun submitAgreedInternship(command: SubmitAgreedInternshipCommand): CompletableFuture<InternshipId> {
+        return commandGateway.send(command)
+    }
+
+    override fun addWeekComment(command: CompanyAddWeekCommentCommand): CompletableFuture<InternshipId> {
+        return commandGateway.send(command)
+    }
+
+    override fun invalidateJournalByCompany(command: InvalidateJournalByCompanyCommand): CompletableFuture<InternshipId> {
+        return commandGateway.send(command)
+    }
+
+    override fun validateJournalByCompany(command: ValidateJournalByCompanyCommand): CompletableFuture<InternshipId> {
         return commandGateway.send(command)
     }
 }

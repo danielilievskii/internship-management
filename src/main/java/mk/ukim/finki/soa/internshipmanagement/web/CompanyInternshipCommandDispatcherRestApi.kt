@@ -2,12 +2,10 @@ package mk.ukim.finki.soa.internshipmanagement.web
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitInternshipCommand
-import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitAgreedInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.company.*
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
 import mk.ukim.finki.soa.internshipmanagement.service.CompanyInternshipService
-import mk.ukim.finki.soa.internshipmanagement.web.dto.company.SubmitInternshipCommandDto
-import mk.ukim.finki.soa.internshipmanagement.web.dto.company.SubmitAgreedInternshipCommandDto
+import mk.ukim.finki.soa.internshipmanagement.web.dto.company.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -68,8 +66,47 @@ class CompanyInternshipCommandDispatcherRestApi(
         return ResponseEntity.ok(companyInternshipService.submitAgreedInternship(command))
     }
 
-    // TODO:
-    //  CompanyAddWeekCommentCommand
-    //  InvalidateJournalByCompanyCommand
-    //  ValidateJournalByCompanyCommand
+    @Operation(
+        summary = "As a Company allows sends a submit command to add a week comment",
+        description = "Allows a company to add a comment for a specific week in the internship journal."
+    )
+    @PostMapping("/CompanyAddWeekComment")
+    fun companyAddWeekComment(
+        @RequestBody commandDto: CompanyAddWeekCommentCommandDto
+    ): ResponseEntity<Any> {
+        val command = CompanyAddWeekCommentCommand(
+            internshipId = InternshipId(commandDto.internshipId),
+            weekId = InternshipWeekId(commandDto.weekId),
+            comment = Comment(commandDto.comment)
+        )
+        return ResponseEntity.ok(companyInternshipService.addWeekComment(command));
+    }
+
+    @Operation(
+        summary = "Invalidate a journal by company",
+        description = "Allows a company to invalidate a journal for a specific internship."
+    )
+    @PostMapping("/InvalidateJournalByCompany")
+    fun invalidateJournalByCompany(
+        @RequestBody commandDto: InvalidateJournalByCompanyCommandDto
+    ): ResponseEntity<Any> {
+        val command = InvalidateJournalByCompanyCommand(
+            internshipId = InternshipId(commandDto.internshipId)
+        )
+        return ResponseEntity.ok(companyInternshipService.invalidateJournalByCompany(command))
+    }
+
+    @Operation(
+        summary = "Validate a journal by company",
+        description = "Allows a company to validate a journal for a specific internship."
+    )
+    @PostMapping("/ValidateJournalByCompany")
+    fun validateJournalByCompany(
+        @RequestBody commandDto: ValidateJournalByCompanyCommandDto
+    ): ResponseEntity<Any> {
+        val command = ValidateJournalByCompanyCommand(
+            internshipId = InternshipId(commandDto.internshipId)
+        )
+        return ResponseEntity.ok(companyInternshipService.validateJournalByCompany(command))
+    }
 }

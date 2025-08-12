@@ -5,8 +5,7 @@ import mk.ukim.finki.soa.internshipmanagement.infrastructure.kafka.dto.PartnerAc
 import mk.ukim.finki.soa.internshipmanagement.infrastructure.kafka.dto.PartnerCreatedEventDto
 import mk.ukim.finki.soa.internshipmanagement.infrastructure.kafka.dto.PartnerDeletedEventDto
 import mk.ukim.finki.soa.internshipmanagement.infrastructure.kafka.dto.PartnerEditedEventDto
-import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitInternshipCommand
-import mk.ukim.finki.soa.internshipmanagement.model.command.company.SubmitAgreedInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.company.*
 import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
@@ -30,6 +29,9 @@ interface StudentInternshipService {
 interface CompanyInternshipService {
     fun submitInternship(command: SubmitInternshipCommand): CompletableFuture<InternshipId>
     fun submitAgreedInternship(command: SubmitAgreedInternshipCommand): CompletableFuture<InternshipId>
+    fun addWeekComment(command: CompanyAddWeekCommentCommand): CompletableFuture<InternshipId>
+    fun invalidateJournalByCompany(command: InvalidateJournalByCompanyCommand): CompletableFuture<InternshipId>
+    fun validateJournalByCompany(command: ValidateJournalByCompanyCommand): CompletableFuture<InternshipId>
 }
 
 interface InternshipViewReadService {
