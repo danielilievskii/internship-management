@@ -23,6 +23,8 @@ import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
 import org.axonframework.spring.stereotype.Aggregate
+import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Entity
@@ -75,6 +77,38 @@ class Internship : LabeledEntity {
 
     override fun getLabel(): String {
         return "Internship (${id.value}) [${status.value}]"
+    }
+
+    fun generateInternshipWeeks(fromDate: LocalDate, toDate: LocalDate, workingHours: WeeklyHours): MutableList<InternshipWeek> {
+        val weeks = mutableListOf<InternshipWeek>()
+
+        fun createWeek(start: LocalDate, end: LocalDate) = InternshipWeek(
+            InternshipWeekId(),
+            InternshipWeekDateRange(start, end),
+            Description(""),
+            workingHours
+        )
+
+        // First week: fromDate -> Sunday
+        var weekEnd = fromDate.with(DayOfWeek.SUNDAY)
+        if (weekEnd.isAfter(toDate)) {
+            return mutableListOf(createWeek(fromDate, toDate))
+        }
+        weeks.add(createWeek(fromDate, weekEnd))
+
+        // Middle full weeks: Monday -> Sunday
+        var currentStart = weekEnd.plusDays(1)
+        while (currentStart.plusDays(6).isBefore(toDate)) {
+            weeks.add(createWeek(currentStart, currentStart.plusDays(6)))
+            currentStart = currentStart.plusWeeks(1)
+        }
+
+        // Last week: Monday -> toDate
+        if (!currentStart.isAfter(toDate)) {
+            weeks.add(createWeek(currentStart, toDate))
+        }
+
+        return weeks
     }
 
     // HANDLE COMMANDS
@@ -212,6 +246,7 @@ class Internship : LabeledEntity {
 
     fun handle(command: SubmitInternshipCommand) {
         val newStatus = status.transitionTo(StatusType.SUBMITTED)
+        val internshipWeeks = generateInternshipWeeks(command.period.fromDate, command.period.toDate, command.weeklyHours)
 
         val event = InternshipSubmittedEvent(
             internshipId = command.internshipId,
@@ -221,18 +256,21 @@ class Internship : LabeledEntity {
             description = command.description,
             period = command.period,
             weeklyHours = command.weeklyHours,
+            weeks = internshipWeeks,
             contactEmail = command.contactEmail,
         )
-        val notify = StudentNotifiedOfInternshipProposalEvent(command.internshipId)
-
         this.on(event)
         AggregateLifecycle.apply(event)
+
+        val notify = StudentNotifiedOfInternshipProposalEvent(command.internshipId)
         AggregateLifecycle.apply(notify)
     }
 
     fun handle(command: SubmitAgreedInternshipCommand) {
         //TODO: Find the student by index
         // val student = studentService.findByIndex(command.studentIndex)
+        val internshipWeeks = generateInternshipWeeks(command.period.fromDate, command.period.toDate, command.weeklyHours)
+
 
         val event = AgreedInternshipSubmittedEvent(
             internshipId = InternshipId(),
@@ -242,6 +280,7 @@ class Internship : LabeledEntity {
             description = command.description,
             period = command.period,
             weeklyHours = command.weeklyHours,
+            weeks = internshipWeeks,
             contactEmail = command.contactEmail
         )
 
@@ -436,6 +475,7 @@ class Internship : LabeledEntity {
         this.description = event.description
         this.period = event.period
         this.weeklyHours = event.weeklyHours
+        this.weeks = event.weeks
         this.companyContactEmail = event.contactEmail
         this.status = event.newStatus
     }
@@ -445,6 +485,7 @@ class Internship : LabeledEntity {
         this.description = event.description
         this.period = event.period
         this.weeklyHours = event.weeklyHours
+        this.weeks = event.weeks
         this.companyContactEmail = event.contactEmail
         this.status = event.newStatus
     }
