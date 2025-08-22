@@ -6,6 +6,10 @@ import mk.ukim.finki.soa.internshipmanagement.infrastructure.kafka.dto.PartnerCr
 import mk.ukim.finki.soa.internshipmanagement.infrastructure.kafka.dto.PartnerDeletedEventDto
 import mk.ukim.finki.soa.internshipmanagement.infrastructure.kafka.dto.PartnerEditedEventDto
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.*
+import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.ArchiveInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.CoordinatorAddWeekCommentCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.InvalidateJournalByCoordinatorCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.ValidateJournalByCoordinatorCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
@@ -51,7 +55,7 @@ interface InternshipStatusChangeViewReadService {
     fun getStatusChangesForInternship(id: InternshipId): List<InternshipStatusChangeView>
 }
 
-interface PartnerTestService{
+interface PartnerTestService {
     fun refreshActivePartners(): List<PartnerDto>
     fun changePartnerActivation(eventDto: PartnerActivationChangedEventDto): CompletableFuture<CompanyId>
     fun createPartner(eventDto: PartnerCreatedEventDto): CompletableFuture<CompanyId>
@@ -59,3 +63,9 @@ interface PartnerTestService{
     fun removePartner(eventDto: PartnerDeletedEventDto): CompletableFuture<CompanyId>
 }
 
+interface CoordinatorInternshipService {
+    fun archiveInternship(command: ArchiveInternshipCommand): CompletableFuture<InternshipId>
+    fun addWeekComment(command: CoordinatorAddWeekCommentCommand): CompletableFuture<InternshipId>
+    fun invalidateJournalByCoordinator(command: InvalidateJournalByCoordinatorCommand): CompletableFuture<InternshipId>
+    fun validateJournalByCoordinator(command: ValidateJournalByCoordinatorCommand): CompletableFuture<InternshipId>
+}
