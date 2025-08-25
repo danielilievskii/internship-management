@@ -21,11 +21,26 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+    networks:
+      - finki_services_net
   consul:
     image: hashicorp/consul
     container_name: dev-consul
     ports:
       - "8500:8500"
+    networks:
+      - finki_services_net
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.2
+    container_name: keycloak
+    command: [ "start-dev", "--import-realm" ]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8001:8080"
+    volumes:
+      - ./keycloak/realms:/opt/keycloak/data/import
     networks:
       - finki_services_net
 networks:

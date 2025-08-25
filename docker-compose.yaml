@@ -1,6 +1,6 @@
 services:
   internship_db:
-    image: postgres:16.1
+    image: postgres:17
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -33,12 +33,10 @@ services:
       spring.cloud.consul.host: "dev-consul"
       spring.cloud.discovery.discovery.hostname: "internship_backend"
       spring.cloud.discovery.discovery.prefer-ip-address=false: "false"
-
     volumes:
       - dms-data:/opt/dms
     networks:
       - finki_services_net
-
 volumes:
   db-data:
   dms-data:
