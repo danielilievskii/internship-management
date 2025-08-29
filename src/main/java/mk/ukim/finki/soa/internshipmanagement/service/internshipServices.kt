@@ -11,13 +11,13 @@ import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.Coordina
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.InvalidateJournalByCoordinatorCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.ValidateJournalByCoordinatorCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentCV
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipStatusChangeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable
+import org.springframework.web.bind.annotation.RequestParam
 import java.util.concurrent.CompletableFuture
 
 interface StudentInternshipService {
@@ -43,6 +43,8 @@ interface CompanyInternshipService {
 interface InternshipViewReadService {
     fun existsById(id: InternshipId): Boolean
     fun findAll(): List<InternshipView>
+    fun findAll(pageNum: Int, pageSize: Int): Page<InternshipView>
+    fun findAll(pageNum: Int, pageSize: Int, studentIndex: String, coordinatorName: String, internshipStatus: StatusType, companyId: String): Page<InternshipView>
     fun findAllByStatus(status: InternshipStatus): List<InternshipView>
 }
 
