@@ -18,7 +18,6 @@ data class CoordinatorSnapshot(
     val id: CoordinatorId,
 
     val name: String,
-    val surname: String,
 
     @AttributeOverride(
         name = "value",
@@ -26,9 +25,9 @@ data class CoordinatorSnapshot(
     )
     val email: Email
 ) {
-    constructor() : this(CoordinatorId(), "", "", Email("default@email.com"))
+    constructor() : this(CoordinatorId(), "", Email("default@email.com"))
 
     override fun toString(): String {
-        return "ProfessorSnapshot(id=$id, name='$name', surname='$surname', email=$email)"
+        return "ProfessorSnapshot(id=$id, name='$name', email=$email)"
     }
 }

@@ -57,20 +57,17 @@ class DataInitializer(
                 listOf(
                     CoordinatorSnapshot(
                         id = CoordinatorId(),
-                        name = "Vesna",
-                        surname = "Dimitrievska",
+                        name = "Vesna Dimitrievska",
                         email = Email("vesna.dimitrievska@email.com"),
                     ),
                     CoordinatorSnapshot(
                         id = CoordinatorId(),
-                        name = "Andreja",
-                        surname = "Naumovski",
+                        name = "Andreja Naumovski",
                         email = Email("andreja.naumovski@email.com"),
                     ),
                     CoordinatorSnapshot(
                         id = CoordinatorId(),
-                        name = "Georgina",
-                        surname = "Mirceva",
+                        name = "Georgina Mirceva",
                         email = Email("georgina.mirceva@email.com"),
                     ),
                 )
@@ -85,16 +82,14 @@ class DataInitializer(
                     StudentSnapshot(
                         id = StudentId(),
                         index = StudentIndex("111111"),
-                        name = "John",
-                        surname = "Doe",
+                        name = "John Doe",
                         email = Email("john.doe@email.com"),
                         ECTSCredits(60)
                     ),
                     StudentSnapshot(
                         id = StudentId(),
                         index = StudentIndex("222222"),
-                        name = "John",
-                        surname = "Smith",
+                        name = "John Smith",
                         email = Email("john.smith@email.com"),
                         ECTSCredits(120)
                     )

@@ -26,7 +26,6 @@ data class StudentSnapshot(
     val index: StudentIndex,
 
     val name: String,
-    val surname: String,
 
     @AttributeOverride(
         name = "value",
@@ -41,10 +40,10 @@ data class StudentSnapshot(
     val credits: ECTSCredits,
 
     ) {
-    constructor() : this(StudentId(), StudentIndex("999999"), "", "", Email("default@email.com"), ECTSCredits(60))
+    constructor() : this(StudentId(), StudentIndex("999999"), "", Email("default@email.com"), ECTSCredits(60))
 
 
     override fun toString(): String {
-        return "StudentSnapshot(id=$id, index=$index, email=$email, credits=$credits, name='$name', surname='$surname')"
+        return "StudentSnapshot(id=$id, index=$index, email=$email, credits=$credits, name='$name')"
     }
 }
