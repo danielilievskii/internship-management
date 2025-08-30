@@ -1,0 +1,20 @@
+package mk.ukim.finki.soa.internshipmanagement.service.impl.query
+
+import mk.ukim.finki.soa.internshipmanagement.exception.UserNotFoundException
+import mk.ukim.finki.soa.internshipmanagement.model.snapshot.CompanySnapshot
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Email
+import mk.ukim.finki.soa.internshipmanagement.repository.CompanySnapshotJpaRepository
+import mk.ukim.finki.soa.internshipmanagement.service.CompanySnapshotReadService
+import org.springframework.stereotype.Service
+
+@Service
+class CompanySnapshotReadServiceImpl(
+    val companyRepository: CompanySnapshotJpaRepository,
+) : CompanySnapshotReadService {
+
+    override fun findByEmail(email: String): CompanySnapshot {
+
+        return companyRepository.findByEmail(Email(email))
+            ?: throw UserNotFoundException("Company with email $email not found")
+    }
+}

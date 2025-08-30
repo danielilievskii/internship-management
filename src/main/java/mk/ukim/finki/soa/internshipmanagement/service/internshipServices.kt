@@ -11,13 +11,14 @@ import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.Coordina
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.InvalidateJournalByCoordinatorCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.ValidateJournalByCoordinatorCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
+import mk.ukim.finki.soa.internshipmanagement.model.snapshot.CompanySnapshot
+import mk.ukim.finki.soa.internshipmanagement.model.snapshot.CoordinatorSnapshot
+import mk.ukim.finki.soa.internshipmanagement.model.snapshot.StudentSnapshot
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipStatusChangeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable
-import org.springframework.web.bind.annotation.RequestParam
 import java.util.concurrent.CompletableFuture
 
 interface StudentInternshipService {
@@ -70,4 +71,25 @@ interface CoordinatorInternshipService {
     fun addWeekComment(command: CoordinatorAddWeekCommentCommand): CompletableFuture<InternshipId>
     fun invalidateJournalByCoordinator(command: InvalidateJournalByCoordinatorCommand): CompletableFuture<InternshipId>
     fun validateJournalByCoordinator(command: ValidateJournalByCoordinatorCommand): CompletableFuture<InternshipId>
+}
+
+interface AuthService {
+    fun getAuthUserEmail(): String
+    fun getAuthStudent(): StudentSnapshot
+    fun getAuthCompany(): CompanySnapshot
+    fun getAuthCoordinator(): CoordinatorSnapshot
+}
+
+interface StudentSnapshotReadService {
+    fun findByEmail(email: String): StudentSnapshot
+    fun findByIndex(index: String): StudentSnapshot
+}
+
+interface CompanySnapshotReadService {
+    fun findByEmail(email: String): CompanySnapshot
+
+}
+
+interface CoordinatorSnapshotReadService {
+    fun findByEmail(email: String): CoordinatorSnapshot
 }

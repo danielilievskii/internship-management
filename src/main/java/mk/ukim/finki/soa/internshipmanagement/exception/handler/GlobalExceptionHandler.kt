@@ -1,6 +1,7 @@
 package mk.ukim.finki.soa.internshipmanagement.exception.handler
 
-import org.axonframework.modelling.command.Aggregate
+import mk.ukim.finki.soa.internshipmanagement.exception.AuthException
+import mk.ukim.finki.soa.internshipmanagement.exception.UserNotFoundException
 import org.axonframework.modelling.command.AggregateNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -30,5 +31,15 @@ class GlobalExceptionHandler {
     @ExceptionHandler(AggregateNotFoundException::class)
     fun handleAggregateNotFound(ex: AggregateNotFoundException): ResponseEntity<String> {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.message ?: "Aggregate not found")
+    }
+
+    @ExceptionHandler(UserNotFoundException::class)
+    fun handleUserNotFound(ex: UserNotFoundException): ResponseEntity<String> {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.message ?: "User not found")
+    }
+
+    @ExceptionHandler(AuthException::class)
+    fun handleAuthException(ex: AuthException): ResponseEntity<String> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.message ?: "Authentication exception")
     }
 }
