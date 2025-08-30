@@ -4,7 +4,6 @@ import mk.ukim.finki.soa.internshipmanagement.exception.UserNotFoundException
 import mk.ukim.finki.soa.internshipmanagement.model.snapshot.CoordinatorSnapshot
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Email
 import mk.ukim.finki.soa.internshipmanagement.repository.CoordinatorSnapshotJpaRepository
-import mk.ukim.finki.soa.internshipmanagement.service.AuthService
 import mk.ukim.finki.soa.internshipmanagement.service.CoordinatorSnapshotReadService
 import org.springframework.stereotype.Service
 

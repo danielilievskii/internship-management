@@ -4,6 +4,7 @@ import mk.ukim.finki.soa.internshipmanagement.model.event.InternshipStatusChange
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentCV
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
 import java.time.LocalDateTime
 
 data class SearchingInternshipCreatedEvent(
@@ -11,6 +12,7 @@ data class SearchingInternshipCreatedEvent(
     override val previousStatus: InternshipStatus?,
     override val newStatus: InternshipStatus,
     override val changedAt: LocalDateTime,
+    val studentId: StudentId,
     val studentCV: StudentCV,
 ) : InternshipStatusChangedEvent(
     internshipId,

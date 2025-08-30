@@ -10,6 +10,8 @@ data class AgreedInternshipSubmittedEvent(
     override val previousStatus: InternshipStatus?,
     override val newStatus: InternshipStatus,
     override val changedAt: LocalDateTime,
+    val studentId: StudentId,
+    val companyId: CompanyId,
     val description: Description,
     val period: InternshipDateRange,
     val weeklyHours: WeeklyHours,

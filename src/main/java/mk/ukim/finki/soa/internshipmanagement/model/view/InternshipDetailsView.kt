@@ -20,10 +20,17 @@ data class InternshipDetailsView(
     @AttributeOverride(name = "value", column = Column(name = "status"))
     val status: InternshipStatus,
 
-    //TODO:
-    // val student
-    // val company
-    // val coordinator
+    @Embedded
+    @AttributeOverride(name = "value", column = Column(name = "student_id"))
+    val studentId: StudentId,
+
+    @Embedded
+    @AttributeOverride(name = "value", column = Column(name = "company_id"))
+    val companyId: CompanyId,
+
+    @Embedded
+    @AttributeOverride(name = "value", column = Column(name = "coordinator_id"))
+    val coordinatorId: CoordinatorId,
 
     @Embedded
     @AttributeOverride(name = "value", column = Column(name = "description"))

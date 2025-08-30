@@ -3,8 +3,12 @@ package mk.ukim.finki.soa.internshipmanagement.web
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
+import mk.ukim.finki.soa.internshipmanagement.model.snapshot.StudentSnapshot
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
+import mk.ukim.finki.soa.internshipmanagement.repository.StudentSnapshotJpaRepository
+import mk.ukim.finki.soa.internshipmanagement.service.AuthService
 import mk.ukim.finki.soa.internshipmanagement.service.StudentInternshipService
+import mk.ukim.finki.soa.internshipmanagement.service.StudentSnapshotReadService
 import mk.ukim.finki.soa.internshipmanagement.web.dto.student.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -17,7 +21,8 @@ import org.springframework.web.multipart.MultipartFile
     description = "Handles student commands related to internship and journal management."
 )
 class StudentInternshipCommandDispatcherRestApi(
-    private val studentInternshipService: StudentInternshipService
+    private val studentInternshipService: StudentInternshipService,
+    private val authService: AuthService
 ) {
     @Operation(
         summary = "Submit a command to create a new searching internship",
@@ -27,7 +32,11 @@ class StudentInternshipCommandDispatcherRestApi(
     fun createSearchingInternship(
         @RequestParam("studentCV") studentCVFile: MultipartFile
     ): ResponseEntity<Any> {
+
+        val authStudent: StudentSnapshot = authService.getAuthStudent()
+
         val command = CreateSearchingInternshipCommand(
+            studentId = authStudent.id,
             studentCV = StudentCV(studentCVFile.bytes)
         )
 

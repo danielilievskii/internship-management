@@ -37,6 +37,18 @@ class Internship : LabeledEntity {
     private lateinit var id: InternshipId
 
     @Embedded
+    @AttributeOverride(name = "value", column = Column(name = "student_id"))
+    private lateinit var studentId: StudentId
+
+    @Embedded
+    @AttributeOverride(name = "value", column = Column(name = "company_id"))
+    private lateinit var companyId: CompanyId
+
+    @Embedded
+    @AttributeOverride(name = "value", column = Column(name = "coordinator_id"))
+    private lateinit var coordinatorId: CoordinatorId
+
+    @Embedded
     @AttributeOverride(name = "value", column = Column(name = "status"))
     private lateinit var status: InternshipStatus
 
@@ -120,6 +132,7 @@ class Internship : LabeledEntity {
             previousStatus = null,
             newStatus = InternshipStatus(StatusType.SEARCHING),
             changedAt = LocalDateTime.now(),
+            studentId = command.studentId,
             studentCV = command.studentCV
         )
         this.on(event)
@@ -250,6 +263,7 @@ class Internship : LabeledEntity {
 
         val event = InternshipSubmittedEvent(
             internshipId = command.internshipId,
+            companyId = command.companyId,
             previousStatus = status,
             newStatus = newStatus,
             changedAt = LocalDateTime.now(),
@@ -267,16 +281,15 @@ class Internship : LabeledEntity {
     }
 
     fun handle(command: SubmitAgreedInternshipCommand) {
-        //TODO: Find the student by index
-        // val student = studentService.findByIndex(command.studentIndex)
         val internshipWeeks = generateInternshipWeeks(command.period.fromDate, command.period.toDate, command.weeklyHours)
-
 
         val event = AgreedInternshipSubmittedEvent(
             internshipId = InternshipId(),
             previousStatus = null,
             newStatus = InternshipStatus(StatusType.SUBMITTED),
             changedAt = LocalDateTime.now(),
+            studentId = command.studentId,
+            companyId = command.companyId,
             description = command.description,
             period = command.period,
             weeklyHours = command.weeklyHours,
@@ -424,6 +437,7 @@ class Internship : LabeledEntity {
     // STUDENT
     fun on(event: SearchingInternshipCreatedEvent) {
         this.id = event.internshipId
+        this.studentId = event.studentId
         this.studentCV = event.studentCV
         this.status = event.newStatus
     }
@@ -472,6 +486,7 @@ class Internship : LabeledEntity {
     // COMPANY
 
     fun on(event: InternshipSubmittedEvent) {
+        this.companyId = event.companyId
         this.description = event.description
         this.period = event.period
         this.weeklyHours = event.weeklyHours
@@ -482,6 +497,8 @@ class Internship : LabeledEntity {
 
     fun on(event: AgreedInternshipSubmittedEvent) {
         this.id = event.internshipId
+        this.studentId = event.studentId
+        this.companyId = event.companyId
         this.description = event.description
         this.period = event.period
         this.weeklyHours = event.weeklyHours

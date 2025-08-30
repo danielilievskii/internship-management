@@ -3,8 +3,12 @@ package mk.ukim.finki.soa.internshipmanagement.web
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.*
+import mk.ukim.finki.soa.internshipmanagement.model.snapshot.CompanySnapshot
+import mk.ukim.finki.soa.internshipmanagement.model.snapshot.StudentSnapshot
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
+import mk.ukim.finki.soa.internshipmanagement.service.AuthService
 import mk.ukim.finki.soa.internshipmanagement.service.CompanyInternshipService
+import mk.ukim.finki.soa.internshipmanagement.service.StudentSnapshotReadService
 import mk.ukim.finki.soa.internshipmanagement.web.dto.company.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,7 +23,9 @@ import org.springframework.web.bind.annotation.RestController
     description = "Handles company commands related to internship and journal management."
 )
 class CompanyInternshipCommandDispatcherRestApi(
-    val companyInternshipService: CompanyInternshipService
+    val companyInternshipService: CompanyInternshipService,
+    val studentSnapshotReadService: StudentSnapshotReadService,
+    val authService: AuthService
 ) {
 
     @Operation(
@@ -30,8 +36,12 @@ class CompanyInternshipCommandDispatcherRestApi(
     fun submitInternship(
         @RequestBody commandDto: SubmitInternshipCommandDto
     ): ResponseEntity<Any> {
+
+        val authCompany: CompanySnapshot = authService.getAuthCompany()
+
         val command = SubmitInternshipCommand(
             internshipId = InternshipId(commandDto.internshipId),
+            companyId = authCompany.id,
             description = Description(commandDto.description),
             period = InternshipDateRange(
                 commandDto.fromDate,
@@ -52,8 +62,13 @@ class CompanyInternshipCommandDispatcherRestApi(
     fun submitInternship(
         @RequestBody commandDto: SubmitAgreedInternshipCommandDto
     ): ResponseEntity<Any> {
+
+        val authCompany: CompanySnapshot = authService.getAuthCompany()
+        val student: StudentSnapshot = studentSnapshotReadService.findByIndex(commandDto.studentIndex)
+
         val command = SubmitAgreedInternshipCommand(
-            studentIndex = StudentIndex(commandDto.studentIndex),
+            studentId = student.id,
+            companyId = authCompany.id,
             description = Description(commandDto.description),
             period = InternshipDateRange(
                 commandDto.fromDate,
