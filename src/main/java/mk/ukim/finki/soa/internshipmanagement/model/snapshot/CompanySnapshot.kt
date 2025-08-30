@@ -24,7 +24,7 @@ data class CompanySnapshot(
     var email: Email = Email(""),
     var isActive: Boolean = true
 ) {
-    constructor() : this(CompanyId(), "", Email(""), true)
+    constructor() : this(CompanyId(), "", Email("default@email.com"), true)
 
     override fun toString(): String {
         return "CompanySnapshot(id=$id, name='$name', email=$email, isActive=$isActive)"
