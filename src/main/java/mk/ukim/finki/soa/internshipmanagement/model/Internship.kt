@@ -102,7 +102,7 @@ class Internship : LabeledEntity {
         )
 
         // First week: fromDate -> Sunday
-        var weekEnd = fromDate.with(DayOfWeek.SUNDAY)
+        val weekEnd = fromDate.with(DayOfWeek.SUNDAY)
         if (weekEnd.isAfter(toDate)) {
             return mutableListOf(createWeek(fromDate, toDate))
         }
@@ -339,7 +339,7 @@ class Internship : LabeledEntity {
         }
 
         val week = weeks.find { it.getId() == command.weekId }
-            ?: throw throw InternshipWeekNotFoundException(command.weekId)
+            ?: throw InternshipWeekNotFoundException(command.weekId)
 
         val event = CompanyWeekCommentAddedEvent(
             internshipId = command.internshipId,

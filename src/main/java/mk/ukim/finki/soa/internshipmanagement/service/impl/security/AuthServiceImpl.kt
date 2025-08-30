@@ -35,18 +35,18 @@ class AuthServiceImpl(
     override fun getAuthStudent(): StudentSnapshot {
 
         val email: String = getAuthUserEmail()
-        return studentSnapshotReadService.findByEmail(email);
+        return studentSnapshotReadService.findByEmail(email)
     }
 
     override fun getAuthCompany(): CompanySnapshot {
 
         val email: String = getAuthUserEmail()
-        return companySnapshotReadService.findByEmail(email);
+        return companySnapshotReadService.findByEmail(email)
     }
 
     override fun getAuthCoordinator(): CoordinatorSnapshot {
 
         val email: String = getAuthUserEmail()
-        return coordinatorSnapshotReadService.findByEmail(email);
+        return coordinatorSnapshotReadService.findByEmail(email)
     }
 }

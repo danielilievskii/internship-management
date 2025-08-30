@@ -94,7 +94,7 @@ class CompanyInternshipCommandDispatcherRestApi(
             weekId = InternshipWeekId(commandDto.weekId),
             comment = Comment(commandDto.comment)
         )
-        return ResponseEntity.ok(companyInternshipService.addWeekComment(command));
+        return ResponseEntity.ok(companyInternshipService.addWeekComment(command))
     }
 
     @Operation(

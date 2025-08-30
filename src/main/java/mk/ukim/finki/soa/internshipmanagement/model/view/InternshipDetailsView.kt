@@ -2,8 +2,6 @@ package mk.ukim.finki.soa.internshipmanagement.model.view
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
-import mk.ukim.finki.soa.internshipmanagement.model.InternshipStatusChange
-import mk.ukim.finki.soa.internshipmanagement.model.InternshipWeek
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
 import org.hibernate.annotations.Immutable
 
