@@ -16,7 +16,7 @@ interface InternshipViewReadService {
     fun existsById(id: InternshipId): Boolean
     fun findAll(): List<InternshipView>
     fun findAll(pageNum: Int, pageSize: Int): Page<InternshipView>
-    fun findAll(pageNum: Int, pageSize: Int, studentIndex: String, coordinatorName: String, internshipStatus: StatusType, companyId: String): Page<InternshipView>
+    fun findAll(pageNum: Int, pageSize: Int, studentId: String?, coordinatorId: String?, internshipStatus: StatusType?, companyId: String?): Page<InternshipView>
     fun findAllByStatus(status: InternshipStatus): List<InternshipView>
 }
 

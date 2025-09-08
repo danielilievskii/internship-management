@@ -65,14 +65,13 @@ class InternshipQueryRestApi(
     fun findAll(
         @RequestParam(defaultValue = "0") pageNum: Int,
         @RequestParam(defaultValue = "10") pageSize: Int,
-        @RequestParam(required = false) studentIndex: String,
-        @RequestParam(required = false) coordinatorName: String,
-        @RequestParam(required = false) internshipStatus: StatusType,
-        @RequestParam(required = false) companyId: String,
+        @RequestParam(required = false) studentId: String?,
+        @RequestParam(required = false) coordinatorId: String?,
+        @RequestParam(required = false) internshipStatus: StatusType?,
+        @RequestParam(required = false) companyId: String?,
     ): ResponseEntity<Page<InternshipView>> {
-        val internshipsPage = internshipViewReadService.findAll(pageNum, pageSize);
-//        val internshipsPage = internshipViewReadService.findAll(
-//            pageNum, pageSize, studentIndex, coordinatorName, internshipStatus, companyId)
+        val internshipsPage = internshipViewReadService.findAll(
+            pageNum, pageSize, studentId, coordinatorId, internshipStatus, companyId)
         return ResponseEntity.ok(internshipsPage)
     }
 

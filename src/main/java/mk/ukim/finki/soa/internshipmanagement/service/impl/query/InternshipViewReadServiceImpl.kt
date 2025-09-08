@@ -32,14 +32,36 @@ class InternshipViewReadServiceImpl(
     override fun findAll(
         pageNum: Int,
         pageSize: Int,
-        studentIndex: String,
-        coordinatorName: String,
-        internshipStatus: StatusType,
-        companyId: String
+        studentId: String?,
+        coordinatorId: String?,
+        internshipStatus: StatusType?,
+        companyId: String?
     ): Page<InternshipView> {
-        //TODO Implement filtering with Specifications
-        return Page.empty();
-//        Specification<InternshipView> spec = Specification.where(null);
+        val pageable = PageRequest.of(pageNum, pageSize)
+
+        val spec = Specification.where<InternshipView>(null)
+            .and(studentId?.let {
+                Specification { root, _, cb ->
+                    cb.equal(root.get<String>("studentId").get<String>("value"), it)
+                }
+            })
+            .and(coordinatorId?.let {
+                Specification { root, _, cb ->
+                    cb.equal(root.get<String>("coordinatorId").get<String>("value"), it)
+                }
+            })
+            .and(internshipStatus?.let {
+                Specification { root, _, cb ->
+                    cb.equal(root.get<String>("status").get<String>("value"), it.name)
+                }
+            })
+            .and(companyId?.let {
+                Specification { root, _, cb ->
+                    cb.equal(root.get<String>("companyId").get<String>("value"), it)
+                }
+            })
+
+        return internshipViewJpaRepository.findAll(spec, pageable)
     }
 
     override fun findAllByStatus(status: InternshipStatus): List<InternshipView> {
