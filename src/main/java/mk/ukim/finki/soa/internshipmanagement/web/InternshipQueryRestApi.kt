@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CoordinatorId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
+import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipCompositeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipStatusChangeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
@@ -55,6 +56,15 @@ class InternshipQueryRestApi(
     @GetMapping("/all")
     fun findAll(): List<InternshipView> {
         return internshipViewReadService.findAll()
+    }
+
+    @Operation(
+        summary = "Fetch all internships",
+        description = "Retrieves a list of all internships."
+    )
+    @GetMapping("/all-composite")
+    fun findAllComposite(): List<InternshipCompositeView> {
+        return internshipViewReadService.findAllComposite()
     }
 
     @Operation(

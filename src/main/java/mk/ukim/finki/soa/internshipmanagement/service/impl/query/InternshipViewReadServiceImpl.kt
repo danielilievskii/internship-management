@@ -1,10 +1,15 @@
 package mk.ukim.finki.soa.internshipmanagement.service.impl.query
 
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
+import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipCompositeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
+import mk.ukim.finki.soa.internshipmanagement.repository.CompanyViewJpaRepository
+import mk.ukim.finki.soa.internshipmanagement.repository.CoordinatorViewJpaRepository
 import mk.ukim.finki.soa.internshipmanagement.repository.InternshipViewJpaRepository
+import mk.ukim.finki.soa.internshipmanagement.repository.StudentViewJpaRepository
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipViewReadService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -14,10 +19,41 @@ import org.springframework.stereotype.Service
 @Service
 class InternshipViewReadServiceImpl(
     val internshipViewJpaRepository: InternshipViewJpaRepository,
+    val studentViewJpaRepository: StudentViewJpaRepository,
+    val companyViewJpaRepository: CompanyViewJpaRepository,
+    val coordinatorViewJpaRepository: CoordinatorViewJpaRepository,
 ) : InternshipViewReadService
 {
     override fun existsById(id: InternshipId): Boolean {
         return internshipViewJpaRepository.existsById(id)
+    }
+
+    override fun findAllComposite(): List<InternshipCompositeView>{
+        val internships = internshipViewJpaRepository.findAll()
+
+        val studentIds = internships.map { it.studentId }.toSet()
+        val students = studentViewJpaRepository.findAllById(studentIds)
+            .associateBy { it.id }
+
+        val companyIds = internships.map { it.companyId }.toSet()
+        val companies = companyViewJpaRepository.findAllById(companyIds)
+            .associateBy { it.id }
+
+
+        val coordinatorIds = internships.map { it.coordinatorId }.toSet()
+        val coordinators = coordinatorViewJpaRepository.findAllById(coordinatorIds)
+            .associateBy { it.id }
+
+        return internships.map {
+            InternshipCompositeView(
+                id = it.id,
+                status = it.status,
+                studentView = students[it.studentId]!!,
+                companyView = companies[it.companyId],
+                coordinatorView = coordinators[it.coordinatorId],
+                period=it.period,
+            )
+        }
     }
 
     override fun findAll(): List<InternshipView> {
