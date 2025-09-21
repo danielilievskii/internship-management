@@ -1,6 +1,5 @@
 package mk.ukim.finki.soa.internshipmanagement.service.impl.query
 
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
@@ -12,6 +11,7 @@ import mk.ukim.finki.soa.internshipmanagement.repository.InternshipViewJpaReposi
 import mk.ukim.finki.soa.internshipmanagement.repository.StudentViewJpaRepository
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipViewReadService
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
@@ -21,48 +21,30 @@ class InternshipViewReadServiceImpl(
     val internshipViewJpaRepository: InternshipViewJpaRepository,
     val studentViewJpaRepository: StudentViewJpaRepository,
     val companyViewJpaRepository: CompanyViewJpaRepository,
-    val coordinatorViewJpaRepository: CoordinatorViewJpaRepository,
-) : InternshipViewReadService
-{
+    val coordinatorViewJpaRepository: CoordinatorViewJpaRepository
+) : InternshipViewReadService {
+
     override fun existsById(id: InternshipId): Boolean {
         return internshipViewJpaRepository.existsById(id)
     }
 
-    override fun findAllComposite(): List<InternshipCompositeView>{
-        val internships = internshipViewJpaRepository.findAll()
+    override fun findAll(): List<InternshipCompositeView> {
+        val internshipViewList = internshipViewJpaRepository.findAll()
 
-        val studentIds = internships.map { it.studentId }.toSet()
-        val students = studentViewJpaRepository.findAllById(studentIds)
-            .associateBy { it.id }
+        val internshipCompositeViewList: List<InternshipCompositeView> =
+            toInternshipCompositeViewList(internshipViewList)
 
-        val companyIds = internships.map { it.companyId }.toSet()
-        val companies = companyViewJpaRepository.findAllById(companyIds)
-            .associateBy { it.id }
-
-
-        val coordinatorIds = internships.map { it.coordinatorId }.toSet()
-        val coordinators = coordinatorViewJpaRepository.findAllById(coordinatorIds)
-            .associateBy { it.id }
-
-        return internships.map {
-            InternshipCompositeView(
-                id = it.id,
-                status = it.status,
-                studentView = students[it.studentId]!!,
-                companyView = companies[it.companyId],
-                coordinatorView = coordinators[it.coordinatorId],
-                period=it.period,
-            )
-        }
+        return internshipCompositeViewList
     }
 
-    override fun findAll(): List<InternshipView> {
-        return internshipViewJpaRepository.findAll()
-    }
-
-    override fun findAll(pageNum: Int, pageSize: Int): Page<InternshipView> {
+    override fun findAll(pageNum: Int, pageSize: Int): Page<InternshipCompositeView> {
         val pageable = PageRequest.of(pageNum, pageSize)
-        return internshipViewJpaRepository.findAll(pageable)
+        val page: Page<InternshipView> = internshipViewJpaRepository.findAll(pageable)
+
+        val internshipCompositeViewList: List<InternshipCompositeView> =
+            toInternshipCompositeViewList(page.content)
+
+        return PageImpl(internshipCompositeViewList, page.pageable, page.totalElements)
     }
 
     override fun findAll(
@@ -72,7 +54,7 @@ class InternshipViewReadServiceImpl(
         coordinatorId: String?,
         internshipStatus: StatusType?,
         companyId: String?
-    ): Page<InternshipView> {
+    ): Page<InternshipCompositeView> {
         val pageable = PageRequest.of(pageNum, pageSize)
 
         val spec = Specification.where<InternshipView>(null)
@@ -97,10 +79,42 @@ class InternshipViewReadServiceImpl(
                 }
             })
 
-        return internshipViewJpaRepository.findAll(spec, pageable)
+        val page: Page<InternshipView> = internshipViewJpaRepository.findAll(spec, pageable)
+
+        val internshipCompositeViewList: List<InternshipCompositeView> =
+            toInternshipCompositeViewList(page.content)
+
+        return PageImpl(internshipCompositeViewList, page.pageable, page.totalElements)
     }
 
     override fun findAllByStatus(status: InternshipStatus): List<InternshipView> {
-        return internshipViewJpaRepository.findAllByStatus(status);
+        return internshipViewJpaRepository.findAllByStatus(status)
+    }
+
+    fun toInternshipCompositeViewList(internships: List<InternshipView>): List<InternshipCompositeView> {
+
+        val studentIds = internships.map { it.studentId }.toSet()
+
+        val students = studentViewJpaRepository.findAllById(studentIds)
+            .associateBy { it.id }
+
+        val companyIds = internships.map { it.companyId }.toSet()
+        val companies = companyViewJpaRepository.findAllById(companyIds)
+            .associateBy { it.id }
+
+        val coordinatorIds = internships.map { it.coordinatorId }.toSet()
+        val coordinators = coordinatorViewJpaRepository.findAllById(coordinatorIds)
+            .associateBy { it.id }
+
+        return internships.map {
+            InternshipCompositeView(
+                id = it.id,
+                status = it.status,
+                studentView = students[it.studentId]!!,
+                companyView = companies[it.companyId],
+                coordinatorView = coordinators[it.coordinatorId],
+                period = it.period,
+            )
+        }
     }
 }

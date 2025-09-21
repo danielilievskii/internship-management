@@ -2,7 +2,6 @@ package mk.ukim.finki.soa.internshipmanagement.web
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CoordinatorId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipCompositeView
@@ -12,11 +11,9 @@ import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipDetailsViewReadService
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipStatusChangeViewReadService
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipViewReadService
-import org.apache.kafka.common.message.FindCoordinatorResponseData.Coordinator
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -54,17 +51,8 @@ class InternshipQueryRestApi(
         description = "Retrieves a list of all internships."
     )
     @GetMapping("/all")
-    fun findAll(): List<InternshipView> {
+    fun findAll(): List<InternshipCompositeView> {
         return internshipViewReadService.findAll()
-    }
-
-    @Operation(
-        summary = "Fetch all internships",
-        description = "Retrieves a list of all internships."
-    )
-    @GetMapping("/all-composite")
-    fun findAllComposite(): List<InternshipCompositeView> {
-        return internshipViewReadService.findAllComposite()
     }
 
     @Operation(
@@ -79,7 +67,7 @@ class InternshipQueryRestApi(
         @RequestParam(required = false) coordinatorId: String?,
         @RequestParam(required = false) internshipStatus: StatusType?,
         @RequestParam(required = false) companyId: String?,
-    ): ResponseEntity<Page<InternshipView>> {
+    ): ResponseEntity<Page<InternshipCompositeView>> {
         val internshipsPage = internshipViewReadService.findAll(
             pageNum, pageSize, studentId, coordinatorId, internshipStatus, companyId)
         return ResponseEntity.ok(internshipsPage)
