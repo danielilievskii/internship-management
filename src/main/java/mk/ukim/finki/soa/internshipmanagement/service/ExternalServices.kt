@@ -8,7 +8,7 @@ import mk.ukim.finki.soa.internshipmanagement.infrastructure.kafka.dto.PartnerEd
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
 import java.util.concurrent.CompletableFuture
 
-interface PartnerTestService {
+interface PartnerService {
     fun refreshActivePartners(): List<PartnerDto>
     fun changePartnerActivation(eventDto: PartnerActivationChangedEventDto): CompletableFuture<CompanyId>
     fun createPartner(eventDto: PartnerCreatedEventDto): CompletableFuture<CompanyId>

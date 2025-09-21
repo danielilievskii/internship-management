@@ -2,7 +2,7 @@ package mk.ukim.finki.soa.internshipmanagement.infrastructure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import mk.ukim.finki.soa.internshipmanagement.service.PartnerTestService
+import mk.ukim.finki.soa.internshipmanagement.service.PartnerService
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import mk.ukim.finki.soa.internshipmanagement.infrastructure.kafka.dto.PartnerActivationChangedEventDto
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class KafkaEventConsumer(
-    private val partnerTestService:  PartnerTestService
+    private val partnerTestService:  PartnerService
 ) {
 
     val objectMapper = ObjectMapper()

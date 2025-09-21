@@ -10,16 +10,17 @@ import mk.ukim.finki.soa.internshipmanagement.infrastructure.kafka.dto.PartnerEd
 import mk.ukim.finki.soa.internshipmanagement.model.snapshot.CompanySnapshot
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Email
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Name
 import mk.ukim.finki.soa.internshipmanagement.repository.CompanySnapshotJpaRepository
-import mk.ukim.finki.soa.internshipmanagement.service.PartnerTestService
+import mk.ukim.finki.soa.internshipmanagement.service.PartnerService
 import org.springframework.stereotype.Service
 import java.util.concurrent.CompletableFuture
 
 @Service
-class PartnerTestServiceImpl (
+class PartnerServiceImpl (
     val companyRepository: CompanySnapshotJpaRepository,
     val client : PartnersManagementClient)
-    : PartnerTestService {
+    : PartnerService {
 
     override fun refreshActivePartners(): List<PartnerDto> {
         companyRepository.deleteAll()
@@ -29,7 +30,7 @@ class PartnerTestServiceImpl (
             companyRepository.save(
                 CompanySnapshot(
                     id = CompanyId(partner.id),
-                    name = partner.name,
+                    name = Name(partner.name),
                     email = Email(partner.email),
                     isActive = true
                 )
@@ -51,7 +52,7 @@ class PartnerTestServiceImpl (
     override fun createPartner(eventDto: PartnerCreatedEventDto): CompletableFuture<CompanyId> {
         val partner = CompanySnapshot(
             id = CompanyId(eventDto.id),
-            name = eventDto.name,
+            name = Name(eventDto.name),
             email = Email(eventDto.email),
             isActive = eventDto.isActive
         )
@@ -64,7 +65,7 @@ class PartnerTestServiceImpl (
         val partner = companyRepository.findById(CompanyId(eventDto.id))
             .orElseThrow { PartnerNotFoundException(CompanyId(eventDto.id)) }
 
-        partner.name = eventDto.name
+        partner.name = Name(eventDto.name)
         partner.email = Email(eventDto.email)
         partner.isActive = eventDto.isActive
         companyRepository.save(partner)
