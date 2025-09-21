@@ -8,6 +8,7 @@ import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CoordinatorId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.ECTSCredits
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Email
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Name
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentIndex
 import mk.ukim.finki.soa.internshipmanagement.repository.CompanySnapshotJpaRepository
@@ -36,13 +37,13 @@ class DataInitializer(
                 listOf(
                     CompanySnapshot(
                         id = CompanyId(),
-                        name = "Netcetera",
+                        name = Name("Netcetera"),
                         email = Email("netcetera@email.com"),
                         isActive = true
                     ),
                     CompanySnapshot(
                         id = CompanyId(),
-                        name = "Intertec",
+                        name = Name("Intertec"),
                         email = Email("intertec@email.com"),
                         isActive = true
                     )
@@ -57,17 +58,17 @@ class DataInitializer(
                 listOf(
                     CoordinatorSnapshot(
                         id = CoordinatorId(),
-                        name = "Vesna Dimitrievska",
+                        name = Name("Vesna Dimitrievska"),
                         email = Email("vesna.dimitrievska@email.com"),
                     ),
                     CoordinatorSnapshot(
                         id = CoordinatorId(),
-                        name = "Andreja Naumovski",
+                        name = Name("Andreja Naumovski"),
                         email = Email("andreja.naumovski@email.com"),
                     ),
                     CoordinatorSnapshot(
                         id = CoordinatorId(),
-                        name = "Georgina Mirceva",
+                        name = Name("Georgina Mirceva"),
                         email = Email("georgina.mirceva@email.com"),
                     ),
                 )
@@ -82,14 +83,14 @@ class DataInitializer(
                     StudentSnapshot(
                         id = StudentId(),
                         index = StudentIndex("111111"),
-                        name = "John Doe",
+                        name = Name("John Doe"),
                         email = Email("john.doe@email.com"),
                         ECTSCredits(60)
                     ),
                     StudentSnapshot(
                         id = StudentId(),
                         index = StudentIndex("222222"),
-                        name = "John Smith",
+                        name = Name("John Smith"),
                         email = Email("john.smith@email.com"),
                         ECTSCredits(120)
                     )

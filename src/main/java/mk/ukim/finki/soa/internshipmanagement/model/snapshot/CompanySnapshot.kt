@@ -6,16 +6,23 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Email
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Name
 
 @Entity
 data class CompanySnapshot(
+
     @Id
     @AttributeOverride(
         name = "value",
         column = Column(name = "company_id")
     )
     var id: CompanyId = CompanyId(),
-    var name: String = "",
+
+    @AttributeOverride(
+        name = "value",
+        column = Column(name = "name")
+    )
+    var name: Name = Name(""),
 
     @AttributeOverride(
         name = "value",
@@ -24,7 +31,7 @@ data class CompanySnapshot(
     var email: Email = Email(""),
     var isActive: Boolean = true
 ) {
-    constructor() : this(CompanyId(), "", Email("default@email.com"), true)
+    constructor() : this(CompanyId(), Name("default"), Email("default@email.com"), true)
 
     override fun toString(): String {
         return "CompanySnapshot(id=$id, name='$name', email=$email, isActive=$isActive)"

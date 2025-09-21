@@ -6,6 +6,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Email
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CoordinatorId
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Name
 
 @Entity
 data class CoordinatorSnapshot(
@@ -17,7 +18,11 @@ data class CoordinatorSnapshot(
     )
     val id: CoordinatorId,
 
-    val name: String,
+    @AttributeOverride(
+        name = "value",
+        column = Column(name = "name")
+    )
+    var name: Name = Name(""),
 
     @AttributeOverride(
         name = "value",
@@ -25,7 +30,7 @@ data class CoordinatorSnapshot(
     )
     val email: Email
 ) {
-    constructor() : this(CoordinatorId(), "", Email("default@email.com"))
+    constructor() : this(CoordinatorId(), Name("default"), Email("default@email.com"))
 
     override fun toString(): String {
         return "ProfessorSnapshot(id=$id, name='$name', email=$email)"

@@ -6,6 +6,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.ECTSCredits
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Email
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Name
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentIndex
 
@@ -25,7 +26,11 @@ data class StudentSnapshot(
     )
     val index: StudentIndex,
 
-    val name: String,
+    @AttributeOverride(
+        name = "value",
+        column = Column(name = "name")
+    )
+    var name: Name = Name(""),
 
     @AttributeOverride(
         name = "value",
@@ -40,7 +45,7 @@ data class StudentSnapshot(
     val credits: ECTSCredits,
 
     ) {
-    constructor() : this(StudentId(), StudentIndex("999999"), "", Email("default@email.com"), ECTSCredits(60))
+    constructor() : this(StudentId(), StudentIndex("999999"), Name("default"), Email("default@email.com"), ECTSCredits(60))
 
 
     override fun toString(): String {

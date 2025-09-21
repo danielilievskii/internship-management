@@ -1,6 +1,7 @@
 package mk.ukim.finki.soa.internshipmanagement.model.view
 
 import jakarta.persistence.*
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Name
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentIndex
 import org.hibernate.annotations.Immutable
@@ -21,6 +22,7 @@ data class StudentView(
     )
     val index: StudentIndex,
 
-    @Column(name = "name")
-    val name: String,
+    @Embedded
+    @AttributeOverride(name = "value", column = Column(name = "name"))
+    val name: Name,
 )

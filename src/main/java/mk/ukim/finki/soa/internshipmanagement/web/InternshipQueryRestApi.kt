@@ -7,7 +7,6 @@ import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipCompositeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipStatusChangeView
-import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipDetailsViewReadService
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipStatusChangeViewReadService
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipViewReadService
