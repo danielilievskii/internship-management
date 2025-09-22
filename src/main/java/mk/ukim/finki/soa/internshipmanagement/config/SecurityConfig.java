@@ -51,7 +51,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Profile("local")
+    @Profile({"local", "test"})
     @Bean("localJwtDecoder")
     public JwtDecoder localJwtDecoder() {
         String jwkSetUri = String.format("%s/protocol/openid-connect/certs", issuer);
