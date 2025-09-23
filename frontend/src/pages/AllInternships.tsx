@@ -25,65 +25,11 @@ const AllInternships = () => {
     setLoading
   } = useInternshipStore();
 
-  // Mock data for demonstration
-  const mockInternships = [
-    {
-      id: '1',
-      status: 'SEARCHING' as const,
-      studentId: '1',
-      companyId: '1',
-      coordinatorId: '1',
-      period: { startDate: '2025-09-20', endDate: '2025-12-20' }
-    },
-    {
-      id: '2',
-      status: 'REJECTED' as const,
-      studentId: '2',
-      companyId: '2',
-      coordinatorId: '2',
-      period: { startDate: '2025-09-20', endDate: '2025-12-20' }
-    },
-    {
-      id: '3',
-      status: 'JOURNAL_SUBMITTED' as const,
-      studentId: '3',
-      companyId: '3',
-      coordinatorId: '3',
-      period: { startDate: '2025-09-20', endDate: '2025-12-20' }
-    },
-    {
-      id: '4',
-      status: 'ACCEPTED' as const,
-      studentId: '4',
-      companyId: '4',
-      coordinatorId: '4',
-      period: { startDate: '2025-09-20', endDate: '2025-12-20' }
-    },
-    {
-      id: '5',
-      status: 'ACCEPTED' as const,
-      studentId: '5',
-      companyId: '5',
-      coordinatorId: '5',
-      period: { startDate: '2025-09-20', endDate: '2025-12-20' }
-    }
-  ];
-
   const fetchInternships = async () => {
     setLoading(true);
     try {
-      // In real app, use this:
-      // const data = await internshipApi.getInternships(currentPage, pageSize, filters);
-      // setInternships(data);
-      
-      // For demo, use mock data:
-      setInternships({
-        content: mockInternships,
-        totalElements: 10,
-        totalPages: 2,
-        size: pageSize,
-        number: currentPage,
-      });
+      const data = await internshipApi.getInternships(currentPage, pageSize, filters);
+      setInternships(data);
     } catch (error) {
       toast({
         title: 'Грешка',

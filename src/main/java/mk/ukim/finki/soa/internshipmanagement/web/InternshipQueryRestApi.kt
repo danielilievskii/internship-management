@@ -61,7 +61,7 @@ class InternshipQueryRestApi(
     @GetMapping("/paginated")
     fun findAll(
         @RequestParam(defaultValue = "0") pageNum: Int,
-        @RequestParam(defaultValue = "10") pageSize: Int,
+        @RequestParam(defaultValue = "5") pageSize: Int,
         @RequestParam(required = false) studentId: String?,
         @RequestParam(required = false) coordinatorId: String?,
         @RequestParam(required = false) internshipStatus: StatusType?,

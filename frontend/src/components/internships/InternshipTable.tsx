@@ -17,21 +17,6 @@ const InternshipTable = ({ internships }: InternshipTableProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Mock data for display purposes (in real app, this would come from API)
-  const mockData = internships.map(internship => ({
-    ...internship,
-    studentName: 'John Doe 111111',
-    coordinatorName: 'Нема определен координатор',
-    companyName: 'Netcetera',
-  }));
-
-  const canEdit = (internship: InternshipView) => {
-    if (!user) return false;
-    return user.role === 'Coordinator' || 
-           (user.role === 'Student' && internship.studentId === user.id) ||
-           (user.role === 'Company' && internship.companyId === user.id);
-  };
-
   const canDelete = (internship: InternshipView) => {
     if (!user) return false;
     return user.role === 'Coordinator';
@@ -39,10 +24,6 @@ const InternshipTable = ({ internships }: InternshipTableProps) => {
 
   const handleViewJournal = (internshipId: string) => {
     navigate(`/internship/${internshipId}/journal`);
-  };
-
-  const handleEdit = (internshipId: string) => {
-    navigate(`/internship/${internshipId}/edit`);
   };
 
   const handleDelete = (internshipId: string) => {
@@ -70,7 +51,7 @@ const InternshipTable = ({ internships }: InternshipTableProps) => {
                 <TableHead className="text-left font-medium">
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary" className="bg-primary text-primary-foreground">
-                      123
+                      index
                     </Badge>
                     Студент
                   </div>
@@ -83,24 +64,24 @@ const InternshipTable = ({ internships }: InternshipTableProps) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockData.map((internship, index) => (
+              {internships.map((internship, index) => (
                 <TableRow key={internship.id || index} className="hover:bg-muted/50">
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-600" />
-                      <span>{internship.studentName}</span>
+                      <span>{internship.studentView.index} {internship.studentView.name}</span>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-600" />
-                      <span className="text-muted-foreground">{internship.coordinatorName}</span>
+                      <span className="text-muted-foreground">{internship.coordinatorView?.name ? internship.coordinatorView.name : "Нема определен координатор"}</span>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-600" />
-                      <span className="italic">{internship.companyName}</span>
+                      <span className="italic">{internship.companyView?.name ? internship.companyView.name : "Нема компанија"}</span>
                     </div>
                   </TableCell>
                   <TableCell>

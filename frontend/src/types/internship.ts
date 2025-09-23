@@ -35,10 +35,26 @@ export interface InternshipWeekView {
 export interface InternshipView {
   id: string;
   status: InternshipStatus;
-  studentId: string;
-  companyId: string;
-  coordinatorId: string;
-  period: Period;
+  studentView: StudentView
+  companyView: CompanyView | null;
+  coordinatorView: CoordinatorView | null;
+  period: Period | null;
+}
+
+export interface StudentView {
+  id: string;
+  index: string;
+  name: string
+}
+
+export interface CompanyView {
+  id: string;
+  name: string
+}
+
+export interface CoordinatorView {
+  id: string;
+  name: string;
 }
 
 export interface InternshipDetailsView extends InternshipView {
