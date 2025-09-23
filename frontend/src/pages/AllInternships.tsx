@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button.tsx';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useInternshipStore } from '@/store/internshipStore.ts';
 import { useAuthStore } from '@/store/authStore.ts';
 import { internshipApi } from '@/services/api.ts';

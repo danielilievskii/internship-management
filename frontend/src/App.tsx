@@ -16,6 +16,7 @@ import Announcements from "@/pages/Announcements.tsx";
 import Candidates from "@/pages/Candidates.tsx";
 import Practicants from "@/pages/Practicants.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import MyApplications from "@/pages/MyApplications.tsx";
 
 const queryClient = new QueryClient();
 
@@ -30,27 +31,11 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={
-              isAuthenticated ? <Navigate to={user?.role === 'Coordinator' ? '/all-internships' : '/internships'} replace /> : <Login />
+              isAuthenticated ? <Navigate to={user?.role === 'Admin' ? '/all-internships' : '/instructions'} replace /> : <Login />
             } />
             
             <Route path="/" element={
-              <Navigate to={isAuthenticated ? (user?.role === 'Coordinator' ? '/all-internships' : '/internships') : '/login'} replace />
-            } />
-
-            <Route path="/internships" element={
-              <ProtectedRoute allowedRoles={['Student', 'Company']}>
-                <Layout>
-                  <StudentInternships />
-                </Layout>
-              </ProtectedRoute>
-            } />
-
-            <Route path="/all-internships" element={
-              <ProtectedRoute allowedRoles={['Coordinator']}>
-                <Layout>
-                  <AllInternships />
-                </Layout>
-              </ProtectedRoute>
+              <Navigate to={isAuthenticated ? '/instructions' : '/login'} replace />
             } />
 
             <Route path="/instructions" element={
@@ -61,17 +46,41 @@ const App = () => {
               </ProtectedRoute>
             } />
 
+            <Route path="/internships" element={
+              <ProtectedRoute allowedRoles={['Student']}>
+                <Layout>
+                  <StudentInternships />
+                </Layout>
+              </ProtectedRoute>
+            } />
+
+            <Route path="/all-internships" element={
+              <ProtectedRoute allowedRoles={['Admin']}>
+                <Layout>
+                  <AllInternships />
+                </Layout>
+              </ProtectedRoute>
+            } />
+
             <Route path="/announcements" element={
-              <ProtectedRoute allowedRoles={['Company', 'Coordinator']}>
+              <ProtectedRoute allowedRoles={['Student', 'Company', 'Coordinator', 'Admin']}>
                 <Layout>
                   <Announcements />
                 </Layout>
               </ProtectedRoute>
             } />
 
+            <Route path="/my-applications" element={
+              <ProtectedRoute allowedRoles={['Student']}>
+                <Layout>
+                  <MyApplications />
+                </Layout>
+              </ProtectedRoute>
+            } />
+
             {/* Internship detail routes */}
             <Route path="/internship/:id" element={
-              <ProtectedRoute allowedRoles={['Student', 'Company', 'Coordinator']}>
+              <ProtectedRoute allowedRoles={['Student', 'Company', 'Coordinator', 'Admin']}>
                 <Layout>
                   <InternshipDetail />
                 </Layout>
@@ -79,7 +88,7 @@ const App = () => {
             } />
             
             <Route path="/internship/:id/journal" element={
-              <ProtectedRoute allowedRoles={['Student', 'Company', 'Coordinator']}>
+              <ProtectedRoute allowedRoles={['Student', 'Company', 'Coordinator', 'Admin']}>
                 <Layout>
                   <InternshipJournal />
                 </Layout>
@@ -98,7 +107,7 @@ const App = () => {
             } />
 
             <Route path="/candidates" element={
-              <ProtectedRoute allowedRoles={['Company', 'Coordinator']}>
+              <ProtectedRoute allowedRoles={['Company','Admin']}>
                 <Layout>
                   <Candidates />
                 </Layout>
@@ -106,7 +115,7 @@ const App = () => {
             } />
 
             <Route path="/practicants" element={
-              <ProtectedRoute allowedRoles={['Student', 'Company', 'Coordinator']}>
+              <ProtectedRoute allowedRoles={['Company', 'Coordinator']}>
                 <Layout>
                   <Practicants />
                 </Layout>
@@ -114,7 +123,7 @@ const App = () => {
             } />
 
             <Route path="/coordinators" element={
-              <ProtectedRoute allowedRoles={['Coordinator']}>
+              <ProtectedRoute allowedRoles={['Admin']}>
                 <Layout>
                   <div className="text-center py-12">
                     <h1 className="text-2xl font-bold mb-4">Координатори</h1>

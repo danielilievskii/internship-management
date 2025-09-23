@@ -8,13 +8,14 @@ const Header = () => {
   const { user, logout } = useAuthStore();
 
   const navigation = [
-    { name: 'Инструкции', href: '/instructions', roles: ['Student', 'Company', 'Coordinator'] },
-    { name: 'Пракси', href: '/internships', roles: ['Student'] },
-    { name: 'Сите пракси', href: '/all-internships', roles: ['Coordinator'] },
-    { name: 'Огласи', href: '/announcements', roles: ['Company', 'Coordinator'] },
-    { name: 'Кандидати', href: '/candidates', roles: ['Company'] },
+    { name: 'Инструкции', href: '/instructions', roles: ['Student', 'Company', 'Coordinator', 'Admin'] },
+    { name: 'Мои Пракси', href: '/internships', roles: ['Student'] },
+    { name: 'Сите Пракси', href: '/all-internships', roles: ['Admin'] },
+    { name: 'Огласи', href: '/announcements', roles: ['Student','Company', 'Coordinator', 'Admin'] },
+    { name: 'Мои Апликации', href: '/my-applications', roles: ['Student'] },
+    { name: 'Кандидати', href: '/candidates', roles: ['Company', 'Admin'] },
     { name: 'Практиканти', href: '/practicants', roles: ['Company', 'Coordinator'] },
-    { name: 'Координатори', href: '/coordinators', roles: ['Coordinator'] },
+    { name: 'Координатори', href: '/coordinators', roles: ['Admin'] },
   ];
 
   const visibleNavigation = navigation.filter(item => 

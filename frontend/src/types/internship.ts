@@ -80,7 +80,7 @@ export interface PaginatedResponse<T> {
   number: number;
 }
 
-export type UserRole = 'Student' | 'Company' | 'Coordinator';
+export type UserRole = 'Student' | 'Company' | 'Coordinator' | 'Admin';
 
 export interface User {
   id: string;

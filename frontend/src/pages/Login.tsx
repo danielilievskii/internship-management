@@ -56,7 +56,7 @@ const Login = () => {
       });
 
       // Redirect based on role
-      if (formData.role === 'Coordinator') {
+      if (formData.role === 'Admin') {
         navigate('/all-internships');
       } else {
         navigate('/instructions');
@@ -120,6 +120,7 @@ const Login = () => {
                   <SelectItem value="Student">Студент</SelectItem>
                   <SelectItem value="Company">Компанија</SelectItem>
                   <SelectItem value="Coordinator">Координатор</SelectItem>
+                  <SelectItem value="Admin">Админ</SelectItem>
                 </SelectContent>
               </Select>
             </div>
