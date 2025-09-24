@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button.tsx';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Label } from '@/components/ui/label.tsx';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
 import { useAuthStore } from '@/store/authStore.ts';
 import { useToast } from '@/hooks/use-toast.ts';
 import { UserRole } from '@/types/internship.ts';
@@ -16,14 +15,13 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    role: '' as UserRole | '',
   });
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.email || !formData.password || !formData.role) {
+    if (!formData.email || !formData.password) {
       toast({
         title: 'Грешка',
         description: 'Ве молиме пополнете ги сите полиња',
@@ -35,28 +33,59 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Mock authentication - in real app, call API
-      const mockUser = {
+      const params = new URLSearchParams();
+      params.append("client_secret", "uiJmTgew4w6ownGJOxxUwh2WYANEmEEY")
+      params.append("client_id", "api-gateway")
+      params.append("grant_type", "password")
+      params.append("username", formData.email)
+      params.append("password", formData.password)
+
+      const response = await fetch(`http://localhost:8001/realms/finki-services/protocol/openid-connect/token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString()
+      })
+
+      if(!response.ok) {
+        toast({
+          title: 'Грешни креденцијали!',
+          description: 'Внесовте грешен мејл или грешна лозинка.',
+          variant: 'destructive'
+        })
+      }
+
+      const data = await response.json();
+
+      const token = data.access_token;
+      const refresh = data.refresh_token;
+
+      const payload = JSON.parse(atob(token.split(".")[1]));
+
+      const roles = payload.realm_access?.roles || []
+      const role = roles.includes("student") ? 'Student' :
+          roles.includes("company") ? 'Company' :
+          roles.includes("professor") ? 'Coordinator' : 'Admin'
+
+      const user = {
         id: '1',
-        name: formData.role === 'Student' ? 'John Doe' : 
-              formData.role === 'Company' ? 'Netcetera Admin' : 
-              'Координатор Админ',
-        email: formData.email,
-        role: formData.role as UserRole,
+        name: payload.name || formData.email,
+        email: payload.email || formData.email,
+        role: role as UserRole,
+        // token,
+        // refresh,
       };
 
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      login(mockUser);
+      login(user)
+      localStorage.setItem("token", token)
       
       toast({
         title: 'Добредојдовте!',
-        description: `Успешно се најавивте како ${formData.role}`,
+        description: `Успешно се најавивте!`,
       });
 
-      // Redirect based on role
-      if (formData.role === 'Admin') {
+      if (user.role === 'Admin') {
         navigate('/all-internships');
       } else {
         navigate('/instructions');
@@ -84,10 +113,10 @@ const Login = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email адреса</Label>
+              <Label htmlFor="text">Email адреса</Label>
               <Input
                 id="email"
-                type="email"
+                type="text"
                 value={formData.email}
                 onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                 placeholder="example@email.com"
@@ -105,24 +134,6 @@ const Login = () => {
                 placeholder="••••••••"
                 required
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="role">Улога</Label>
-              <Select
-                value={formData.role}
-                onValueChange={(value: UserRole) => setFormData(prev => ({ ...prev, role: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Изберете улога" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Student">Студент</SelectItem>
-                  <SelectItem value="Company">Компанија</SelectItem>
-                  <SelectItem value="Coordinator">Координатор</SelectItem>
-                  <SelectItem value="Admin">Админ</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             <Button
