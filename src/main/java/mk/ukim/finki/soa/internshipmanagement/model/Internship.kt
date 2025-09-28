@@ -3,8 +3,9 @@ package mk.ukim.finki.soa.internshipmanagement.model
 import jakarta.persistence.*
 import mk.ukim.finki.soa.internshipmanagement.exception.InternshipWeekNotFoundException
 import mk.ukim.finki.soa.internshipmanagement.exception.InvalidInternshipStateException
+import mk.ukim.finki.soa.internshipmanagement.model.command.ArchiveInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.admin.ChangeCoordinatorCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.*
-import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.ArchiveInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.CoordinatorAddWeekCommentCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.InvalidateJournalByCoordinatorCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.ValidateJournalByCoordinatorCommand
@@ -12,6 +13,7 @@ import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
 import mk.ukim.finki.soa.internshipmanagement.model.common.Identifier
 import mk.ukim.finki.soa.internshipmanagement.model.common.LabeledEntity
 import mk.ukim.finki.soa.internshipmanagement.model.event.InternshipStatusChangedEvent
+import mk.ukim.finki.soa.internshipmanagement.model.event.admin.CoordinatorChangedEvent
 import mk.ukim.finki.soa.internshipmanagement.model.event.company.*
 import mk.ukim.finki.soa.internshipmanagement.model.event.coordinator.CoordinatorWeekCommentAddedEvent
 import mk.ukim.finki.soa.internshipmanagement.model.event.coordinator.InternshipArchivedEvent
@@ -427,6 +429,21 @@ class Internship : LabeledEntity {
         AggregateLifecycle.apply(event)
     }
 
+    fun handle(command: ChangeCoordinatorCommand) {
+        if (this.coordinatorId == command.newCoordinatorId) {
+            throw InvalidInternshipStateException("Coordinator already assigned.")
+        }
+
+        val event = CoordinatorChangedEvent(
+            internshipId = command.internshipId,
+            oldCoordinatorId = this.coordinatorId,
+            newCoordinatorId = command.newCoordinatorId,
+            changedAt = LocalDateTime.now()
+        )
+
+        this.on(event)
+        AggregateLifecycle.apply(event)
+    }
 
     // APPLY EVENTS
     @EventSourcingHandler
@@ -492,34 +509,54 @@ class Internship : LabeledEntity {
     }
 
     // COMPANY
-
-    fun on(event: InternshipSubmittedEvent) {
-        this.companyId = event.companyId
-        this.description = event.description
-        this.period = event.period
-        this.weeklyHours = event.weeklyHours
+    private fun applySubmittedInternshipData(
+        companyId: CompanyId,
+        description: Description,
+        period: InternshipDateRange,
+        weeklyHours: WeeklyHours,
+        weeks: List<InternshipWeek>,
+        contactEmail: Email,
+        newStatus: InternshipStatus
+    ) {
+        this.companyId = companyId
+        this.description = description
+        this.period = period
+        this.weeklyHours = weeklyHours
 
         this.weeks.clear()
-        this.weeks.addAll(event.weeks)
+        this.weeks.addAll(weeks)
 
-        this.companyContactEmail = event.contactEmail
-        this.status = event.newStatus
+        this.companyContactEmail = contactEmail
+        this.status = newStatus
+    }
+
+    fun on(event: InternshipSubmittedEvent) {
+        applySubmittedInternshipData(
+            companyId = event.companyId,
+            description = event.description,
+            period = event.period,
+            weeklyHours = event.weeklyHours,
+            weeks = event.weeks,
+            contactEmail = event.contactEmail,
+            newStatus = event.newStatus
+        )
     }
 
     fun on(event: AgreedInternshipSubmittedEvent) {
         this.id = event.internshipId
         this.studentId = event.studentId
-        this.companyId = event.companyId
-        this.description = event.description
-        this.period = event.period
-        this.weeklyHours = event.weeklyHours
 
-        this.weeks.clear()
-        this.weeks.addAll(event.weeks)
-
-        this.companyContactEmail = event.contactEmail
-        this.status = event.newStatus
+        applySubmittedInternshipData(
+            companyId = event.companyId,
+            description = event.description,
+            period = event.period,
+            weeklyHours = event.weeklyHours,
+            weeks = event.weeks,
+            contactEmail = event.contactEmail,
+            newStatus = event.newStatus
+        )
     }
+
 
     fun on(event: JournalValidatedByCompanyEvent) {
         this.status = event.newStatus
@@ -559,5 +596,8 @@ class Internship : LabeledEntity {
         this.status = event.newStatus
     }
 
+    fun on(event: CoordinatorChangedEvent) {
+        this.coordinatorId = event.newCoordinatorId
+    }
 
 }

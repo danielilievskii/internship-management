@@ -1,4 +1,4 @@
-package mk.ukim.finki.soa.internshipmanagement.model.command.coordinator
+package mk.ukim.finki.soa.internshipmanagement.model.command
 
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 

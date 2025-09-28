@@ -1,7 +1,8 @@
 package mk.ukim.finki.soa.internshipmanagement.service
 
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.*
-import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.ArchiveInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.ArchiveInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.admin.ChangeCoordinatorCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.CoordinatorAddWeekCommentCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.InvalidateJournalByCoordinatorCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.ValidateJournalByCoordinatorCommand
@@ -38,4 +39,5 @@ interface CoordinatorInternshipService {
 
 interface AdminInternshipService {
     fun archiveInternship(command: ArchiveInternshipCommand): CompletableFuture<InternshipId>
+    fun changeCoordinator(command: ChangeCoordinatorCommand): CompletableFuture<InternshipId>
 }

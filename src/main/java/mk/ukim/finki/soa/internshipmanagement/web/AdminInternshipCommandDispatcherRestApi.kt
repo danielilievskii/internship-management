@@ -2,10 +2,13 @@ package mk.ukim.finki.soa.internshipmanagement.web
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.ArchiveInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.ArchiveInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.admin.ChangeCoordinatorCommand
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CoordinatorId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.service.AdminInternshipService
-import mk.ukim.finki.soa.internshipmanagement.web.dto.coordinator.ArchiveInternshipCommandDto
+import mk.ukim.finki.soa.internshipmanagement.web.dto.ArchiveInternshipCommandDto
+import mk.ukim.finki.soa.internshipmanagement.web.dto.admin.ChangeCoordinatorCommandDto
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -34,5 +37,14 @@ class AdminInternshipCommandDispatcherRestApi(
             internshipId = InternshipId(commandDto.internshipId)
         )
         return ResponseEntity.ok(adminInternshipService.archiveInternship(command))
+    }
+
+    @PostMapping("/changeCoordinator")
+    fun changeCoordinator(@RequestBody dto: ChangeCoordinatorCommandDto): ResponseEntity<Any> {
+        val command = ChangeCoordinatorCommand(
+            internshipId = InternshipId(dto.internshipId),
+            newCoordinatorId = CoordinatorId(dto.newCoordinatorId)
+        )
+        return ResponseEntity.ok(adminInternshipService.changeCoordinator(command))
     }
 }

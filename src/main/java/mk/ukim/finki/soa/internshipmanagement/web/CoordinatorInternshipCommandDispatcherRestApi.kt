@@ -2,7 +2,7 @@ package mk.ukim.finki.soa.internshipmanagement.web
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.ArchiveInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.ArchiveInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.CoordinatorAddWeekCommentCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.InvalidateJournalByCoordinatorCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.ValidateJournalByCoordinatorCommand
@@ -11,7 +11,7 @@ import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipWeekId
 import mk.ukim.finki.soa.internshipmanagement.service.CoordinatorInternshipService
 import mk.ukim.finki.soa.internshipmanagement.web.dto.coordinator.InvalidateJournalByCoordinatorCommandDto
-import mk.ukim.finki.soa.internshipmanagement.web.dto.coordinator.ArchiveInternshipCommandDto
+import mk.ukim.finki.soa.internshipmanagement.web.dto.ArchiveInternshipCommandDto
 import mk.ukim.finki.soa.internshipmanagement.web.dto.coordinator.CoordinatorAddWeekCommentCommandDto
 import mk.ukim.finki.soa.internshipmanagement.web.dto.coordinator.ValidateJournalByCoordinatorCommandDto
 import org.springframework.http.ResponseEntity
