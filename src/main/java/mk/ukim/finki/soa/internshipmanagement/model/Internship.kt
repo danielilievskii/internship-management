@@ -490,7 +490,10 @@ class Internship : LabeledEntity {
         this.description = event.description
         this.period = event.period
         this.weeklyHours = event.weeklyHours
-        this.weeks = event.weeks
+
+        this.weeks.clear()
+        this.weeks.addAll(event.weeks)
+
         this.companyContactEmail = event.contactEmail
         this.status = event.newStatus
     }
@@ -502,7 +505,10 @@ class Internship : LabeledEntity {
         this.description = event.description
         this.period = event.period
         this.weeklyHours = event.weeklyHours
-        this.weeks = event.weeks
+
+        this.weeks.clear()
+        this.weeks.addAll(event.weeks)
+
         this.companyContactEmail = event.contactEmail
         this.status = event.newStatus
     }
