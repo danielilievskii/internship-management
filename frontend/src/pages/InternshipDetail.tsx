@@ -5,11 +5,28 @@ import { Badge } from '@/components/ui/badge.tsx';
 import { ArrowLeft, FileText, Download, Calendar, MapPin } from 'lucide-react';
 import StatusBadge from '@/components/internships/StatusBadge.tsx';
 import { useToast } from '@/hooks/use-toast.ts';
+import {useEffect, useState} from "react";
+import {internshipApi} from "@/services/api.ts";
+import {InternshipDetailsView} from "@/types/internship.ts";
 
 const InternshipDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const [internshipDetails, setInternshipDetails] = useState<InternshipDetailsView | null>(null);
+
+  useEffect(() => {
+
+    console.log("Sending req: " + id)
+
+    internshipApi.getInternshipDetails(id)
+        .then((data) => {
+          setInternshipDetails(data)
+          console.log(data)
+        })
+
+  }, [id])
 
   // Mock data for the internship detail
   const internship = {
@@ -63,15 +80,15 @@ const InternshipDetail = () => {
           <CardContent className="space-y-4">
             <div>
               <label className="text-sm font-medium text-muted-foreground">Студент</label>
-              <p className="text-lg">{internship.studentName}</p>
+              <p className="text-lg">{internshipDetails?.studentView?.name}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Компанија</label>
-              <p className="text-lg">{internship.companyName}</p>
+              <p className="text-lg">{internshipDetails?.companyView?.name}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Позиција</label>
-              <p className="text-lg">{internship.position}</p>
+              {/*<p className="text-lg">{internship.position}</p>*/}
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Координатор</label>
@@ -80,7 +97,7 @@ const InternshipDetail = () => {
             <div>
               <label className="text-sm font-medium text-muted-foreground">Статус</label>
               <div className="mt-1">
-                <StatusBadge status={internship.status} />
+                <StatusBadge status={internshipDetails?.status} />
               </div>
             </div>
           </CardContent>
@@ -97,15 +114,15 @@ const InternshipDetail = () => {
           <CardContent className="space-y-4">
             <div>
               <label className="text-sm font-medium text-muted-foreground">Почеток</label>
-              <p className="text-lg">{internship.period.startDate}</p>
+              <p className="text-lg">{internshipDetails?.period?.startDate}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Завршеток</label>
-              <p className="text-lg">{internship.period.endDate}</p>
+              <p className="text-lg">{internshipDetails?.period?.endDate}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Неделни часови</label>
-              <p className="text-lg">{internship.weeklyHours} часа</p>
+              <p className="text-lg">{internshipDetails?.weeklyHours} часа</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground flex items-center gap-1">
@@ -123,7 +140,7 @@ const InternshipDetail = () => {
             <CardTitle>Опис на праксата</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground leading-relaxed">{internship.description}</p>
+            <p className="text-muted-foreground leading-relaxed">{internshipDetails?.description}</p>
           </CardContent>
         </Card>
 
@@ -136,7 +153,7 @@ const InternshipDetail = () => {
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Контакт email</label>
-                <p className="text-lg">{internship.companyContactEmail}</p>
+                <p className="text-lg">{internshipDetails?.companyContactEmail}</p>
               </div>
               <div className="flex gap-2">
                 <Button 

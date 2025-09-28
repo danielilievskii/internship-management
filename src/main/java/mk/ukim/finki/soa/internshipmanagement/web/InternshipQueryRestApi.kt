@@ -6,6 +6,7 @@ import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipCompositeView
+import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsCompositeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipStatusChangeView
 import mk.ukim.finki.soa.internshipmanagement.service.AuthService
@@ -44,8 +45,8 @@ class InternshipQueryRestApi(
     @GetMapping("/{internshipId}")
     fun findById(
         @PathVariable internshipId: InternshipId
-    ): InternshipDetailsView {
-        return internshipDetailsViewReadService.findById(internshipId)
+    ): InternshipDetailsCompositeView {
+        return internshipDetailsViewReadService.findCompositeById(internshipId)
     }
 
     @Operation(

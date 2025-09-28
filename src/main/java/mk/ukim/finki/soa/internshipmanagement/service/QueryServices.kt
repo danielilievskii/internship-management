@@ -4,14 +4,13 @@ import mk.ukim.finki.soa.internshipmanagement.model.snapshot.CompanySnapshot
 import mk.ukim.finki.soa.internshipmanagement.model.snapshot.CoordinatorSnapshot
 import mk.ukim.finki.soa.internshipmanagement.model.snapshot.StudentSnapshot
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentCV
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipCompositeView
+import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsCompositeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipStatusChangeView
-import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
 import org.springframework.data.domain.Page
 
 interface InternshipViewReadService {
@@ -22,6 +21,7 @@ interface InternshipViewReadService {
 
 interface InternshipDetailsViewReadService {
     fun findById(id: InternshipId): InternshipDetailsView
+    fun findCompositeById(id: InternshipId): InternshipDetailsCompositeView
     fun getStudentCV(id: InternshipId): StudentCV
 }
 
