@@ -1,9 +1,11 @@
 package mk.ukim.finki.soa.internshipmanagement.service.impl.query
 
+import mk.ukim.finki.soa.internshipmanagement.application.assembler.InternshipDetailsAssembler
 import mk.ukim.finki.soa.internshipmanagement.exception.InternshipNotFoundException
 import mk.ukim.finki.soa.internshipmanagement.exception.InternshipStudentCVNotFoundException
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentCV
+import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsCompositeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsView
 import mk.ukim.finki.soa.internshipmanagement.repository.InternshipDetailsViewJpaRepository
 import mk.ukim.finki.soa.internshipmanagement.service.AccessPolicyService
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service
 @Service
 class InternshipDetailsViewReadServiceImpl(
     val internshipDetailsViewJpaRepository: InternshipDetailsViewJpaRepository,
+    val internshipDetailsAssembler: InternshipDetailsAssembler,
     val accessPolicyService: AccessPolicyService,
 ) : InternshipDetailsViewReadService {
 
@@ -23,6 +26,12 @@ class InternshipDetailsViewReadServiceImpl(
         accessPolicyService.assertCanViewInternship(internship)
 
         return internship
+    }
+
+    override fun findCompositeById(id: InternshipId): InternshipDetailsCompositeView {
+        val internship: InternshipDetailsView = findById(id)
+
+        return internshipDetailsAssembler.assemble(internship)
     }
 
     override fun getStudentCV(id: InternshipId): StudentCV {

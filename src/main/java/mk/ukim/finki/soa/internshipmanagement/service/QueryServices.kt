@@ -8,6 +8,7 @@ import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentCV
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipCompositeView
+import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsCompositeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipStatusChangeView
 import org.springframework.data.domain.Page
@@ -20,6 +21,7 @@ interface InternshipViewReadService {
 
 interface InternshipDetailsViewReadService {
     fun findById(id: InternshipId): InternshipDetailsView
+    fun findCompositeById(id: InternshipId): InternshipDetailsCompositeView
     fun getStudentCV(id: InternshipId): StudentCV
 }
 
