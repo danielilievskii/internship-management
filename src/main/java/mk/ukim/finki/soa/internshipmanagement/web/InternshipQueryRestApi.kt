@@ -2,11 +2,13 @@ package mk.ukim.finki.soa.internshipmanagement.web
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipCompositeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipStatusChangeView
+import mk.ukim.finki.soa.internshipmanagement.service.AuthService
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipDetailsViewReadService
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipStatusChangeViewReadService
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipViewReadService
@@ -31,7 +33,8 @@ import org.springframework.web.bind.annotation.RestController
 class InternshipQueryRestApi(
     val internshipViewReadService: InternshipViewReadService,
     val internshipDetailsViewReadService: InternshipDetailsViewReadService,
-    val internshipStatusChangeViewReadService: InternshipStatusChangeViewReadService
+    val internshipStatusChangeViewReadService: InternshipStatusChangeViewReadService,
+    val authService: AuthService
 ) {
 
     @Operation(
@@ -58,7 +61,7 @@ class InternshipQueryRestApi(
         summary = "Fetch all internships in a pagination format",
         description = "Retrieves a paginated list of all internships."
     )
-    @GetMapping("/paginated")
+    @GetMapping
     fun findAll(
         @RequestParam(defaultValue = "0") pageNum: Int,
         @RequestParam(defaultValue = "5") pageSize: Int,
@@ -67,8 +70,10 @@ class InternshipQueryRestApi(
         @RequestParam(required = false) internshipStatus: StatusType?,
         @RequestParam(required = false) companyId: String?,
     ): ResponseEntity<Page<InternshipCompositeView>> {
+
         val internshipsPage = internshipViewReadService.findAll(
             pageNum, pageSize, studentId, coordinatorId, internshipStatus, companyId)
+
         return ResponseEntity.ok(internshipsPage)
     }
 
@@ -78,28 +83,34 @@ class InternshipQueryRestApi(
     )
     @GetMapping("/{internshipId}/status-changes")
     fun findStatusChangesByInternshipId(
-        @PathVariable internshipId: InternshipId
+        @PathVariable internshipId: String
     ): List<InternshipStatusChangeView> {
-        return internshipStatusChangeViewReadService.getStatusChangesForInternship(internshipId)
+        val id = InternshipId(internshipId)
+
+        return internshipStatusChangeViewReadService.getStatusChangesForInternship(id)
     }
 
     @GetMapping("/{internshipId}/view-cv")
     fun downloadStudentCv(
-        @PathVariable internshipId: InternshipId
+        @PathVariable internshipId: String
     ): ResponseEntity<ByteArray> {
-        val studentCV = internshipDetailsViewReadService.getStudentCV(internshipId)
+
+        val id = InternshipId(internshipId)
+        val studentCV = internshipDetailsViewReadService.getStudentCV(id)
 
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"CV_${internshipId.value}.pdf\"")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"CV_${id.value}.pdf\"")
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .body(studentCV.content)
     }
 
     @GetMapping("/{internshipId}/download-cv")
     fun viewStudentCv(
-        @PathVariable internshipId: InternshipId
+        @PathVariable internshipId: String
     ): ResponseEntity<Resource> {
-        val studentCV = internshipDetailsViewReadService.getStudentCV(internshipId)
+
+        val id = InternshipId(internshipId)
+        val studentCV = internshipDetailsViewReadService.getStudentCV(id)
 
         return ResponseEntity.ok()
             .contentType(MediaType.APPLICATION_PDF)

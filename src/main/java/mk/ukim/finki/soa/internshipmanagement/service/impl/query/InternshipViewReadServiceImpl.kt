@@ -28,6 +28,7 @@ class InternshipViewReadServiceImpl(
         return internshipViewJpaRepository.existsById(id)
     }
 
+    // TODO: This method is used for testing purposes and should be removed
     override fun findAll(): List<InternshipCompositeView> {
         val internshipViewList = internshipViewJpaRepository.findAll()
 
@@ -37,16 +38,7 @@ class InternshipViewReadServiceImpl(
         return internshipCompositeViewList
     }
 
-    override fun findAll(pageNum: Int, pageSize: Int): Page<InternshipCompositeView> {
-        val pageable = PageRequest.of(pageNum, pageSize)
-        val page: Page<InternshipView> = internshipViewJpaRepository.findAll(pageable)
-
-        val internshipCompositeViewList: List<InternshipCompositeView> =
-            toInternshipCompositeViewList(page.content)
-
-        return PageImpl(internshipCompositeViewList, page.pageable, page.totalElements)
-    }
-
+    // TODO: Change all arguments with value objects and do a check if the student/coordinator/company exist
     override fun findAll(
         pageNum: Int,
         pageSize: Int,
@@ -87,14 +79,9 @@ class InternshipViewReadServiceImpl(
         return PageImpl(internshipCompositeViewList, page.pageable, page.totalElements)
     }
 
-    override fun findAllByStatus(status: InternshipStatus): List<InternshipView> {
-        return internshipViewJpaRepository.findAllByStatus(status)
-    }
-
     fun toInternshipCompositeViewList(internships: List<InternshipView>): List<InternshipCompositeView> {
 
         val studentIds = internships.map { it.studentId }.toSet()
-
         val students = studentViewJpaRepository.findAllById(studentIds)
             .associateBy { it.id }
 

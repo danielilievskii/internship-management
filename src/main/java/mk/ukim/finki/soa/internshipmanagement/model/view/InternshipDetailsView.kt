@@ -37,7 +37,7 @@ data class InternshipDetailsView(
     @JsonIgnore
     @Embedded
     @AttributeOverride(name = "content", column = Column(name = "student_cv"))
-    var studentCV: StudentCV,
+    var studentCV: StudentCV?,
 
     @Embedded
     @AttributeOverrides(

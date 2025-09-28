@@ -6,21 +6,27 @@ import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentCV
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsView
 import mk.ukim.finki.soa.internshipmanagement.repository.InternshipDetailsViewJpaRepository
+import mk.ukim.finki.soa.internshipmanagement.service.AccessPolicyService
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipDetailsViewReadService
 import org.springframework.stereotype.Service
 
 @Service
-class InternshipDetailsViewServiceImpl(
-    val internshipDetailsViewJpaRepository: InternshipDetailsViewJpaRepository
+class InternshipDetailsViewReadServiceImpl(
+    val internshipDetailsViewJpaRepository: InternshipDetailsViewJpaRepository,
+    val accessPolicyService: AccessPolicyService,
 ) : InternshipDetailsViewReadService {
 
     override fun findById(id: InternshipId): InternshipDetailsView {
-        return internshipDetailsViewJpaRepository.findByIdWithDetails(id)
+        val internship: InternshipDetailsView = internshipDetailsViewJpaRepository.findByIdWithDetails(id)
             ?: throw InternshipNotFoundException(id)
+
+        accessPolicyService.assertCanViewInternship(internship)
+
+        return internship
     }
 
     override fun getStudentCV(id: InternshipId): StudentCV {
-        val internship = findById(id)
+        val internship: InternshipDetailsView = findById(id)
 
         return internship.studentCV
             ?: throw InternshipStudentCVNotFoundException(id)
