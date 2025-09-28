@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import mk.ukim.finki.soa.internshipmanagement.exception.InternshipWeekNotFoundException
 import mk.ukim.finki.soa.internshipmanagement.exception.InvalidInternshipStateException
 import mk.ukim.finki.soa.internshipmanagement.model.command.ArchiveInternshipCommand
+import mk.ukim.finki.soa.internshipmanagement.model.command.AssignCoordinatorCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.admin.ChangeCoordinatorCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.company.*
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.CoordinatorAddWeekCommentCommand
@@ -12,6 +13,7 @@ import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.Validate
 import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
 import mk.ukim.finki.soa.internshipmanagement.model.common.Identifier
 import mk.ukim.finki.soa.internshipmanagement.model.common.LabeledEntity
+import mk.ukim.finki.soa.internshipmanagement.model.event.CoordinatorAssignedEvent
 import mk.ukim.finki.soa.internshipmanagement.model.event.InternshipStatusChangedEvent
 import mk.ukim.finki.soa.internshipmanagement.model.event.admin.CoordinatorChangedEvent
 import mk.ukim.finki.soa.internshipmanagement.model.event.company.*
@@ -177,7 +179,8 @@ class Internship : LabeledEntity {
             previousStatus = status,
             newStatus = newStatus,
             changedAt = LocalDateTime.now(),
-            coordinatorId = command.coordinatorId
+            studentId = this.studentId
+
         )
         this.on(event)
         AggregateLifecycle.apply(event)
@@ -415,6 +418,20 @@ class Internship : LabeledEntity {
 
     // ADMIN
 
+    fun handle(command: AssignCoordinatorCommand) {
+        if (this::coordinatorId.isInitialized && this.coordinatorId == command.coordinatorId) {
+            throw InvalidInternshipStateException("Coordinator already assigned.")
+        }
+
+        val event = CoordinatorAssignedEvent(
+            internshipId = command.internshipId,
+            coordinatorId = command.coordinatorId,
+            changedAt = LocalDateTime.now()
+        )
+        this.on(event)
+        AggregateLifecycle.apply(event)
+    }
+
     fun handle(command: ArchiveInternshipCommand) {
         val newStatus = status.transitionTo(StatusType.ARCHIVED)
 
@@ -430,17 +447,16 @@ class Internship : LabeledEntity {
     }
 
     fun handle(command: ChangeCoordinatorCommand) {
-        if (this.coordinatorId == command.newCoordinatorId) {
+        if (this::coordinatorId.isInitialized && this.coordinatorId == command.newCoordinatorId) {
             throw InvalidInternshipStateException("Coordinator already assigned.")
         }
 
         val event = CoordinatorChangedEvent(
             internshipId = command.internshipId,
-            oldCoordinatorId = this.coordinatorId,
+            oldCoordinatorId = if (this::coordinatorId.isInitialized) this.coordinatorId else command.newCoordinatorId,
             newCoordinatorId = command.newCoordinatorId,
             changedAt = LocalDateTime.now()
         )
-
         this.on(event)
         AggregateLifecycle.apply(event)
     }
@@ -476,7 +492,6 @@ class Internship : LabeledEntity {
 
     fun on(event: InternshipAcceptedEvent) {
         this.status = event.newStatus
-        this.coordinatorId = event.coordinatorId
     }
 
     fun on(event: InternshipRejectedEvent) {
@@ -598,6 +613,10 @@ class Internship : LabeledEntity {
 
     fun on(event: CoordinatorChangedEvent) {
         this.coordinatorId = event.newCoordinatorId
+    }
+
+    fun on(event: CoordinatorAssignedEvent) {
+        this.coordinatorId = event.coordinatorId
     }
 
 }
