@@ -35,3 +35,7 @@ interface CoordinatorInternshipService {
     fun invalidateJournalByCoordinator(command: InvalidateJournalByCoordinatorCommand): CompletableFuture<InternshipId>
     fun validateJournalByCoordinator(command: ValidateJournalByCoordinatorCommand): CompletableFuture<InternshipId>
 }
+
+interface AdminInternshipService {
+    fun archiveInternship(command: ArchiveInternshipCommand): CompletableFuture<InternshipId>
+}

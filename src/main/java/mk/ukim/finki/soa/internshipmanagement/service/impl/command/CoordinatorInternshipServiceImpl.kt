@@ -1,6 +1,5 @@
 package mk.ukim.finki.soa.internshipmanagement.service.impl.command
 
-import mk.ukim.finki.soa.internshipmanagement.model.Internship
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.ArchiveInternshipCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.CoordinatorAddWeekCommentCommand
 import mk.ukim.finki.soa.internshipmanagement.model.command.coordinator.InvalidateJournalByCoordinatorCommand
