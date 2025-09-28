@@ -91,7 +91,11 @@ class Internship : LabeledEntity {
         return "Internship (${id.value}) [${status.value}]"
     }
 
-    fun generateInternshipWeeks(fromDate: LocalDate, toDate: LocalDate, workingHours: WeeklyHours): MutableList<InternshipWeek> {
+    fun generateInternshipWeeks(
+        fromDate: LocalDate,
+        toDate: LocalDate,
+        workingHours: WeeklyHours
+    ): MutableList<InternshipWeek> {
         val weeks = mutableListOf<InternshipWeek>()
 
         fun createWeek(start: LocalDate, end: LocalDate) = InternshipWeek(
@@ -170,7 +174,8 @@ class Internship : LabeledEntity {
             internshipId = command.internshipId,
             previousStatus = status,
             newStatus = newStatus,
-            changedAt = LocalDateTime.now()
+            changedAt = LocalDateTime.now(),
+            coordinatorId = command.coordinatorId
         )
         this.on(event)
         AggregateLifecycle.apply(event)
@@ -259,7 +264,8 @@ class Internship : LabeledEntity {
 
     fun handle(command: SubmitInternshipCommand) {
         val newStatus = status.transitionTo(StatusType.SUBMITTED)
-        val internshipWeeks = generateInternshipWeeks(command.period.fromDate, command.period.toDate, command.weeklyHours)
+        val internshipWeeks =
+            generateInternshipWeeks(command.period.fromDate, command.period.toDate, command.weeklyHours)
 
         val event = InternshipSubmittedEvent(
             internshipId = command.internshipId,
@@ -281,7 +287,8 @@ class Internship : LabeledEntity {
     }
 
     fun handle(command: SubmitAgreedInternshipCommand) {
-        val internshipWeeks = generateInternshipWeeks(command.period.fromDate, command.period.toDate, command.weeklyHours)
+        val internshipWeeks =
+            generateInternshipWeeks(command.period.fromDate, command.period.toDate, command.weeklyHours)
 
         val event = AgreedInternshipSubmittedEvent(
             internshipId = InternshipId(),
@@ -452,6 +459,7 @@ class Internship : LabeledEntity {
 
     fun on(event: InternshipAcceptedEvent) {
         this.status = event.newStatus
+        this.coordinatorId = event.coordinatorId
     }
 
     fun on(event: InternshipRejectedEvent) {

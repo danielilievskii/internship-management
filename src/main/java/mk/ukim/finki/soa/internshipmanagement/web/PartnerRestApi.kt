@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 class PartnerRestApi(val partnerService: PartnerService) {
 
     @GetMapping("/active")
-    fun refreshActivePartners() : ResponseEntity<Any> {
+    fun refreshActivePartners(): ResponseEntity<Any> {
         return ResponseEntity.ok(partnerService.refreshActivePartners())
     }
 }

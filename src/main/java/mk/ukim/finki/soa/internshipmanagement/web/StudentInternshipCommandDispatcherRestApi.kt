@@ -2,6 +2,7 @@ package mk.ukim.finki.soa.internshipmanagement.web
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import mk.ukim.finki.soa.internshipmanagement.application.mapper.CommandMapperRegistry
 import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
 import mk.ukim.finki.soa.internshipmanagement.model.snapshot.StudentSnapshot
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
@@ -20,7 +21,8 @@ import org.springframework.web.multipart.MultipartFile
 )
 class StudentInternshipCommandDispatcherRestApi(
     private val studentInternshipService: StudentInternshipService,
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val commandMapperRegistry: CommandMapperRegistry,
 ) {
     @Operation(
         summary = "Submit a command to create a new searching internship",
@@ -77,15 +79,17 @@ class StudentInternshipCommandDispatcherRestApi(
         summary = "Submit a command to accept an internship",
         description = "Sets the status of the specified internship to ACCEPTED."
     )
+
     @PostMapping("/AcceptInternship")
-    fun acceptInternship(
-        @RequestBody commandDto: AcceptInternshipCommandDto
-    ): ResponseEntity<Any> {
-        val command = AcceptInternshipCommand(
-            internshipId = InternshipId(commandDto.internshipId)
+    fun acceptInternship(@RequestBody dto: AcceptInternshipCommandDto): ResponseEntity<Any> {
+        val mapper = commandMapperRegistry.getMapper(
+            AcceptInternshipCommandDto::class.java,
+            AcceptInternshipCommand::class.java
         )
+        val command = mapper.fromDto(dto)
         return ResponseEntity.ok(studentInternshipService.acceptInternship(command))
     }
+
 
     @Operation(
         summary = "Submit a command to reject an internship",
@@ -126,7 +130,7 @@ class StudentInternshipCommandDispatcherRestApi(
     @DeleteMapping("/DeleteInternshipWeek")
     fun deleteInternshipWeek(
         @RequestBody commandDto: DeleteInternshipWeekCommandDto
-    ) : ResponseEntity<Any> {
+    ): ResponseEntity<Any> {
         val command = DeleteInternshipWeekCommand(
             internshipId = InternshipId(commandDto.internshipId),
             weekId = InternshipWeekId(commandDto.internshipWeekId)
@@ -141,7 +145,7 @@ class StudentInternshipCommandDispatcherRestApi(
     @PostMapping("/EditInternshipWeek")
     fun editInternshipWeek(
         @RequestBody commandDto: EditInternshipWeekCommandDto
-    ) : ResponseEntity<Any> {
+    ): ResponseEntity<Any> {
         val command = EditInternshipWeekCommand(
             internshipId = InternshipId(commandDto.internshipId),
             weekId = InternshipWeekId(commandDto.weekId),
@@ -158,7 +162,7 @@ class StudentInternshipCommandDispatcherRestApi(
     @PostMapping("/submitJournal")
     fun submitJournal(
         @RequestBody commandDto: SubmitJournalCommandDto
-    ) : ResponseEntity<Any> {
+    ): ResponseEntity<Any> {
         val command = SubmitJournalCommand(
             internshipId = InternshipId(commandDto.internshipId),
         )

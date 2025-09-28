@@ -4,13 +4,15 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CoordinatorId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipCompositeView
 import mk.ukim.finki.soa.internshipmanagement.service.AuthService
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipViewReadService
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @Tag(
     name = "Coordinator Internship Query API",
@@ -40,7 +42,8 @@ class CoordinatorInternshipQueryRestApi(
         val coordinatorId = CoordinatorId(userId)
 
         val internshipsPage = internshipViewReadService.findAll(
-            pageNum, pageSize, studentId, coordinatorId.value, internshipStatus, companyId)
+            pageNum, pageSize, studentId, coordinatorId.value, internshipStatus, companyId
+        )
 
         return ResponseEntity.ok(internshipsPage)
     }

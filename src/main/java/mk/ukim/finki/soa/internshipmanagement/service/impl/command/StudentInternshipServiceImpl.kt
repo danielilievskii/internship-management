@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture
 
 @Service
 class StudentInternshipServiceImpl(
-    val commandGateway: CommandGateway
+    val commandGateway: CommandGateway,
 ) : StudentInternshipService {
     override fun createSearchingInternship(command: CreateSearchingInternshipCommand): CompletableFuture<InternshipId> {
         return commandGateway.send(command)
@@ -23,9 +23,11 @@ class StudentInternshipServiceImpl(
         return commandGateway.send(command)
     }
 
+
     override fun acceptInternship(command: AcceptInternshipCommand): CompletableFuture<InternshipId> {
         return commandGateway.send(command)
     }
+
 
     override fun rejectInternship(command: RejectInternshipCommand): CompletableFuture<InternshipId> {
         return commandGateway.send(command)
