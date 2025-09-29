@@ -6,7 +6,7 @@ import {
   CreateInternshipWeekPayload,
   StudentSnapshot
 } from '@/types/internship.ts';
-import {mapApiInternship, mapPaginatedResponse} from "@/services/mappers/internshipMapper.ts";
+import {mapApiInternship, mapApiInternshipDetails, mapPaginatedResponse} from "@/services/mappers/internshipMapper.ts";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
@@ -71,7 +71,7 @@ export const internshipApi = {
   // Get internship details
   getInternshipDetails: async (internshipId: string): Promise<InternshipDetailsView> => {
     const response = await api.get(`/internships/${internshipId}`);
-    return response.data;
+    return mapApiInternshipDetails(response.data);
   },
 
   // Create new week entry

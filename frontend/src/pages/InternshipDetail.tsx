@@ -1,13 +1,13 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { Badge } from '@/components/ui/badge.tsx';
 import { ArrowLeft, FileText, Download, Calendar, MapPin } from 'lucide-react';
 import StatusBadge from '@/components/internships/StatusBadge.tsx';
 import { useToast } from '@/hooks/use-toast.ts';
 import {useEffect, useState} from "react";
 import {internshipApi} from "@/services/api.ts";
 import {InternshipDetailsView} from "@/types/internship.ts";
+import {texts} from "@/constants/texts.ts";
 
 const InternshipDetail = () => {
   const { id } = useParams();
@@ -17,36 +17,18 @@ const InternshipDetail = () => {
   const [internshipDetails, setInternshipDetails] = useState<InternshipDetailsView | null>(null);
 
   useEffect(() => {
-
-    console.log("Sending req: " + id)
-
     internshipApi.getInternshipDetails(id)
         .then((data) => {
           setInternshipDetails(data)
           console.log(data)
         })
-
   }, [id])
 
-  // Mock data for the internship detail
-  const internship = {
-    id: id,
-    status: 'ACCEPTED' as const,
-    studentName: 'John Doe 111111',
-    coordinatorName: 'Нема определен координатор',
-    companyName: 'Netcetera',
-    position: 'Frontend Developer Intern',
-    description: 'Develop modern web applications using React and TypeScript. Work with experienced developers to create user-friendly interfaces and learn industry best practices.',
-    period: { startDate: '2025-09-20', endDate: '2025-12-20' },
-    companyContactEmail: 'hr@netcetera.com',
-    weeklyHours: 40,
-    location: 'Skopje, Macedonia'
-  };
 
   const handleDownloadCV = () => {
     toast({
       title: 'CV преземање',
-      description: 'CV-то се преземаат...',
+      description: 'CV-то се презема...',
     });
   };
 
@@ -80,19 +62,19 @@ const InternshipDetail = () => {
           <CardContent className="space-y-4">
             <div>
               <label className="text-sm font-medium text-muted-foreground">Студент</label>
-              <p className="text-lg">{internshipDetails?.studentView?.name}</p>
+              <p className="text-lg">{internshipDetails?.studentView?.name || texts.notSpecified}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Компанија</label>
-              <p className="text-lg">{internshipDetails?.companyView?.name}</p>
+              <p className="text-lg">{internshipDetails?.companyView?.name || texts.notSpecified}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Позиција</label>
-              {/*<p className="text-lg">{internship.position}</p>*/}
+              <p className="text-lg">{texts.notSpecified}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Координатор</label>
-              <p className="text-lg text-muted-foreground">{internship.coordinatorName}</p>
+              <p className="text-lg text-muted-foreground">{internshipDetails?.coordinatorView?.name || texts.notSpecified}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Статус</label>
@@ -114,22 +96,27 @@ const InternshipDetail = () => {
           <CardContent className="space-y-4">
             <div>
               <label className="text-sm font-medium text-muted-foreground">Почеток</label>
-              <p className="text-lg">{internshipDetails?.period?.startDate}</p>
+              <p className="text-lg">{internshipDetails?.period?.fromDate || texts.notSpecified}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Завршеток</label>
-              <p className="text-lg">{internshipDetails?.period?.endDate}</p>
+              <p className="text-lg">{internshipDetails?.period?.toDate || texts.notSpecified}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Неделни часови</label>
-              <p className="text-lg">{internshipDetails?.weeklyHours} часа</p>
+              {
+                internshipDetails?.weeklyHours
+                ? <p className="text-lg">{internshipDetails?.weeklyHours} часа</p>
+                : <p className="text-lg">{texts.notSpecified}</p>
+              }
+
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground flex items-center gap-1">
                 <MapPin className="h-4 w-4" />
                 Локација
               </label>
-              <p className="text-lg">{internship.location}</p>
+              <p className="text-lg">{texts.notSpecified}</p>
             </div>
           </CardContent>
         </Card>
@@ -140,7 +127,7 @@ const InternshipDetail = () => {
             <CardTitle>Опис на праксата</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground leading-relaxed">{internshipDetails?.description}</p>
+            <p className="text-muted-foreground leading-relaxed">{internshipDetails?.description || texts.notSpecified}</p>
           </CardContent>
         </Card>
 
@@ -153,7 +140,7 @@ const InternshipDetail = () => {
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Контакт email</label>
-                <p className="text-lg">{internshipDetails?.companyContactEmail}</p>
+                <p className="text-lg">{internshipDetails?.companyContactEmail || texts.notSpecified}</p>
               </div>
               <div className="flex gap-2">
                 <Button 

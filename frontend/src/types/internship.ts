@@ -13,8 +13,8 @@ export type InternshipStatus =
 export type CommentAuthor = 'Company' | 'Coordinator';
 
 export interface Period {
-  startDate: string; // ISO date string, e.g., "2025-09-20"
-  endDate: string;
+  fromDate: string; // ISO date string, e.g., "2025-09-20"
+  toDate: string;
 }
 
 export interface Comment {
@@ -29,7 +29,8 @@ export interface InternshipWeekView {
   period: Period;
   description: string;
   workingHours: number;
-  comments: Comment[];
+  companyComment: string;
+  coordinatorComment: string;
 }
 
 export interface InternshipView {
