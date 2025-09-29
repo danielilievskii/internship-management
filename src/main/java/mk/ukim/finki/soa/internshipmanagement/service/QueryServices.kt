@@ -3,24 +3,21 @@ package mk.ukim.finki.soa.internshipmanagement.service
 import mk.ukim.finki.soa.internshipmanagement.model.snapshot.CompanySnapshot
 import mk.ukim.finki.soa.internshipmanagement.model.snapshot.CoordinatorSnapshot
 import mk.ukim.finki.soa.internshipmanagement.model.snapshot.StudentSnapshot
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentCV
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
-import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipCompositeView
-import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsCompositeView
-import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsView
-import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipStatusChangeView
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
+import mk.ukim.finki.soa.internshipmanagement.model.view.*
 import org.springframework.data.domain.Page
 
 interface InternshipViewReadService {
     fun existsById(id: InternshipId): Boolean
+    fun existsByStatusAndStudentId(status: InternshipStatus, studentId: StudentId): Boolean
+    fun findByStatusAndStudentId(status: InternshipStatus, id: StudentId): InternshipView?
     fun findAll(): List<InternshipCompositeView>
     fun findAll(pageNum: Int, pageSize: Int, studentId: String?, coordinatorId: String?, internshipStatus: StatusType?, companyId: String?): Page<InternshipCompositeView>
 }
 
 interface InternshipDetailsViewReadService {
     fun findById(id: InternshipId): InternshipDetailsView
+    fun findByStatusAndStudentId(status: InternshipStatus, id: StudentId): InternshipDetailsView?
     fun findCompositeById(id: InternshipId): InternshipDetailsCompositeView
     fun getStudentCV(id: InternshipId): StudentCV
 }

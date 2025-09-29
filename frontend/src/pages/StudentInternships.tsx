@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { FileText, Upload, Eye, CheckCircle, XCircle, Check, Download } from 'lu
 import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/use-toast';
 import { InternshipStatus } from '@/types/internship';
+import {internshipApi} from "@/services/api.ts";
 
 interface StudentInternship {
   id: string;
@@ -25,24 +26,47 @@ const StudentInternships = () => {
   const [selectedCV, setSelectedCV] = useState<File | null>(null);
   const [cvSubmitted, setCvSubmitted] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [internships, setInternships] = useState<StudentInternship[]>([
-    {
-      id: '1',
-      company: 'Netcetera',
-      position: 'Frontend Developer Intern',
-      status: 'ACCEPTED' as const,
-      period: { startDate: '2025-09-20', endDate: '2025-12-20' },
-      description: 'Develop modern web applications using React and TypeScript...',
-    },
-    {
-      id: '2',
-      company: 'Seavus',
-      position: 'Backend Developer Intern',
-      status: 'SUBMITTED' as const,
-      period: { startDate: '2025-10-01', endDate: '2025-12-31' },
-      description: 'Work with Java Spring Boot applications...',
+  const [internships, setInternships] = useState<StudentInternship[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if(!user || user.role !== 'Student') {
+        setIsLoading(false)
+        return
+      }
+
+      try {
+        setIsLoading(true)
+        const [internshipsResponse, cvResponse] = await Promise.all([
+            internshipApi.getStudentInternships(),
+            internshipApi.getCV(),
+        ])
+        // setInternships(internshipsResponse)
+        if (cvResponse && cvResponse.size > 0) {
+          const file = new File([cvResponse], `${user.name}.pdf`, {
+            type: cvResponse.type || 'application/octet-stream',
+          });
+          setSelectedCV(file);
+          setCvSubmitted(true)
+        }
+      }
+      catch (error) {
+        console.error(error)
+        setError("Failed to load data. Please try again later.");
+        toast({
+          title: 'Грешка при вчитување',
+          description: 'Имаше грешка при вчитување на вашите податоци.',
+          variant: 'destructive',
+        });
+      }
+      finally {
+        setIsLoading(false)
+      }
     }
-  ]);
+    fetchData()
+  }, []);
 
   const handleCVUpload = () => {
     const input = document.createElement('input');
@@ -58,13 +82,26 @@ const StudentInternships = () => {
     input.click();
   };
 
-  const handleSubmitCV = () => {
-    if (selectedCV) {
-      setCvSubmitted(true);
+  const handleSubmitCV = async () => {
+    if (!selectedCV) return;
+
+    try {
+      await internshipApi.submitCV(selectedCV)
+      setCvSubmitted(true)
+
       toast({
         title: 'CV поднесен',
         description: `Вашиот CV ${selectedCV.name} е успешно поднесен за пребарување пракса.`,
       });
+    }
+    catch (error) {
+      console.error(error);
+      toast({
+        title: 'Грешка при поднесување',
+        description: 'Не успеавме да го поднесеме вашиот CV. Обидете се повторно.',
+        variant: 'destructive',
+      });
+    } finally {
       setShowConfirmDialog(false);
     }
   };
@@ -82,9 +119,29 @@ const StudentInternships = () => {
     }
   };
 
-  const handleCancelSubmit = () => {
-    setSelectedCV(null);
-    setShowConfirmDialog(false);
+  const handleCancelSubmit = async () => {
+    if (!selectedCV) return;
+
+    try {
+      await internshipApi.deleteSearchingInternship()
+
+      setSelectedCV(null);
+      setCvSubmitted(false)
+      toast({
+        title: 'CV успешно пребришано',
+        description: `Вашието CV ${selectedCV.name} е успешно пребришано како и поднесувањето за пребарување пракса.`,
+      });
+    }
+    catch (error) {
+      console.error(error);
+      toast({
+        title: 'Грешка при бришење',
+        description: 'Не успеавме да го избришеме вашето CV. Обидете се повторно.',
+        variant: 'destructive',
+      });
+    } finally {
+      setShowConfirmDialog(false);
+    }
   };
 
   const handleAcceptInternship = (internshipId: string) => {
@@ -142,10 +199,10 @@ const StudentInternships = () => {
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <Upload className="h-5 w-5" />
-                  Мој CV
+                  CV
                 </CardTitle>
                 <CardDescription>
-                  Прикачете го вашиот CV за да можете да аплицирате за пракси
+                  Прикачете го вашето CV за да можете да аплицирате за пракси
                 </CardDescription>
               </div>
               {cvSubmitted && selectedCV && (
@@ -183,7 +240,7 @@ const StudentInternships = () => {
                   {selectedCV ? 'Променете датотека' : 'Изберете датотека'}
                 </Button>
                 {selectedCV && (
-                    <Button onClick={() => setSelectedCV(null)} variant="destructive">
+                    <Button onClick={() => handleCancelSubmit()} variant="destructive">
                       Откажи пребарување
                     </Button>
                 )}
@@ -279,7 +336,7 @@ const StudentInternships = () => {
             <AlertDialogHeader>
               <AlertDialogTitle>Поднесување на CV</AlertDialogTitle>
               <AlertDialogDescription>
-                Дали сакате да го поднесете вашиот CV "{selectedCV?.name}" за пребарување пракса?
+                Дали сакате да го поднесете вашето CV "{selectedCV?.name}" за пребарување пракса? Со притискање на копчето „Поднеси“ ќе креирате барање за пракса.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

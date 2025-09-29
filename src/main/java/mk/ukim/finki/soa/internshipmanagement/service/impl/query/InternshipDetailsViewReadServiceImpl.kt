@@ -4,9 +4,12 @@ import mk.ukim.finki.soa.internshipmanagement.application.assembler.InternshipDe
 import mk.ukim.finki.soa.internshipmanagement.exception.InternshipNotFoundException
 import mk.ukim.finki.soa.internshipmanagement.exception.InternshipStudentCVNotFoundException
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentCV
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsCompositeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsView
+import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
 import mk.ukim.finki.soa.internshipmanagement.repository.InternshipDetailsViewJpaRepository
 import mk.ukim.finki.soa.internshipmanagement.service.AccessPolicyService
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipDetailsViewReadService
@@ -26,6 +29,11 @@ class InternshipDetailsViewReadServiceImpl(
         accessPolicyService.assertCanViewInternship(internship)
 
         return internship
+    }
+
+    override fun findByStatusAndStudentId(status: InternshipStatus, id: StudentId): InternshipDetailsView? {
+        val internships: List<InternshipDetailsView> = internshipDetailsViewJpaRepository.findAllByStatusAndStudentId(status, id)
+        return internships.firstOrNull()
     }
 
     override fun findCompositeById(id: InternshipId): InternshipDetailsCompositeView {

@@ -2,7 +2,9 @@ package mk.ukim.finki.soa.internshipmanagement.service.impl.query
 
 import mk.ukim.finki.soa.internshipmanagement.application.assembler.InternshipAssembler
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipCompositeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
 import mk.ukim.finki.soa.internshipmanagement.repository.InternshipViewJpaRepository
@@ -21,6 +23,16 @@ class InternshipViewReadServiceImpl(
 
     override fun existsById(id: InternshipId): Boolean {
         return internshipViewJpaRepository.existsById(id)
+    }
+
+    override fun existsByStatusAndStudentId(status: InternshipStatus, studentId: StudentId): Boolean {
+        return internshipViewJpaRepository.existsByStatusAndStudentId(status, studentId)
+    }
+
+    override fun findByStatusAndStudentId(status: InternshipStatus, id: StudentId): InternshipView? {
+        val internships: List<InternshipView> = internshipViewJpaRepository.findAllByStatusAndStudentId(status, id)
+        // We have to take all at first because we don't have constraints on the backend
+        return internships.firstOrNull()
     }
 
     // TODO: This method is used for testing purposes and should be removed

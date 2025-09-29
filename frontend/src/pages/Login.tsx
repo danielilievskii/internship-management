@@ -59,7 +59,7 @@ const Login = () => {
       const data = await response.json();
 
       const token = data.access_token;
-      const refresh = data.refresh_token;
+      // const refresh = data.refresh_token;
 
       const payload = JSON.parse(atob(token.split(".")[1]));
 
@@ -78,7 +78,7 @@ const Login = () => {
       };
 
       login(user)
-      localStorage.setItem("token", token)
+      localStorage.setItem("auth-token", token)
       
       toast({
         title: 'Добредојдовте!',

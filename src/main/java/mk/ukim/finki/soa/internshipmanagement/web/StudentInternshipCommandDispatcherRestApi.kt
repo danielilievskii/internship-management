@@ -6,7 +6,9 @@ import mk.ukim.finki.soa.internshipmanagement.application.mapper.CommandMapperRe
 import mk.ukim.finki.soa.internshipmanagement.model.command.student.*
 import mk.ukim.finki.soa.internshipmanagement.model.snapshot.StudentSnapshot
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
+import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
 import mk.ukim.finki.soa.internshipmanagement.service.AuthService
+import mk.ukim.finki.soa.internshipmanagement.service.InternshipViewReadService
 import mk.ukim.finki.soa.internshipmanagement.service.StudentInternshipService
 import mk.ukim.finki.soa.internshipmanagement.web.dto.student.*
 import org.springframework.http.ResponseEntity
@@ -14,7 +16,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-@RequestMapping("/student/submitCommand")
+@RequestMapping("/api/student/submitCommand")
 @Tag(
     name = "Student Internship Command API",
     description = "Handles student commands related to internship and journal management."
@@ -23,6 +25,7 @@ class StudentInternshipCommandDispatcherRestApi(
     private val studentInternshipService: StudentInternshipService,
     private val authService: AuthService,
     private val commandMapperRegistry: CommandMapperRegistry,
+    private val internshipViewReadService: InternshipViewReadService,
 ) {
     @Operation(
         summary = "Submit a command to create a new searching internship",
@@ -35,6 +38,15 @@ class StudentInternshipCommandDispatcherRestApi(
 
         val authStudent: StudentSnapshot = authService.getAuthStudent()
 
+        val existsInternship = internshipViewReadService.findByStatusAndStudentId(InternshipStatus(StatusType.SEARCHING), authStudent.id)
+
+        if (existsInternship != null) {
+            val command = EditSearchingInternshipCommand(
+                internshipId = existsInternship.id,
+                newCV = StudentCV(studentCVFile.bytes)
+            )
+            return ResponseEntity.ok(studentInternshipService.editSearchingInternship(command))
+        }
         val command = CreateSearchingInternshipCommand(
             studentId = authStudent.id,
             studentCV = StudentCV(studentCVFile.bytes)
@@ -66,11 +78,15 @@ class StudentInternshipCommandDispatcherRestApi(
     )
     @DeleteMapping("/DeleteSearchingInternship")
     fun deleteSearchingInternship(
-        @RequestBody commandDto: DeleteSearchingInternshipCommandDto
     ): ResponseEntity<Any> {
-        val command = DeleteSearchingInternshipCommand(
-            internshipId = InternshipId(commandDto.internshipId)
-        )
+
+        val authStudent: StudentSnapshot = authService.getAuthStudent()
+        val status = InternshipStatus(StatusType.SEARCHING)
+        val studentId: StudentId = authStudent.id
+        val internship: InternshipView = internshipViewReadService.findByStatusAndStudentId(status, studentId)
+            ?: return ResponseEntity.notFound().build()
+
+        val command = DeleteSearchingInternshipCommand(internship.id)
 
         return ResponseEntity.ok(studentInternshipService.deleteSearchingInternship(command))
     }

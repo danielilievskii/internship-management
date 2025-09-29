@@ -88,3 +88,11 @@ export interface User {
   email: string;
   role: UserRole;
 }
+
+export interface StudentSnapshot {
+  id: string,
+  index: string,
+  name: string,
+  email: string,
+  credits: number,
+}

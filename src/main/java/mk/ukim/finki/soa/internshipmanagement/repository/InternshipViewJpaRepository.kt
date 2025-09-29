@@ -2,6 +2,7 @@ package mk.ukim.finki.soa.internshipmanagement.repository
 
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
@@ -10,4 +11,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface InternshipViewJpaRepository : JpaRepository<InternshipView, InternshipId>, JpaSpecificationExecutor<InternshipView> {
     fun findAllByStatus(status: InternshipStatus) : List<InternshipView>
+    fun findByStudentIdAndStatus(studentId: StudentId, status: InternshipStatus): MutableList<InternshipView>
+    fun findAllByStatusAndStudentId(status: InternshipStatus, studentId: StudentId): List<InternshipView>
+    fun existsByStatusAndStudentId(status: InternshipStatus, studentId: StudentId): Boolean
 }

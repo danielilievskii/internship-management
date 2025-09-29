@@ -1,17 +1,18 @@
 import axios from 'axios';
-import { 
-  InternshipView, 
-  InternshipDetailsView, 
-  PaginatedResponse, 
-  CreateInternshipWeekPayload 
+import {
+  InternshipView,
+  InternshipDetailsView,
+  PaginatedResponse,
+  CreateInternshipWeekPayload,
+  StudentSnapshot
 } from '@/types/internship.ts';
 import {mapApiInternship, mapPaginatedResponse} from "@/services/mappers/internshipMapper.ts";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  // headers: {
+  //   'Content-Type': 'application/json',
+  // },
 });
 
 // Add request interceptor for authentication
@@ -20,12 +21,23 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  config.headers.Authorization = `Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJKV0lUdWpaWDctZUtVaXdJVUJyT3l2U0VYeWtNX0VnendHSVRCSFZGVXA0In0.eyJleHAiOjE3NTg2NDgxMzksImlhdCI6MTc1ODY0NzgzOSwianRpIjoiNGY3ODBlYWYtZDljMS00NjI5LWE4NGItNjQzZGI5Y2U2MDRjIiwiaXNzIjoiaHR0cDovL2tleWNsb2FrOjgwODAvcmVhbG1zL2ZpbmtpLXNlcnZpY2VzIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImU0OTU2MTRhLWZmMTYtNDE5MC04YmQ5LTQyM2I5NGVkMWI2NSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImFwaS1nYXRld2F5Iiwic2Vzc2lvbl9zdGF0ZSI6IjJlNzNiNTFiLTU1NjgtNGRjZC05MjYxLWNkNjFiMTFjNjQ0YyIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiLyoiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwiY29tcGFueSIsInVtYV9hdXRob3JpemF0aW9uIiwiZGVmYXVsdC1yb2xlcy1maW5raS1zZXJ2aWNlcyJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCBjb21wYW55Iiwic2lkIjoiMmU3M2I1MWItNTU2OC00ZGNkLTkyNjEtY2Q2MWIxMWM2NDRjIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJOZXRjZXRlcmEgQ29tcGFueSIsInByZWZlcnJlZF91c2VybmFtZSI6Im5jYSIsImdpdmVuX25hbWUiOiJOZXRjZXRlcmEiLCJmYW1pbHlfbmFtZSI6IkNvbXBhbnkiLCJlbWFpbCI6Im5ldGNldGVyYUBlbWFpbC5jb20ifQ.DOw9VYtQEfh-3OUmte8VIu0bezHfR_BCAHTPJ3lhEw-WwbVcWOrLeGhMsxnG7YVtZgzpKCjFGbNXkYODfc-PCUz8QzxNoBglQF16HcA1tL-jeeA_PQGdkejnwwUzwcGSsPYBFs7uz1pGzztSOCCvv3rXTrItzqq5j7zRCfikGp6grujEs-hQPhz4VeP5KGJzKtrfhN3iBdwdEOUXJN7zeygcBAc2tqBOIIntP7ZCxw1j88UNO0iwOfxeLY-y2F-srjd52T0JuF4AYaRHhuIQopK2sV_3Z8pvaHOp0B3VJQqYbQMkrBFASMopB0KGvwCykfOgdrkodH-GOEdyjFfLOQ`
+
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+  else if (
+      config.data &&
+      typeof config.data === 'object' &&
+      !(config.data instanceof Blob) &&
+      !(config.data instanceof ArrayBuffer)
+  ) {
+    config.headers['Content-Type'] = 'application/json';
+  }
   return config;
 });
 
 export const internshipApi = {
-  // Get paginated internships
+
   getInternships: async (
     page: number = 0,
     size: number = 5,
@@ -48,6 +60,12 @@ export const internshipApi = {
 
     const response = await api.get(`/internships/paginated?${params}`);
     return mapPaginatedResponse(response.data, mapApiInternship);
+  },
+
+  submitCV: async (payload: File): Promise<void> => {
+    const formData = new FormData()
+    formData.append("studentCV", payload)
+    await api.post(`/student/submitCommand/CreateSearchingInternship`, formData)
   },
 
   // Get internship details
@@ -74,10 +92,21 @@ export const internshipApi = {
     await api.put(`/internships/${internshipId}/status`, { status });
   },
 
-  // Delete internship
-  deleteInternship: async (internshipId: string): Promise<void> => {
-    await api.delete(`/internships/${internshipId}`);
+  deleteSearchingInternship: async (): Promise<void> => {
+    await api.delete(`/student/submitCommand/DeleteSearchingInternship`);
   },
+
+  //TODO: get all student internships which are accepted, proposed (maybe also archived?)
+  getStudentInternships() {
+    return undefined;
+  },
+
+  getCV: async (): Promise<File> => {
+    const response = await api.get(`/student/internships/cv`, {
+      responseType: 'blob',
+    });
+    return response.data
+  }
 };
 
 export default api;
