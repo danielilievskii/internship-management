@@ -7,12 +7,12 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         {children}
       </main>
-      <footer className="mt-auto py-4 text-center text-sm text-muted-foreground border-t">
+      <footer className="py-4 text-center text-sm text-muted-foreground border-t">
         finki © 2025
       </footer>
     </div>
