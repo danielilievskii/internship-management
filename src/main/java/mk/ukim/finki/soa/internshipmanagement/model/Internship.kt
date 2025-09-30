@@ -240,6 +240,7 @@ class Internship : LabeledEntity {
         val event = InternshipWeekEditedEvent(
             internshipId = command.internshipId,
             weekId = command.weekId,
+            period = command.period,
             newDescription = command.newDescription,
             newWorkingHours = command.newWorkingHours
         )

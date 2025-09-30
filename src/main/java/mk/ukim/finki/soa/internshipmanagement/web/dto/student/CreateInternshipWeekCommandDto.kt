@@ -7,5 +7,5 @@ data class CreateInternshipWeekCommandDto(
     val fromDate: LocalDate,
     val toDate: LocalDate,
     val description: String,
-    val workingWeeklyHours: Int
+    val workingHours: Int
 )

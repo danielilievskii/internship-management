@@ -134,7 +134,7 @@ class StudentInternshipCommandDispatcherRestApi(
             internshipId = InternshipId(commandDto.internshipId),
             period = InternshipWeekDateRange(commandDto.fromDate, commandDto.toDate),
             description = Description(commandDto.description),
-            workingHours = WeeklyHours(commandDto.workingWeeklyHours)
+            workingHours = WeeklyHours(commandDto.workingHours)
         )
         return ResponseEntity.ok(studentInternshipService.createInternshipWeek(command))
     }
@@ -165,8 +165,9 @@ class StudentInternshipCommandDispatcherRestApi(
         val command = EditInternshipWeekCommand(
             internshipId = InternshipId(commandDto.internshipId),
             weekId = InternshipWeekId(commandDto.weekId),
-            newDescription = Description(commandDto.newDescription),
-            newWorkingHours = WeeklyHours(commandDto.newWorkingHours)
+            period = InternshipWeekDateRange(commandDto.fromDate, commandDto.toDate),
+            newDescription = Description(commandDto.description),
+            newWorkingHours = WeeklyHours(commandDto.workingHours)
         )
         return ResponseEntity.ok(studentInternshipService.editInternshipWeek(command))
     }
