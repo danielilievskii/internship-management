@@ -1,29 +1,32 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.tsx';
-import { Button } from '@/components/ui/button.tsx';
-import { ArrowLeft, FileText, Download, Calendar, MapPin } from 'lucide-react';
+import {useParams, useNavigate} from 'react-router-dom';
+import {Card, CardContent,  CardHeader, CardTitle} from '@/components/ui/card.tsx';
+import {Button} from '@/components/ui/button.tsx';
+import {ArrowLeft, FileText, Download, Calendar, MapPin} from 'lucide-react';
 import StatusBadge from '@/components/internships/StatusBadge.tsx';
-import { useToast } from '@/hooks/use-toast.ts';
+import {useToast} from '@/hooks/use-toast.ts';
 import {useEffect, useState} from "react";
 import {internshipApi} from "@/services/api.ts";
 import {InternshipDetailsView} from "@/types/internship.ts";
 import {texts} from "@/constants/texts.ts";
+import Loading from "@/pages/Loading.tsx";
 
 const InternshipDetail = () => {
-  const { id } = useParams();
+  const {id} = useParams();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const {toast} = useToast();
 
+  const [loading, setLoading] = useState(true)
   const [internshipDetails, setInternshipDetails] = useState<InternshipDetailsView | null>(null);
 
   useEffect(() => {
     internshipApi.getInternshipDetails(id)
-        .then((data) => {
-          setInternshipDetails(data)
-          console.log(data)
-        })
-  }, [id])
-
+      .then((data) => {
+        setInternshipDetails(data)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [])
 
   const handleDownloadCV = () => {
     toast({
@@ -36,15 +39,17 @@ const InternshipDetail = () => {
     navigate(`/internship/${id}/journal`);
   };
 
+  if (loading) return <Loading />;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={() => navigate(-1)}
           className="flex items-center gap-2"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4"/>
           Назад
         </Button>
         <h1 className="text-3xl font-bold">Детали за пракса</h1>
@@ -55,7 +60,7 @@ const InternshipDetail = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
+              <FileText className="h-5 w-5"/>
               Основни информации
             </CardTitle>
           </CardHeader>
@@ -74,12 +79,13 @@ const InternshipDetail = () => {
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Координатор</label>
-              <p className="text-lg text-muted-foreground">{internshipDetails?.coordinatorView?.name || texts.notSpecified}</p>
+              <p
+                className="text-lg text-muted-foreground">{internshipDetails?.coordinatorView?.name || texts.notSpecified}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Статус</label>
               <div className="mt-1">
-                <StatusBadge status={internshipDetails?.status} />
+                <StatusBadge status={internshipDetails?.status}/>
               </div>
             </div>
           </CardContent>
@@ -89,7 +95,7 @@ const InternshipDetail = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
+              <Calendar className="h-5 w-5"/>
               Временски рамки
             </CardTitle>
           </CardHeader>
@@ -106,14 +112,14 @@ const InternshipDetail = () => {
               <label className="text-sm font-medium text-muted-foreground">Неделни часови</label>
               {
                 internshipDetails?.weeklyHours
-                ? <p className="text-lg">{internshipDetails?.weeklyHours} часа</p>
-                : <p className="text-lg">{texts.notSpecified}</p>
+                  ? <p className="text-lg">{internshipDetails?.weeklyHours} часа</p>
+                  : <p className="text-lg">{texts.notSpecified}</p>
               }
 
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-                <MapPin className="h-4 w-4" />
+                <MapPin className="h-4 w-4"/>
                 Локација
               </label>
               <p className="text-lg">{texts.notSpecified}</p>
@@ -127,7 +133,8 @@ const InternshipDetail = () => {
             <CardTitle>Опис на праксата</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground leading-relaxed">{internshipDetails?.description || texts.notSpecified}</p>
+            <p
+              className="text-muted-foreground leading-relaxed">{internshipDetails?.description || texts.notSpecified}</p>
           </CardContent>
         </Card>
 
@@ -143,19 +150,19 @@ const InternshipDetail = () => {
                 <p className="text-lg">{internshipDetails?.companyContactEmail || texts.notSpecified}</p>
               </div>
               <div className="flex gap-2">
-                <Button 
+                <Button
                   variant="outline"
                   onClick={handleDownloadCV}
                   className="flex items-center gap-2"
                 >
-                  <Download className="h-4 w-4" />
+                  <Download className="h-4 w-4"/>
                   Преземи CV
                 </Button>
-                <Button 
+                <Button
                   onClick={handleViewJournal}
                   className="flex items-center gap-2 bg-action-view text-action-view-foreground hover:bg-action-view/90"
                 >
-                  <FileText className="h-4 w-4" />
+                  <FileText className="h-4 w-4"/>
                   Прегледај дневник
                 </Button>
               </div>

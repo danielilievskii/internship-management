@@ -1,4 +1,5 @@
 export const texts = {
-    notSpecified: "Нема одредено"
+    notSpecified: "Нема одредено",
+    notInserted: "Нема внесено"
 }
 

@@ -35,7 +35,8 @@ export function mapApiInternshipDetails(apiObj: any): InternshipDetailsView {
             description: w.description?.value,
             coordinatorComment: w.coordinatorComment?.value,
             companyComment: w.companyComment?.value,
-            period: w.period
+            period: w.period,
+            workingHours: w.workingHours?.value
         })) ?? [],
     };
 }

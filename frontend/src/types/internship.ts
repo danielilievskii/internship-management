@@ -6,8 +6,8 @@ export type InternshipStatus =
   | 'ACCEPTED' 
   | 'REJECTED' 
   | 'JOURNAL_SUBMITTED' 
-  | 'VALIDATED' 
-  | 'INVALIDATED' 
+  | 'VALIDATED_BY_COMPANY'
+  | 'VALIDATED_BY_COORDINATOR'
   | 'ARCHIVED';
 
 export type CommentAuthor = 'Company' | 'Coordinator';
@@ -67,10 +67,25 @@ export interface InternshipDetailsView extends InternshipView {
 
 export interface CreateInternshipWeekPayload {
   internshipId: string;
-  fromDate: string;     // ISO date string
-  toDate: string;       // ISO date string
+  fromDate: string;
+  toDate: string;
   description: string;
   workingWeeklyHours: number;
+}
+
+export interface EditInternshipWeekPayload {
+  internshipId: string;
+  weekId: string;
+  fromDate: string;
+  toDate: string;
+  description: string;
+  workingWeeklyHours: number;
+}
+
+export interface AddWeekCommentPayload {
+  internshipId: string;
+  weekId: string;
+  comment: string;
 }
 
 export interface PaginatedResponse<T> {
