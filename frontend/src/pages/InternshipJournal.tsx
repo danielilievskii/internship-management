@@ -16,7 +16,10 @@ import {
   EditInternshipWeekPayload,
   InternshipDetailsView
 } from "@/types/internship.ts";
-import {companyCommandsApi, coordinatorCommandsApi, internshipApi, studentCommandsApi} from "@/services/api.ts";
+import {internshipApi} from "@/services/api.ts";
+import {studentCommandsApi} from "@/services/studentApi.ts";
+import {companyCommandsApi} from "@/services/companyApi.ts";
+import {coordinatorCommandsApi} from "@/services/coordinatorApi.ts";
 import {texts} from "@/constants/texts.ts";
 import Loading from "@/pages/Loading.tsx";
 import InternshipWeekForm from "@/components/internship-journal/InternshipWeekForm.tsx";

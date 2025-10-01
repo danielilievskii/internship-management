@@ -4,7 +4,7 @@ import {CreateInternshipWeekPayload, EditInternshipWeekPayload} from "@/types/in
 export const studentQueryApi = {
 
   getInternships: async (): Promise<void> => {
-    return await api.get(`/student/internships/my`)
+    return await api.get(`/student/internships`)
       .then((response) => response.data);
   },
 

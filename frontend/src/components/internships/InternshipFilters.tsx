@@ -1,33 +1,37 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button.tsx';
-import { Input } from '@/components/ui/input.tsx';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
-import { Search, Filter, User, Building, UserCheck } from 'lucide-react';
-import { useInternshipStore } from '@/store/internshipStore.ts';
+import React from "react";
+import { Button } from "@/components/ui/button.tsx";
+import { Input } from "@/components/ui/input.tsx";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select.tsx";
+import { Filter, User, Building, UserCheck } from "lucide-react";
+import { useAuthStore } from "@/store/authStore.ts";
 
-const InternshipFilters = () => {
-  const { filters, setFilters } = useInternshipStore();
-  const [localFilters, setLocalFilters] = useState({
-    studentSearch: '',
-    coordinatorSearch: '',
-    companyFilter: 'all',
-    statusFilter: 'all',
-  });
+interface InternshipFiltersProps {
+  filterCompany: string;
+  setFilterCompany: (value: string) => void;
+  filterCoordinator: string;
+  setFilterCoordinator: (value: string) => void;
+  filterStatus: string;
+  setFilterStatus: (value: string) => void;
+  onReset: () => void;
+}
 
-  const handleSearch = () => {
-    setFilters(localFilters);
-  };
-
-  const handleReset = () => {
-    const resetFilters = {
-      studentSearch: '',
-      coordinatorSearch: '',
-      companyFilter: 'all',
-      statusFilter: 'all',
-    };
-    setLocalFilters(resetFilters);
-    setFilters(resetFilters);
-  };
+const InternshipFilters: React.FC<InternshipFiltersProps> = ({
+                                                               filterCompany,
+                                                               setFilterCompany,
+                                                               filterCoordinator,
+                                                               setFilterCoordinator,
+                                                               filterStatus,
+                                                               setFilterStatus,
+                                                               onReset
+                                                             }) => {
+  const { user } = useAuthStore();
+  const role = user.role;
 
   return (
     <div className="bg-card p-6 rounded-lg border">
@@ -37,57 +41,54 @@ const InternshipFilters = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium flex items-center gap-2">
-            <User className="h-4 w-4" />
-            Пребарај по студент/индекс...
-          </label>
-          <Input
-            placeholder="Пребарај по студент/индекс..."
-            value={localFilters.studentSearch}
-            onChange={(e) => setLocalFilters(prev => ({ ...prev, studentSearch: e.target.value }))}
-          />
-        </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium flex items-center gap-2">
-            <UserCheck className="h-4 w-4" />
-            Пребарај по координатор...
-          </label>
-          <Input
-            placeholder="Пребарај по координатор..."
-            value={localFilters.coordinatorSearch}
-            onChange={(e) => setLocalFilters(prev => ({ ...prev, coordinatorSearch: e.target.value }))}
-          />
-        </div>
+        {(role === "Company" || role === "Coordinator" || role === "Admin") && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium flex items-center gap-2">
+              <User className="h-4 w-4" />
+              Пребарај по индекс
+            </label>
+            <Input placeholder="Пребарај по индекс..." />
+          </div>
+        )}
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium flex items-center gap-2">
-            <Building className="h-4 w-4" />
-            Сите компании
-          </label>
-          <Select
-            value={localFilters.companyFilter}
-            onValueChange={(value) => setLocalFilters(prev => ({ ...prev, companyFilter: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Сите компании" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Сите компании</SelectItem>
-              <SelectItem value="netcetera">Netcetera</SelectItem>
-              <SelectItem value="seavus">Seavus</SelectItem>
-              <SelectItem value="thoughtworks">ThoughtWorks</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        {(role === "Student" || role === "Company" || role === "Admin") && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium flex items-center gap-2">
+              <UserCheck className="h-4 w-4" />
+              Пребарај по координатор
+            </label>
+            <Input
+              placeholder="Пребарај по координатор..."
+              value={filterCoordinator}
+              onChange={(e) => setFilterCoordinator(e.target.value)}
+            />
+          </div>
+        )}
+
+        {(role === "Student" || role === "Coordinator" || role === "Admin") && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium flex items-center gap-2">
+              <Building className="h-4 w-4" />
+              Сите компании
+            </label>
+            <Select value={filterCompany} onValueChange={setFilterCompany}>
+              <SelectTrigger>
+                <SelectValue placeholder="Сите компании" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Сите компании</SelectItem>
+                <SelectItem value="Netcetera">Netcetera</SelectItem>
+                <SelectItem value="Seavus">Seavus</SelectItem>
+                <SelectItem value="ThoughtWorks">ThoughtWorks</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         <div className="space-y-2">
           <label className="text-sm font-medium">Сите статуси</label>
-          <Select
-            value={localFilters.statusFilter}
-            onValueChange={(value) => setLocalFilters(prev => ({ ...prev, statusFilter: value }))}
-          >
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
             <SelectTrigger>
               <SelectValue placeholder="Сите статуси" />
             </SelectTrigger>
@@ -105,11 +106,7 @@ const InternshipFilters = () => {
       </div>
 
       <div className="flex gap-3">
-        <Button onClick={handleSearch} className="bg-action-view text-action-view-foreground hover:bg-action-view/90">
-          <Search className="h-4 w-4 mr-2" />
-          Пребарај
-        </Button>
-        <Button variant="outline" onClick={handleReset}>
+        <Button variant="outline" onClick={onReset}>
           Ресетирај
         </Button>
       </div>

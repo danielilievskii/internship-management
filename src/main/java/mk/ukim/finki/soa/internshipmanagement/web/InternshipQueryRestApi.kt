@@ -43,6 +43,19 @@ class InternshipQueryRestApi(
     }
 
     @Operation(
+        summary = "Fetch all status changes for an internship",
+        description = "Retrieves all status change records associated with the internship identified by the given ID."
+    )
+    @GetMapping("/{internshipId}/status-changes")
+    fun findStatusChangesById(
+        @PathVariable internshipId: String
+    ): List<InternshipStatusChangeView> {
+        val id = InternshipId(internshipId)
+
+        return internshipStatusChangeViewReadService.getStatusChangesForInternship(id)
+    }
+
+    @Operation(
         summary = "Fetch all internships",
         description = "Retrieves a list of all internships."
     )
@@ -72,20 +85,7 @@ class InternshipQueryRestApi(
         return ResponseEntity.ok(internshipsPage)
     }
 
-    @Operation(
-        summary = "Fetch all status changes for an internship",
-        description = "Retrieves all status change records associated with the internship identified by the given ID."
-    )
-    @GetMapping("/{internshipId}/status-changes")
-    fun findStatusChangesByInternshipId(
-        @PathVariable internshipId: String
-    ): List<InternshipStatusChangeView> {
-        val id = InternshipId(internshipId)
-
-        return internshipStatusChangeViewReadService.getStatusChangesForInternship(id)
-    }
-
-    @GetMapping("/{internshipId}/view-cv")
+    @GetMapping("/{internshipId}/download-cv")
     fun downloadStudentCv(
         @PathVariable internshipId: String
     ): ResponseEntity<ByteArray> {
@@ -97,19 +97,5 @@ class InternshipQueryRestApi(
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"CV_${id.value}.pdf\"")
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .body(studentCV.content)
-    }
-
-    @GetMapping("/{internshipId}/download-cv")
-    fun viewStudentCv(
-        @PathVariable internshipId: String
-    ): ResponseEntity<Resource> {
-
-        val id = InternshipId(internshipId)
-        val studentCV = internshipDetailsViewReadService.getStudentCV(id)
-
-        return ResponseEntity.ok()
-            .contentType(MediaType.APPLICATION_PDF)
-            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=cv.pdf")
-            .body(ByteArrayResource(studentCV.content))
     }
 }

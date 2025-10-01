@@ -4,13 +4,10 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipCompositeView
 import mk.ukim.finki.soa.internshipmanagement.service.AuthService
-import mk.ukim.finki.soa.internshipmanagement.service.CompanySnapshotReadService
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipDetailsViewReadService
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipViewReadService
-import org.springframework.data.domain.Page
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -26,7 +23,6 @@ class StudentInternshipQueryRestApi(
     val internshipViewReadService: InternshipViewReadService,
     val internshipDetailsViewReadService: InternshipDetailsViewReadService,
     val authService: AuthService,
-    val companySnapshotReadService: CompanySnapshotReadService,
 ) {
 
     fun detectFileType(bytes: ByteArray): String {
@@ -43,24 +39,14 @@ class StudentInternshipQueryRestApi(
 
     @Operation(
         summary = "Fetches all internships for the currently logged student",
-        description = "Retrieves a paginated list of all internships."
+        description = "Retrieves a list of all internships."
     )
-    @GetMapping
-    fun findAll(
-        @RequestParam(defaultValue = "0") pageNum: Int,
-        @RequestParam(defaultValue = "5") pageSize: Int,
-        @RequestParam(required = false) coordinatorId: String?,
-        @RequestParam(required = false) internshipStatus: StatusType?,
-        @RequestParam(required = false) companyId: String?,
-    ): ResponseEntity<Page<InternshipCompositeView>> {
+    @GetMapping()
+    fun findAll(): ResponseEntity<List<InternshipCompositeView>> {
+        val student = authService.getAuthStudent()
+        val internships = internshipViewReadService.findAllByStudentId(student.id)
 
-        val (role, userId) = authService.getCurrentUser()
-        val studentId = StudentId(userId)
-
-        val internshipsPage = internshipViewReadService.findAll(
-            pageNum, pageSize, studentId.value, coordinatorId, internshipStatus, companyId)
-
-        return ResponseEntity.ok(internshipsPage)
+        return ResponseEntity.ok(internships)
     }
 
     @Operation(
@@ -92,27 +78,5 @@ class StudentInternshipQueryRestApi(
             .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"$fileName\"")
             .contentType(MediaType.parseMediaType(contentType))
             .body(cvBytes)
-    }
-
-    @Operation(
-        summary = "Fetches the StudentCV for the currently logged student",
-        description = "Retrieves the StudentCV by fetching the logged in student and after retrieving the student cv if there is an internship with the status searching"
-    )
-    @GetMapping("/myInternships")
-    fun findAllStudentInternships(
-        @RequestParam(defaultValue = "0") pageNum: Int,
-        @RequestParam(defaultValue = "5") pageSize: Int,
-        @RequestParam(required = false) companyName: String?,
-        @RequestParam(required = false) internshipStatus: StatusType?,
-    ) : ResponseEntity<Page<InternshipCompositeView>> {
-        val student = authService.getAuthStudent()
-        val coordinatorId = null
-        val companyId = if (companyName != null) companySnapshotReadService.findByName(companyName)?.id?.value else null
-        if (companyName != null && companyId == null)
-        {
-            val emptyPage: Page<InternshipCompositeView> = Page.empty()
-            return ResponseEntity.ok(emptyPage)
-        }
-        return ResponseEntity.ok(internshipViewReadService.findAll(pageNum, pageSize, student.id.value, coordinatorId, internshipStatus, companyId));
     }
 }

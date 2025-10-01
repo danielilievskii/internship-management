@@ -1,5 +1,7 @@
 package mk.ukim.finki.soa.internshipmanagement.repository
 
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CoordinatorId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId

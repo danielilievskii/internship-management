@@ -70,7 +70,7 @@ export interface CreateInternshipWeekPayload {
   fromDate: string;
   toDate: string;
   description: string;
-  workingWeeklyHours: number;
+  workingHours: number;
 }
 
 export interface EditInternshipWeekPayload {
@@ -79,7 +79,7 @@ export interface EditInternshipWeekPayload {
   fromDate: string;
   toDate: string;
   description: string;
-  workingWeeklyHours: number;
+  workingHours: number;
 }
 
 export interface AddWeekCommentPayload {

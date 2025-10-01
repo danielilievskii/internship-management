@@ -1,6 +1,8 @@
 package mk.ukim.finki.soa.internshipmanagement.service.impl.query
 
 import mk.ukim.finki.soa.internshipmanagement.application.assembler.InternshipAssembler
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CoordinatorId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
@@ -43,6 +45,24 @@ class InternshipViewReadServiceImpl(
             internshipAssembler.assembleList(internshipViewList)
 
         return internshipCompositeViewList
+    }
+
+    override fun findAllByStudentId(studentId: StudentId): List<InternshipCompositeView> {
+        val internshipViewList = internshipViewJpaRepository.findAllByStudentId(studentId)
+
+        return internshipAssembler.assembleList(internshipViewList);
+    }
+
+    override fun findAllByCoordinatorId(coordinatorId: CoordinatorId): List<InternshipCompositeView> {
+        val internshipViewList = internshipViewJpaRepository.findAllByCoordinatorId(coordinatorId)
+
+        return internshipAssembler.assembleList(internshipViewList);
+    }
+
+    override fun findAllByCompanyId(companyId: CompanyId): List<InternshipCompositeView> {
+        val internshipViewList = internshipViewJpaRepository.findAllByCompanyId(companyId)
+
+        return internshipAssembler.assembleList(internshipViewList);
     }
 
     // TODO: Change all arguments with value objects and do a check if the student/coordinator/company exist

@@ -1,6 +1,5 @@
 import {InternshipView, InternshipDetailsView, PaginatedResponse} from "@/types/internship.ts";
 
-
 // Normalize a single InternshipView
 export function mapApiInternship(apiObj: any): InternshipView {
     return {
