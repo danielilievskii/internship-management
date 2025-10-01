@@ -58,7 +58,8 @@ export const internshipApi = {
     if (filters?.companyFilter) params.append('companyFilter', filters.companyFilter);
     if (filters?.statusFilter) params.append('statusFilter', filters.statusFilter);
 
-    const response = await api.get(`/internships/paginated?${params}`);
+    // TODO: Check if its /internships/paginated or if its ok
+    const response = await api.get(`/internships?${params}`);
     return mapPaginatedResponse(response.data, mapApiInternship);
   },
 
@@ -96,9 +97,10 @@ export const internshipApi = {
     await api.delete(`/student/submitCommand/DeleteSearchingInternship`);
   },
 
-  //TODO: get all student internships which are accepted, proposed (maybe also archived?)
-  getStudentInternships() {
-    return undefined;
+  getStudentInternships: async (page = 0, size = 5): Promise<PaginatedResponse<InternshipDetailsView>> => {
+    const response = await api.get(`/student/internships/myInternships?page=${page}&size=${size}`);
+    console.log(response.data)
+    return response.data
   },
 
   getCV: async (): Promise<File> => {

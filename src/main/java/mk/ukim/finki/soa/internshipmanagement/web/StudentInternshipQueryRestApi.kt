@@ -7,6 +7,7 @@ import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipCompositeView
 import mk.ukim.finki.soa.internshipmanagement.service.AuthService
+import mk.ukim.finki.soa.internshipmanagement.service.CompanySnapshotReadService
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipDetailsViewReadService
 import mk.ukim.finki.soa.internshipmanagement.service.InternshipViewReadService
 import org.springframework.data.domain.Page
@@ -25,6 +26,7 @@ class StudentInternshipQueryRestApi(
     val internshipViewReadService: InternshipViewReadService,
     val internshipDetailsViewReadService: InternshipDetailsViewReadService,
     val authService: AuthService,
+    val companySnapshotReadService: CompanySnapshotReadService,
 ) {
 
     fun detectFileType(bytes: ByteArray): String {
@@ -90,5 +92,27 @@ class StudentInternshipQueryRestApi(
             .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"$fileName\"")
             .contentType(MediaType.parseMediaType(contentType))
             .body(cvBytes)
+    }
+
+    @Operation(
+        summary = "Fetches the StudentCV for the currently logged student",
+        description = "Retrieves the StudentCV by fetching the logged in student and after retrieving the student cv if there is an internship with the status searching"
+    )
+    @GetMapping("/myInternships")
+    fun findAllStudentInternships(
+        @RequestParam(defaultValue = "0") pageNum: Int,
+        @RequestParam(defaultValue = "5") pageSize: Int,
+        @RequestParam(required = false) companyName: String?,
+        @RequestParam(required = false) internshipStatus: StatusType?,
+    ) : ResponseEntity<Page<InternshipCompositeView>> {
+        val student = authService.getAuthStudent()
+        val coordinatorId = null
+        val companyId = if (companyName != null) companySnapshotReadService.findByName(companyName)?.id?.value else null
+        if (companyName != null && companyId == null)
+        {
+            val emptyPage: Page<InternshipCompositeView> = Page.empty()
+            return ResponseEntity.ok(emptyPage)
+        }
+        return ResponseEntity.ok(internshipViewReadService.findAll(pageNum, pageSize, student.id.value, coordinatorId, internshipStatus, companyId));
     }
 }
