@@ -49,6 +49,7 @@ class InternshipWeek : LabeledEntity {
     }
 
     fun applyEdit(event: InternshipWeekEditedEvent) {
+        this.period = event.period
         this.description = event.newDescription
         this.workingHours = event.newWorkingHours
     }

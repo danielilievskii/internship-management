@@ -27,13 +27,16 @@ export function mapApiInternship(apiObj: any): InternshipView {
 export function mapApiInternshipDetails(apiObj: any): InternshipDetailsView {
     return {
         ...mapApiInternship(apiObj),
-        description: apiObj.description ?? "",
-        companyContactEmail: apiObj.companyContactEmail ?? "",
-        weeklyHours: apiObj.weeklyHours ?? 0,
+        description: apiObj.description?.value,
+        companyContactEmail: apiObj.companyContactEmail?.value,
+        weeklyHours: apiObj.weeklyHours?.value,
         weeks: apiObj.weeks?.map((w: any) => ({
-            // id: w.id?.value,
-            // title: w.title ?? "",
-            // content: w.content ?? "",
+            id: w.id?.value,
+            description: w.description?.value,
+            coordinatorComment: w.coordinatorComment?.value,
+            companyComment: w.companyComment?.value,
+            period: w.period,
+            workingHours: w.workingHours?.value
         })) ?? [],
     };
 }

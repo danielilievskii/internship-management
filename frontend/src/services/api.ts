@@ -4,9 +4,9 @@ import {
   InternshipDetailsView,
   PaginatedResponse,
   CreateInternshipWeekPayload,
-  StudentSnapshot
+  StudentSnapshot, EditInternshipWeekPayload, AddWeekCommentPayload
 } from '@/types/internship.ts';
-import {mapApiInternship, mapPaginatedResponse} from "@/services/mappers/internshipMapper.ts";
+import {mapApiInternship, mapApiInternshipDetails, mapPaginatedResponse} from "@/services/mappers/internshipMapper.ts";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
@@ -72,12 +72,7 @@ export const internshipApi = {
   // Get internship details
   getInternshipDetails: async (internshipId: string): Promise<InternshipDetailsView> => {
     const response = await api.get(`/internships/${internshipId}`);
-    return response.data;
-  },
-
-  // Create new week entry
-  createWeekEntry: async (payload: CreateInternshipWeekPayload): Promise<void> => {
-    await api.post('/internships/weeks', payload);
+    return mapApiInternshipDetails(response.data);
   },
 
   // View CV
@@ -111,4 +106,25 @@ export const internshipApi = {
   }
 };
 
-export default api;
+export const studentCommandsApi = {
+
+  createInternshipWeek: async (payload: CreateInternshipWeekPayload): Promise<void> => {
+    await api.post('/student/submitCommand/CreateInternshipWeek', payload);
+  },
+
+  editInternshipWeek: async (payload: EditInternshipWeekPayload): Promise<void> => {
+    await api.post('/student/submitCommand/EditInternshipWeek', payload);
+  },
+}
+
+export const companyCommandsApi = {
+  addWeekComment: async (payload: AddWeekCommentPayload): Promise<void> => {
+    await api.post('/company/submitCommand/CompanyAddWeekComment', payload);
+  },
+}
+
+export const coordinatorCommandsApi = {
+  addWeekComment: async (payload: AddWeekCommentPayload): Promise<void> => {
+    await api.post('/internship/submitCommand/CoordinatorAddWeekComment', payload);
+  },
+}
