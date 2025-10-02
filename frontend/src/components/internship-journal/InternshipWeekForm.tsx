@@ -9,7 +9,7 @@ interface WeekFormProps {
   entry: {
     fromDate: string;
     toDate: string;
-    workingWeeklyHours: number;
+    workingHours: number | string;
     description: string;
   };
   onChange: (field: string, value: string) => void;

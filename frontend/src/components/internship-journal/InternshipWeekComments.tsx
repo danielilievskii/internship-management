@@ -8,10 +8,9 @@ interface CommentsProps {
   internshipDetails: any;
   canCoordinatorComment?: boolean;
   canCompanyComment?: boolean;
-  setIsAddingComment: (value: boolean) => void;
   newComment: string;
   setNewComment: (value: string) => void;
-  handleAddComment: (weekId: number) => void;
+  handleAddComment: (weekId: string) => void;
 }
 
 const InternshipWeekComments: React.FC<CommentsProps> = ({

@@ -1,24 +1,36 @@
 import {useEffect, useState} from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { FileText, Eye, CheckCircle, XCircle,} from 'lucide-react';
-import { useAuthStore } from '@/store/authStore';
-import { useToast } from '@/hooks/use-toast';
-import { InternshipStatus } from '@/types/internship';
+import {useNavigate} from 'react-router-dom';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import {Badge} from '@/components/ui/badge';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from '@/components/ui/alert-dialog';
+import {XCircle} from 'lucide-react';
+import {useAuthStore} from '@/store/authStore';
+import {useToast} from '@/hooks/use-toast';
+import {InternshipStatus} from '@/types/internship';
 import {studentCommandsApi, studentQueryApi} from "@/services/studentApi.ts";
 import {matchesFilter} from "@/util/dataUtils.ts";
 import CVUploadCard from "@/components/internships/CVUploadCard.tsx";
 import InternshipsFilter from "@/components/internships/InternshipFilters.tsx";
 import {mapApiInternship} from "@/services/mappers/internshipMapper.ts";
 import Loading from "@/pages/Loading.tsx";
+import {AcceptButton} from "@/components/styled/AcceptButton.tsx";
+import {RejectButton} from "@/components/styled/RejectButton.tsx";
+import {DetailsButton} from "@/components/styled/DetailsButton.tsx";
+import {ViewJournalButton} from "@/components/styled/ViewJournalButton.tsx";
 
 const StudentInternships = () => {
-  const { user } = useAuthStore();
+  const {user} = useAuthStore();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const {toast} = useToast();
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -106,8 +118,7 @@ const StudentInternships = () => {
         title: 'CV поднесен',
         description: `Вашето CV ${selectedCV.name} е успешно поднесен за пребарување пракса.`,
       });
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
       toast({
         title: 'Грешка при поднесување',
@@ -143,8 +154,7 @@ const StudentInternships = () => {
         title: 'Пребарувањето за пракса откажано',
         description: `Вашето CV ${displayedCV.name} е успешно избришано како и поднесувањето за пребарување пракса.`,
       });
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
       toast({
         title: 'Грешка при бришење',
@@ -161,19 +171,18 @@ const StudentInternships = () => {
       await studentCommandsApi.acceptInternship(internshipId)
 
       setInternships(prev =>
-          prev.map(intern =>
-              intern.id === internshipId
-                  ? { ...intern, status: 'ACCEPTED' as InternshipStatus }
-                  : intern
-          )
+        prev.map(intern =>
+          intern.id === internshipId
+            ? {...intern, status: 'ACCEPTED' as InternshipStatus}
+            : intern
+        )
       );
 
       toast({
         title: 'Пракса прифатена',
         description: 'Успешно ја прифативте праксата.',
       });
-    }
-    catch (error) {
+    } catch (error) {
       toast({
         title: 'Грешка при прифаќање на пракса!',
         description: 'Се појави проблем при прифаќање на праксата. Ве молам обидете се повторно.',
@@ -187,11 +196,11 @@ const StudentInternships = () => {
       await studentCommandsApi.rejectInternship(internshipId)
 
       setInternships(prev =>
-          prev.map(intern =>
-              intern.id === internshipId
-                  ? { ...intern, status: 'REJECTED' as InternshipStatus }
-                  : intern
-          )
+        prev.map(intern =>
+          intern.id === internshipId
+            ? {...intern, status: 'REJECTED' as InternshipStatus}
+            : intern
+        )
       );
 
       toast({
@@ -200,8 +209,7 @@ const StudentInternships = () => {
         variant: 'destructive',
       });
 
-    }
-    catch (error) {
+    } catch (error) {
       toast({
         title: 'Грешка при одбивање на пракса!',
         description: 'Се појави проблем при одбивање на праксата. Ве молам обидете се повторно.',
@@ -221,7 +229,7 @@ const StudentInternships = () => {
   if (!user || user.role !== 'Student') {
     return (
       <div className="text-center py-12">
-        <h1 className="text-2xl font-bold mb-4">Неавторизован пристап</h1>
+        <h1 className="text-2xl font-bold mb-4">Неавторизиран пристап</h1>
         <p className="text-muted-foreground">Немате дозвола за пристап до оваа страница.</p>
       </div>
     );
@@ -236,7 +244,7 @@ const StudentInternships = () => {
       <Card className="border-red-500 bg-red-50 p-6">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-red-700">
-            <XCircle className="h-5 w-5" />
+            <XCircle className="h-5 w-5"/>
             Грешка при вчитување
           </CardTitle>
         </CardHeader>
@@ -285,7 +293,8 @@ const StudentInternships = () => {
                   <div>
                     <CardTitle className="text-lg">{internship.companyView.name}</CardTitle>
                     <CardDescription>{internship.position}</CardDescription>
-                    { internship.coordinatorView && <CardDescription>Coordinator: {internship.coordinatorView.name}</CardDescription>}
+                    {internship.coordinatorView &&
+                        <CardDescription>Coordinator: {internship.coordinatorView.name}</CardDescription>}
                   </div>
                   <Badge
                     className={
@@ -306,47 +315,19 @@ const StudentInternships = () => {
                 </p>
 
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleViewDetails(internship.id)}
-                    className="bg-action-view text-action-view-foreground hover:bg-action-view/90"
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    Детали
-                  </Button>
+                  <DetailsButton size="sm" onClick={() => handleViewDetails(internship.id)}
+                  />
 
                   {internship.status === 'SUBMITTED' && (
                     <>
-                      <Button
-                        size="sm"
-                        onClick={() => handleAcceptInternship(internship.id)}
-                        className="bg-status-accepted text-status-accepted-foreground hover:bg-status-accepted/90"
-                      >
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Прифати
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleRejectInternship(internship.id)}
-                        className="bg-status-rejected text-status-rejected-foreground hover:bg-status-rejected/90"
-                      >
-                        <XCircle className="h-4 w-4 mr-2" />
-                        Одбиј
-                      </Button>
+                      <AcceptButton size="sm" onClick={() => handleAcceptInternship(internship.id)}/>
+                      <RejectButton size="sm" onClick={() => handleRejectInternship(internship.id)}/>
                     </>
                   )}
 
                   {internship.status === 'ACCEPTED' && (
-                    <Button
-                      size="sm"
-                      onClick={() => handleViewJournal(internship.id)}
-                      className="bg-action-view text-action-view-foreground hover:bg-action-view/90"
-                    >
-                      <FileText className="h-4 w-4 mr-2" />
-                      Дневник
-                    </Button>
+                    <ViewJournalButton size="sm" onClick={() => handleViewJournal(internship.id)}
+                    />
                   )}
                 </div>
               </CardContent>
@@ -373,7 +354,8 @@ const StudentInternships = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Поднесување на CV</AlertDialogTitle>
             <AlertDialogDescription>
-              Дали сакате да го поднесете вашето CV "{selectedCV?.name}" за пребарување пракса? Со притискање на копчето „Поднеси“ ќе креирате барање за пракса.
+              Дали сакате да го поднесете вашето CV "{selectedCV?.name}" за пребарување пракса? Со притискање на копчето
+              „Поднеси“ ќе креирате барање за пракса.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
