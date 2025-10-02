@@ -1,17 +1,18 @@
 package mk.ukim.finki.soa.internshipmanagement.model.valueobject
 
+import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
-import jakarta.persistence.Lob
 import java.io.Serializable
 
 @Embeddable
 data class StudentCV(
-    @Lob val content: ByteArray
+    @Column(name = "student_cv", columnDefinition = "bytea", nullable = false)
+    val content: ByteArray
 ) : Serializable {
 
     init {
         require(content.isNotEmpty()) { "CV cannot be empty." }
-        require(content.size <= 1_048_576) { "CV must not exceed 1 MB." }
+        require(content.size <= 4 * 1_048_576) { "CV must not exceed 4 MB." }
     }
 
     override fun toString(): String = "[CV content: ${content.size} bytes]"
