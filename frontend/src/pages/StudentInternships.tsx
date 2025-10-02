@@ -156,33 +156,58 @@ const StudentInternships = () => {
     }
   };
 
-  const handleAcceptInternship = (internshipId: string) => {
-    setInternships(prev =>
-      prev.map(intern =>
-        intern.id === internshipId
-          ? { ...intern, status: 'ACCEPTED' as InternshipStatus }
-          : intern
-      )
-    );
-    toast({
-      title: 'Пракса прифатена',
-      description: 'Успешно ја прифативте праксата.',
-    });
+  const handleAcceptInternship = async (internshipId: string) => {
+    try {
+      await studentCommandsApi.acceptInternship(internshipId)
+
+      setInternships(prev =>
+          prev.map(intern =>
+              intern.id === internshipId
+                  ? { ...intern, status: 'ACCEPTED' as InternshipStatus }
+                  : intern
+          )
+      );
+
+      toast({
+        title: 'Пракса прифатена',
+        description: 'Успешно ја прифативте праксата.',
+      });
+    }
+    catch (error) {
+      toast({
+        title: 'Грешка при прифаќање на пракса!',
+        description: 'Се појави проблем при прифаќање на праксата. Ве молам обидете се повторно.',
+        variant: 'destructive'
+      });
+    }
   };
 
-  const handleRejectInternship = (internshipId: string) => {
-    setInternships(prev =>
-      prev.map(intern =>
-        intern.id === internshipId
-          ? { ...intern, status: 'REJECTED' as InternshipStatus }
-          : intern
-      )
-    );
-    toast({
-      title: 'Пракса одбиена',
-      description: 'Ја одбивте праксата.',
-      variant: 'destructive',
-    });
+  const handleRejectInternship = async (internshipId: string) => {
+    try {
+      await studentCommandsApi.rejectInternship(internshipId)
+
+      setInternships(prev =>
+          prev.map(intern =>
+              intern.id === internshipId
+                  ? { ...intern, status: 'REJECTED' as InternshipStatus }
+                  : intern
+          )
+      );
+
+      toast({
+        title: 'Пракса одбиена',
+        description: 'Ја одбивте праксата.',
+        variant: 'destructive',
+      });
+
+    }
+    catch (error) {
+      toast({
+        title: 'Грешка при одбивање на пракса!',
+        description: 'Се појави проблем при одбивање на праксата. Ве молам обидете се повторно.',
+        variant: 'destructive'
+      });
+    }
   };
 
   const handleViewDetails = (internshipId: string) => {
@@ -260,6 +285,7 @@ const StudentInternships = () => {
                   <div>
                     <CardTitle className="text-lg">{internship.companyView.name}</CardTitle>
                     <CardDescription>{internship.position}</CardDescription>
+                    { internship.coordinatorView && <CardDescription>Coordinator: {internship.coordinatorView.name}</CardDescription>}
                   </div>
                   <Badge
                     className={

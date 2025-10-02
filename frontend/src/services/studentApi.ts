@@ -1,5 +1,6 @@
 import {api} from "@/services/api.ts";
 import {CreateInternshipWeekPayload, EditInternshipWeekPayload, InternshipView} from "@/types/internship.ts";
+import {AcceptInternshipCommandDto, RejectInternshipCommandDto} from "@/types/InternshipCommands.ts";
 
 export const studentQueryApi = {
 
@@ -8,7 +9,7 @@ export const studentQueryApi = {
       .then((response) => response.data);
   },
 
-  getCV: async (): Promise<Blob> => {
+  getCV: async (): Promise<File> => {
     return await api.get(`/student/internships/cv`, {
       responseType: 'blob',
     }).then((response) => response.data);
@@ -25,6 +26,16 @@ export const studentCommandsApi = {
 
   deleteSearchingInternship: async (): Promise<void> => {
     await api.delete(`/student/submitCommand/DeleteSearchingInternship`);
+  },
+
+  acceptInternship: async(internshipId: string): Promise<void> => {
+    let acceptInternshipCommandDto : AcceptInternshipCommandDto = { internshipId }
+    await api.post(`/student/submitCommand/AcceptInternship`, acceptInternshipCommandDto)
+  },
+
+  rejectInternship: async(internshipId: string): Promise<void> => {
+    let rejectInternshipCommandDto : RejectInternshipCommandDto = { internshipId }
+    await api.post(`/student/submitCommand/RejectInternship`, rejectInternshipCommandDto)
   },
 
   createInternshipWeek: async (payload: CreateInternshipWeekPayload): Promise<void> => {
