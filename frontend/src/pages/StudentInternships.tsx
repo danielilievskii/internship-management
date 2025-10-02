@@ -24,8 +24,9 @@ const StudentInternships = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [internships, setInternships] = useState([]);
+
+  const [displayedCV, setDisplayedCV] = useState<File | null>(null);
   const [selectedCV, setSelectedCV] = useState<File | null>(null);
-  const [cvSubmitted, setCvSubmitted] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const [filterCompany, setFilterCompany] = useState('all');
@@ -58,8 +59,7 @@ const StudentInternships = () => {
           const file = new File([cvBlob], `${user.name}.pdf`, {
             type: cvBlob.type || 'application/octet-stream',
           });
-          setSelectedCV(file);
-          setCvSubmitted(true);
+          setDisplayedCV(file);
         }
       })
       .catch((error) => {
@@ -80,7 +80,7 @@ const StudentInternships = () => {
     fetchStudentData();
   }, []);
 
-  const handleCVUpload = () => {
+  const handleUploadCV = () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.pdf,.doc,.docx';
@@ -99,7 +99,8 @@ const StudentInternships = () => {
 
     try {
       await studentCommandsApi.createSearchingInternship(selectedCV)
-      setCvSubmitted(true)
+      setDisplayedCV(selectedCV)
+      setSelectedCV(null)
 
       toast({
         title: 'CV поднесен',
@@ -110,7 +111,7 @@ const StudentInternships = () => {
       console.error(error);
       toast({
         title: 'Грешка при поднесување',
-        description: 'Не успеавме да го поднесеме вашиот CV. Обидете се повторно.',
+        description: 'Не успеавме да го поднесеме вашето CV. Обидете се повторно.',
         variant: 'destructive',
       });
     } finally {
@@ -119,11 +120,11 @@ const StudentInternships = () => {
   };
 
   const handleDownloadCV = () => {
-    if (selectedCV) {
-      const url = URL.createObjectURL(selectedCV);
+    if (displayedCV) {
+      const url = URL.createObjectURL(displayedCV);
       const a = document.createElement('a');
       a.href = url;
-      a.download = selectedCV.name;
+      a.download = displayedCV.name;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -132,16 +133,15 @@ const StudentInternships = () => {
   };
 
   const handleCancelSubmit = async () => {
-    if (!selectedCV) return;
+    if (!displayedCV) return;
 
     try {
       await studentCommandsApi.deleteSearchingInternship()
+      setDisplayedCV(null);
 
-      setSelectedCV(null);
-      setCvSubmitted(false)
       toast({
-        title: 'CV успешно пребришано',
-        description: `Вашието CV ${selectedCV.name} е успешно пребришано како и поднесувањето за пребарување пракса.`,
+        title: 'Пребарувањето за пракса откажано',
+        description: `Вашето CV ${displayedCV.name} е успешно избришано како и поднесувањето за пребарување пракса.`,
       });
     }
     catch (error) {
@@ -229,9 +229,8 @@ const StudentInternships = () => {
     <div className="space-y-6">
       {/* CV Upload Section */}
       <CVUploadCard
-        selectedCV={selectedCV}
-        cvSubmitted={cvSubmitted}
-        handleCVUpload={handleCVUpload}
+        displayedCV={displayedCV}
+        handleCVUpload={handleUploadCV}
         handleCancelSubmit={handleCancelSubmit}
         handleDownloadCV={handleDownloadCV}
       />

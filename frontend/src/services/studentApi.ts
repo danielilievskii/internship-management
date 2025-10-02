@@ -1,14 +1,14 @@
 import {api} from "@/services/api.ts";
-import {CreateInternshipWeekPayload, EditInternshipWeekPayload} from "@/types/internship.ts";
+import {CreateInternshipWeekPayload, EditInternshipWeekPayload, InternshipView} from "@/types/internship.ts";
 
 export const studentQueryApi = {
 
-  getInternships: async (): Promise<void> => {
+  getInternships: async (): Promise<InternshipView[]> => {
     return await api.get(`/student/internships`)
       .then((response) => response.data);
   },
 
-  getCV: async (): Promise<void> => {
+  getCV: async (): Promise<Blob> => {
     return await api.get(`/student/internships/cv`, {
       responseType: 'blob',
     }).then((response) => response.data);

@@ -4,16 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface CVUploadCardProps {
-  selectedCV: File | null;
-  cvSubmitted: boolean;
+  displayedCV: File | null;
   handleCVUpload: () => void;
   handleCancelSubmit: () => void;
   handleDownloadCV: () => void;
 }
 
 const CVUploadCard: React.FC<CVUploadCardProps> = ({
-                                                     selectedCV,
-                                                     cvSubmitted,
+                                                     displayedCV,
                                                      handleCVUpload,
                                                      handleCancelSubmit,
                                                      handleDownloadCV
@@ -31,7 +29,7 @@ const CVUploadCard: React.FC<CVUploadCardProps> = ({
               Прикачете го вашето CV за да можете да аплицирате за пракси
             </CardDescription>
           </div>
-          {cvSubmitted && selectedCV && (
+          {displayedCV && (
             <Button
               variant="outline"
               size="sm"
@@ -47,30 +45,30 @@ const CVUploadCard: React.FC<CVUploadCardProps> = ({
       <CardContent>
         <div
           className={`border-2 border-dashed rounded-lg p-6 text-center ${
-            selectedCV
+            displayedCV
               ? 'border-primary bg-primary/5 border-solid'
               : 'border-muted-foreground/25'
           }`}
         >
-          {selectedCV ? (
+          {displayedCV ? (
             <Check className="h-12 w-12 mx-auto mb-4 text-primary" />
           ) : (
             <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
           )}
           <p className="mb-4">
-            {selectedCV
-              ? `Избрана датотека: ${selectedCV.name}`
+            {displayedCV
+              ? `Избрана датотека: ${displayedCV.name}`
               : 'Повлечете го вашето CV овде или кликнете за да изберете'
             }
           </p>
           <div className="flex gap-2 justify-center">
             <Button
               onClick={handleCVUpload}
-              variant={selectedCV ? "outline" : "default"}
+              variant={displayedCV ? "outline" : "default"}
             >
-              {selectedCV ? 'Променете датотека' : 'Изберете датотека'}
+              {displayedCV ? 'Променете датотека' : 'Изберете датотека'}
             </Button>
-            {selectedCV && (
+            {displayedCV && (
               <Button
                 onClick={handleCancelSubmit}
                 variant="destructive"
