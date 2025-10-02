@@ -98,7 +98,6 @@ class Internship : LabeledEntity {
     fun generateInternshipWeeks(
         fromDate: LocalDate,
         toDate: LocalDate,
-        workingHours: WeeklyHours
     ): MutableList<InternshipWeek> {
         val weeks = mutableListOf<InternshipWeek>()
 
@@ -106,8 +105,8 @@ class Internship : LabeledEntity {
             InternshipWeekId(),
             InternshipWeekDateRange(start, end),
             Description(""),
-            workingHours
-        )
+            WeeklyHours(0)
+        );
 
         // First week: fromDate -> Sunday
         val weekEnd = fromDate.with(DayOfWeek.SUNDAY)
@@ -271,7 +270,7 @@ class Internship : LabeledEntity {
     fun handle(command: SubmitInternshipCommand) {
         val newStatus = status.transitionTo(StatusType.SUBMITTED)
         val internshipWeeks =
-            generateInternshipWeeks(command.period.fromDate, command.period.toDate, command.weeklyHours)
+            generateInternshipWeeks(command.period.fromDate, command.period.toDate)
 
         val event = InternshipSubmittedEvent(
             internshipId = command.internshipId,
@@ -294,7 +293,7 @@ class Internship : LabeledEntity {
 
     fun handle(command: SubmitAgreedInternshipCommand) {
         val internshipWeeks =
-            generateInternshipWeeks(command.period.fromDate, command.period.toDate, command.weeklyHours)
+            generateInternshipWeeks(command.period.fromDate, command.period.toDate)
 
         val event = AgreedInternshipSubmittedEvent(
             internshipId = InternshipId(),
