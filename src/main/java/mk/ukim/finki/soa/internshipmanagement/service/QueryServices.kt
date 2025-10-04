@@ -9,13 +9,21 @@ import org.springframework.data.domain.Page
 
 interface InternshipViewReadService {
     fun existsById(id: InternshipId): Boolean
+    fun findById(id: InternshipId): InternshipView?
     fun existsByStatusAndStudentId(status: InternshipStatus, studentId: StudentId): Boolean
     fun findByStatusAndStudentId(status: InternshipStatus, id: StudentId): InternshipView?
     fun findAll(): List<InternshipCompositeView>
     fun findAllByStudentId(studentId: StudentId): List<InternshipCompositeView>
     fun findAllByCoordinatorId(coordinatorId: CoordinatorId): List<InternshipCompositeView>
     fun findAllByCompanyId(companyId: CompanyId): List<InternshipCompositeView>
-    fun findAll(pageNum: Int, pageSize: Int, studentId: String?, coordinatorId: String?, internshipStatus: StatusType?, companyId: String?): Page<InternshipCompositeView>
+    fun findAll(
+        pageNum: Int,
+        pageSize: Int,
+        studentId: String?,
+        coordinatorId: String?,
+        internshipStatus: StatusType?,
+        companyId: String?
+    ): Page<InternshipCompositeView>
 }
 
 interface InternshipDetailsViewReadService {

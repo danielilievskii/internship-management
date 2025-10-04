@@ -1,12 +1,7 @@
 package mk.ukim.finki.soa.internshipmanagement.service.impl.query
 
 import mk.ukim.finki.soa.internshipmanagement.application.assembler.InternshipAssembler
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CompanyId
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.CoordinatorId
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
-import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipCompositeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipView
 import mk.ukim.finki.soa.internshipmanagement.repository.InternshipViewJpaRepository
@@ -25,6 +20,10 @@ class InternshipViewReadServiceImpl(
 
     override fun existsById(id: InternshipId): Boolean {
         return internshipViewJpaRepository.existsById(id)
+    }
+
+    override fun findById(id: InternshipId): InternshipView? {
+        return internshipViewJpaRepository.findById(id).orElse(null)
     }
 
     override fun existsByStatusAndStudentId(status: InternshipStatus, studentId: StudentId): Boolean {
@@ -50,19 +49,19 @@ class InternshipViewReadServiceImpl(
     override fun findAllByStudentId(studentId: StudentId): List<InternshipCompositeView> {
         val internshipViewList = internshipViewJpaRepository.findAllByStudentId(studentId)
 
-        return internshipAssembler.assembleList(internshipViewList);
+        return internshipAssembler.assembleList(internshipViewList)
     }
 
     override fun findAllByCoordinatorId(coordinatorId: CoordinatorId): List<InternshipCompositeView> {
         val internshipViewList = internshipViewJpaRepository.findAllByCoordinatorId(coordinatorId)
 
-        return internshipAssembler.assembleList(internshipViewList);
+        return internshipAssembler.assembleList(internshipViewList)
     }
 
     override fun findAllByCompanyId(companyId: CompanyId): List<InternshipCompositeView> {
         val internshipViewList = internshipViewJpaRepository.findAllByCompanyId(companyId)
 
-        return internshipAssembler.assembleList(internshipViewList);
+        return internshipAssembler.assembleList(internshipViewList)
     }
 
     // TODO: Change all arguments with value objects and do a check if the student/coordinator/company exist

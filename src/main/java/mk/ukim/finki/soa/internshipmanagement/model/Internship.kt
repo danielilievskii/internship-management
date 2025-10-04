@@ -22,6 +22,7 @@ import mk.ukim.finki.soa.internshipmanagement.model.event.coordinator.Internship
 import mk.ukim.finki.soa.internshipmanagement.model.event.coordinator.JournalInvalidatedByCoordinatorEvent
 import mk.ukim.finki.soa.internshipmanagement.model.event.coordinator.JournalValidatedByCoordinatorEvent
 import mk.ukim.finki.soa.internshipmanagement.model.event.student.*
+import mk.ukim.finki.soa.internshipmanagement.model.event.student.notifications.*
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.*
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
@@ -570,6 +571,7 @@ class Internship : LabeledEntity {
             contactEmail = event.contactEmail,
             newStatus = event.newStatus
         )
+
     }
 
 
