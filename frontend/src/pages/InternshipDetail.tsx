@@ -3,9 +3,7 @@ import {useEffect, useState} from "react";
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card.tsx';
 import {Button} from '@/components/ui/button.tsx';
 import {
-  ArrowLeft,
   FileText,
-  Download,
   Calendar,
   MapPin,
   CheckCircle,
@@ -17,11 +15,11 @@ import {
 import StatusBadge from '@/components/internships/StatusBadge.tsx';
 import {useToast} from '@/hooks/use-toast.ts';
 import {internshipApi} from "@/services/api.ts";
-import {InternshipDetailsView, InternshipStatus, InternshipStatusChangeView} from "@/types/internship.ts";
+import {InternshipDetailsView, InternshipStatusChangeView} from "@/types/internship.ts";
 import {texts} from "@/constants/texts.ts";
 import Loading from "@/pages/Loading.tsx";
 import {UserRole} from "@/types/internship.ts";
-import {studentCommandsApi, studentQueryApi} from "@/services/studentApi.ts";
+import {studentCommandsApi} from "@/services/studentApi.ts";
 import {useAuthStore} from "@/store/authStore.ts";
 import {AcceptButton} from "@/components/styled/AcceptButton.tsx";
 import {RejectButton} from "@/components/styled/RejectButton.tsx";

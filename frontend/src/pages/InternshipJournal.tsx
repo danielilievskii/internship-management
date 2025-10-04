@@ -7,7 +7,7 @@ import {Badge} from '@/components/ui/badge.tsx';
 import {Textarea} from '@/components/ui/textarea.tsx';
 import {Input} from '@/components/ui/input.tsx';
 import {Label} from '@/components/ui/label.tsx';
-import {ArrowLeft, Plus, Calendar, Clock} from 'lucide-react';
+import { Plus, Calendar, Clock} from 'lucide-react';
 import {useToast} from '@/hooks/use-toast.ts';
 import {useAuthStore} from '@/store/authStore.ts';
 import {
@@ -25,13 +25,13 @@ import Loading from "@/pages/Loading.tsx";
 import InternshipWeekForm from "@/components/internship-journal/InternshipWeekForm.tsx";
 import InternshipWeekComments from "@/components/internship-journal/InternshipWeekComments.tsx";
 import InternshipWeekDescription from "@/components/internship-journal/InternshipWeekDescription.tsx";
-
+import {BackButton} from "@/components/styled/BackButton.tsx";
 
 interface WeekEntryData {
   fromDate: string;
   toDate: string;
   description: string;
-  workingHours: number;
+  workingHours: string | number;
 }
 
 interface EditWeekFormData {
@@ -245,14 +245,7 @@ const InternshipJournal = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button
-          variant="outline"
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4"/>
-          Назад
-        </Button>
+        <BackButton onClick={() => navigate(-1)} />
         <h1 className="text-3xl font-bold">Дневник на пракса</h1>
       </div>
 
