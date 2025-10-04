@@ -1,36 +1,76 @@
 import { Button } from '@/components/ui/button.tsx';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx';
-import { Badge } from '@/components/ui/badge.tsx';
-import { Eye, Edit, Trash2, CheckCircle, FileText } from 'lucide-react';
+import {FileText, Archive} from 'lucide-react';
 import { InternshipView } from '@/types/internship.ts';
 import StatusBadge from './StatusBadge.tsx';
 import { useAuthStore } from '@/store/authStore.ts';
 import { useToast } from '@/hooks/use-toast.ts';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
+import {formatMacedonianDateTime} from "@/util/dateUtils.ts";
+import {studentCommandsApi} from "@/services/studentApi.ts";
+import {DetailsButton} from "@/components/styled/DetailsButton.tsx";
+import {AcceptButton} from "@/components/styled/AcceptButton.tsx";
+import {RejectButton} from "@/components/styled/RejectButton.tsx";
 
 interface InternshipTableProps {
   internships: InternshipView[];
+  fetchInternships: () => void
 }
 
-const InternshipTable = ({ internships }: InternshipTableProps) => {
+const InternshipTable = ({ internships, fetchInternships }: InternshipTableProps) => {
   const { user } = useAuthStore();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const canDelete = (internship: InternshipView) => {
-    if (!user) return false;
-    return user.role === 'Coordinator';
+  let tableHeading = user.role === 'Student' ? "Листа на мои пракси" : "Листа на сите пракси"
+
+  const handleViewDetails = (internshipId: string) => {
+    navigate(`/internship/${internshipId}`);
   };
 
-  const handleViewJournal = (internshipId: string) => {
-    navigate(`/internship/${internshipId}/journal`);
-  };
+  const handleAcceptInternship = async (internshipId: string) => {
+    try {
+      await studentCommandsApi.acceptInternship(internshipId)
+      fetchInternships()
 
-  const handleDelete = (internshipId: string) => {
-    if (confirm('Дали сте сигурни дека сакате да ја избришете оваа пракса?')) {
       toast({
-        title: 'Пракса избришана',
-        description: 'Праксата е успешно избришана.',
+        title: 'Пракса прифатена',
+        description: 'Успешно ја прифативте праксата.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Грешка при прифаќање на пракса!',
+        description: 'Се појави проблем при прифаќање на праксата. Ве молам обидете се повторно.',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const handleRejectInternship = async (internshipId: string) => {
+    try {
+      await studentCommandsApi.rejectInternship(internshipId)
+      fetchInternships()
+
+      toast({
+        title: 'Пракса одбиена',
+        description: 'Ја одбивте праксата.',
+        variant: 'destructive',
+      });
+
+    } catch (error) {
+      toast({
+        title: 'Грешка при одбивање на пракса!',
+        description: 'Се појави проблем при одбивање на праксата. Ве молам обидете се повторно.',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const handleArchive = (internshipId: string) => {
+    if (confirm('Дали сте сигурни дека сакате да ја архицирате оваа пракса?')) {
+      toast({
+        title: 'Пракса архивирана',
+        description: 'Праксата е успешно архивирана.',
         variant: 'destructive',
       });
     }
@@ -41,73 +81,76 @@ const InternshipTable = ({ internships }: InternshipTableProps) => {
       <div className="p-6">
         <div className="flex items-center gap-2 mb-6">
           <FileText className="h-5 w-5 text-muted-foreground" />
-          <h2 className="text-xl font-semibold">Листа на сите пракси</h2>
+          <h2 className="text-xl font-semibold">{tableHeading}</h2>
         </div>
 
         <div className="overflow-x-auto">
-          <Table>
+          <Table className="text-lg">
             <TableHeader>
               <TableRow className="border-b">
-                <TableHead className="text-left font-medium">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="bg-primary text-primary-foreground">
-                      index
-                    </Badge>
-                    Студент
-                  </div>
-                </TableHead>
-                <TableHead className="text-left font-medium">Координатор</TableHead>
-                <TableHead className="text-left font-medium">Компанија</TableHead>
-                <TableHead className="text-left font-medium">Статус</TableHead>
-                <TableHead className="text-left font-medium">Дневник</TableHead>
-                <TableHead className="text-left font-medium">Акции</TableHead>
+                {user.role === 'Admin' && (
+                    <TableHead className="text-left font-medium w-[20%]">Студент</TableHead>
+                )}
+                <TableHead className="text-left font-medium w-[20%]">Координатор</TableHead>
+                <TableHead className="text-left font-medium w-[15%]">Компанија</TableHead>
+                <TableHead className="text-left font-medium w-[20%]">Период</TableHead>
+                <TableHead className="text-left font-medium w-[20%]">Статус</TableHead>
+                <TableHead className="text-left font-medium w-[10%]">Aкции</TableHead>
               </TableRow>
             </TableHeader>
+
             <TableBody>
               {internships.map((internship, index) => (
                 <TableRow key={internship.id || index} className="hover:bg-muted/50">
+                  {user.role === 'Admin' && (
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <span>{internship.studentView.index} {internship.studentView.name}</span>
+                      </div>
+                    </TableCell>
+                  )}
+
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                      <span>{internship.studentView.index} {internship.studentView.name}</span>
+                      <span className="text-muted-foreground">
+                        {internship.coordinatorView?.name || "Нема определен координатор"}
+                      </span>
                     </div>
                   </TableCell>
+
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                      <span className="text-muted-foreground">{internship.coordinatorView?.name ? internship.coordinatorView.name : "Нема определен координатор"}</span>
+                      <span className="italic">{internship.companyView?.name || "Нема компанија"}</span>
                     </div>
                   </TableCell>
+
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                      <span className="italic">{internship.companyView?.name ? internship.companyView.name : "Нема компанија"}</span>
-                    </div>
+                    <span>
+                      {formatMacedonianDateTime(internship.period.fromDate, false)} - {formatMacedonianDateTime(internship.period.toDate, false)}
+                     </span>
                   </TableCell>
+
                   <TableCell>
                     <StatusBadge status={internship.status} />
                   </TableCell>
+
                   <TableCell>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => handleViewJournal(internship.id)}
-                      className="bg-action-view text-action-view-foreground hover:bg-action-view/90"
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      Дневник
-                    </Button>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {canDelete(internship) && (
+                    <div className="flex flex-col justify-center gap-1 h-full">
+                      <DetailsButton size="sm" onClick={() => handleViewDetails(internship.id)}/>
+                      {(user.role === 'Student' && internship.status === 'SUBMITTED') && (
+                        <>
+                          <AcceptButton size="sm" onClick={() => handleAcceptInternship(internship.id)}/>
+                          <RejectButton size="sm" onClick={() => handleRejectInternship(internship.id)}/>
+                        </>
+                      )}
+                      {user.role === 'Admin' && (
                         <Button
                           variant="default"
                           size="sm"
-                          onClick={() => handleDelete(internship.id)}
+                          onClick={() => handleArchive(internship.id)}
                           className="bg-action-delete text-action-delete-foreground hover:bg-action-delete/90"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Archive className="h-4 w-4" />
                         </Button>
                       )}
                     </div>

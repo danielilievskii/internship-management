@@ -1,7 +1,5 @@
 import {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
-import {Badge} from '@/components/ui/badge';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,21 +13,16 @@ import {
 import {XCircle} from 'lucide-react';
 import {useAuthStore} from '@/store/authStore';
 import {useToast} from '@/hooks/use-toast';
-import {InternshipStatus} from '@/types/internship';
 import {studentCommandsApi, studentQueryApi} from "@/services/studentApi.ts";
-import {matchesFilter} from "@/util/dataUtils.ts";
+import {matchesTextInput, matchesSelectOption} from "@/util/dataUtils.ts";
 import CVUploadCard from "@/components/internships/CVUploadCard.tsx";
 import InternshipsFilter from "@/components/internships/InternshipFilters.tsx";
 import {mapApiInternship} from "@/services/mappers/internshipMapper.ts";
 import Loading from "@/pages/Loading.tsx";
-import {AcceptButton} from "@/components/styled/AcceptButton.tsx";
-import {RejectButton} from "@/components/styled/RejectButton.tsx";
-import {DetailsButton} from "@/components/styled/DetailsButton.tsx";
-import {ViewJournalButton} from "@/components/styled/ViewJournalButton.tsx";
+import InternshipTable from "@/components/internships/InternshipTable.tsx";
 
 const StudentInternships = () => {
   const {user} = useAuthStore();
-  const navigate = useNavigate();
   const {toast} = useToast();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -45,11 +38,16 @@ const StudentInternships = () => {
   const [filterCoordinator, setFilterCoordinator] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
 
-  const filteredInternships = internships.filter(internship =>
-    matchesFilter(internship.companyView.name, filterCompany) &&
-    matchesFilter(internship.coordinatorView.name, filterCoordinator) &&
-    matchesFilter(internship.status, filterStatus)
-  );
+  const filteredInternships = internships
+    .filter(internship =>
+      matchesSelectOption(internship.companyView.name, filterCompany) &&
+      matchesTextInput(internship.coordinatorView.name, filterCoordinator) &&
+      matchesSelectOption(internship.status, filterStatus))
+    .sort((a, b) => {
+      const dateA = new Date(a.period.fromDate).getTime();
+      const dateB = new Date(b.period.fromDate).getTime();
+      return dateB - dateA;
+    });
 
   const fetchStudentData = () => {
     setIsLoading(true);
@@ -166,66 +164,6 @@ const StudentInternships = () => {
     }
   };
 
-  const handleAcceptInternship = async (internshipId: string) => {
-    try {
-      await studentCommandsApi.acceptInternship(internshipId)
-
-      setInternships(prev =>
-        prev.map(intern =>
-          intern.id === internshipId
-            ? {...intern, status: 'ACCEPTED' as InternshipStatus}
-            : intern
-        )
-      );
-
-      toast({
-        title: 'Пракса прифатена',
-        description: 'Успешно ја прифативте праксата.',
-      });
-    } catch (error) {
-      toast({
-        title: 'Грешка при прифаќање на пракса!',
-        description: 'Се појави проблем при прифаќање на праксата. Ве молам обидете се повторно.',
-        variant: 'destructive'
-      });
-    }
-  };
-
-  const handleRejectInternship = async (internshipId: string) => {
-    try {
-      await studentCommandsApi.rejectInternship(internshipId)
-
-      setInternships(prev =>
-        prev.map(intern =>
-          intern.id === internshipId
-            ? {...intern, status: 'REJECTED' as InternshipStatus}
-            : intern
-        )
-      );
-
-      toast({
-        title: 'Пракса одбиена',
-        description: 'Ја одбивте праксата.',
-        variant: 'destructive',
-      });
-
-    } catch (error) {
-      toast({
-        title: 'Грешка при одбивање на пракса!',
-        description: 'Се појави проблем при одбивање на праксата. Ве молам обидете се повторно.',
-        variant: 'destructive'
-      });
-    }
-  };
-
-  const handleViewDetails = (internshipId: string) => {
-    navigate(`/internship/${internshipId}`);
-  };
-
-  const handleViewJournal = (internshipId: string) => {
-    navigate(`/internship/${internshipId}/journal`);
-  };
-
   if (!user || user.role !== 'Student') {
     return (
       <div className="text-center py-12">
@@ -248,11 +186,8 @@ const StudentInternships = () => {
             Грешка при вчитување
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <CardDescription className="text-red-600">
-            {error}
-            <p className="mt-2">Проверете ја вашата интернет конекција или обидете се повторно подоцна.</p>
-          </CardDescription>
+        <CardContent className="text-red-600">
+          <p className="mt-2">Проверете ја вашата интернет конекција или обидете се повторно подоцна.</p>
         </CardContent>
       </Card>
     );
@@ -260,14 +195,14 @@ const StudentInternships = () => {
 
   return (
     <div className="space-y-6">
-      {/* CV Upload Section */}
+      <h1 className="text-3xl font-bold">Мои пракси</h1>
+
       <CVUploadCard
         displayedCV={displayedCV}
         handleCVUpload={handleUploadCV}
         handleCancelSubmit={handleCancelSubmit}
         handleDownloadCV={handleDownloadCV}
       />
-
       <InternshipsFilter
         filterCompany={filterCompany}
         setFilterCompany={setFilterCompany}
@@ -281,72 +216,18 @@ const StudentInternships = () => {
           setFilterStatus('all');
         }}
       />
+      <InternshipTable internships={filteredInternships} fetchInternships={fetchStudentData}/>
 
-      {/* My Applications */}
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Мои пракси</h2>
-        <div className="grid gap-4">
-          {filteredInternships.map((internship) => (
-            <Card key={internship.id}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-lg">{internship.companyView.name}</CardTitle>
-                    <CardDescription>{internship.position}</CardDescription>
-                    {internship.coordinatorView &&
-                        <CardDescription>Coordinator: {internship.coordinatorView.name}</CardDescription>}
-                  </div>
-                  <Badge
-                    className={
-                      internship.status === 'ACCEPTED'
-                        ? 'bg-status-accepted text-status-accepted-foreground'
-                        : internship.status === 'REJECTED'
-                          ? 'bg-status-rejected text-status-rejected-foreground'
-                          : 'bg-status-submitted text-status-submitted-foreground'
-                    }
-                  >
-                    {internship.status}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  {internship.period.fromDate} - {internship.period.toDate}
-                </p>
-
-                <div className="flex gap-2">
-                  <DetailsButton size="sm" onClick={() => handleViewDetails(internship.id)}
-                  />
-
-                  {internship.status === 'SUBMITTED' && (
-                    <>
-                      <AcceptButton size="sm" onClick={() => handleAcceptInternship(internship.id)}/>
-                      <RejectButton size="sm" onClick={() => handleRejectInternship(internship.id)}/>
-                    </>
-                  )}
-
-                  {internship.status === 'ACCEPTED' && (
-                    <ViewJournalButton size="sm" onClick={() => handleViewJournal(internship.id)}
-                    />
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/*/!* Pagination *!/*/}
-        {/*  <div className="flex justify-between items-center mt-4">*/}
-        {/*    <Button variant="outline" disabled={pagination.page === 0} onClick={() => fetchStudentInternships(pagination.page - 1)}>*/}
-        {/*      Претходна*/}
-        {/*    </Button>*/}
-        {/*    <span>Страница {pagination.page + 1} од {pagination.totalPages}</span>*/}
-        {/*    <Button variant="outline" disabled={pagination.page + 1 >= pagination.totalPages} onClick={() => fetchStudentInternships(pagination.page + 1)}>*/}
-        {/*      Следна*/}
-        {/*    </Button>*/}
-        {/*  </div>*/}
-
-      </div>
+      {/*/!* Pagination *!/*/}
+      {/*  <div className="flex justify-between items-center mt-4">*/}
+      {/*    <Button variant="outline" disabled={pagination.page === 0} onClick={() => fetchStudentInternships(pagination.page - 1)}>*/}
+      {/*      Претходна*/}
+      {/*    </Button>*/}
+      {/*    <span>Страница {pagination.page + 1} од {pagination.totalPages}</span>*/}
+      {/*    <Button variant="outline" disabled={pagination.page + 1 >= pagination.totalPages} onClick={() => fetchStudentInternships(pagination.page + 1)}>*/}
+      {/*      Следна*/}
+      {/*    </Button>*/}
+      {/*  </div>*/}
 
       {/* Confirmation Dialog */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
