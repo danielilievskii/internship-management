@@ -1,4 +1,9 @@
-import {InternshipView, InternshipDetailsView, PaginatedResponse} from "@/types/internship.ts";
+import {
+    InternshipView,
+    InternshipDetailsView,
+    PaginatedResponse,
+    InternshipStatusChangeView
+} from "@/types/internship.ts";
 
 // Normalize a single InternshipView
 export function mapApiInternship(apiObj: any): InternshipView {
@@ -37,6 +42,17 @@ export function mapApiInternshipDetails(apiObj: any): InternshipDetailsView {
             period: w.period,
             workingHours: w.workingHours?.value
         })) ?? [],
+    };
+}
+
+export function mapApiInternshipStatusChange(apiObj: any): InternshipStatusChangeView {
+
+    return {
+        id: apiObj.id?.value,
+        internshipId: apiObj.internshipId?.value,
+        previousStatus: apiObj.previousStatus?.value ?? null,
+        newStatus: apiObj.newStatus?.value,
+        changedAt: apiObj.changedAt ,
     };
 }
 

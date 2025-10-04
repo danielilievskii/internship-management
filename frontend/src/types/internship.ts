@@ -65,6 +65,14 @@ export interface InternshipDetailsView extends InternshipView {
   weeks: InternshipWeekView[];
 }
 
+export interface InternshipStatusChangeView {
+  id: string;
+  internshipId: string;
+  previousStatus: string
+  newStatus: string;
+  changedAt: string;
+}
+
 export interface CreateInternshipWeekPayload {
   internshipId: string;
   fromDate: string;

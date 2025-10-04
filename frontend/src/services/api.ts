@@ -2,10 +2,15 @@ import axios from 'axios';
 import {
   InternshipView,
   InternshipDetailsView,
-  PaginatedResponse,
+  PaginatedResponse, InternshipStatusChangeView,
 
 } from '@/types/internship.ts';
-import {mapApiInternship, mapApiInternshipDetails, mapPaginatedResponse} from "@/services/mappers/internshipMapper.ts";
+import {
+  mapApiInternship,
+  mapApiInternshipDetails,
+  mapApiInternshipStatusChange,
+  mapPaginatedResponse
+} from "@/services/mappers/internshipMapper.ts";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
@@ -62,10 +67,14 @@ export const internshipApi = {
     return mapPaginatedResponse(response.data, mapApiInternship);
   },
 
-  // Get internship details
   getInternshipDetails: async (internshipId: string): Promise<InternshipDetailsView> => {
     const response = await api.get(`/internships/${internshipId}`);
     return mapApiInternshipDetails(response.data);
+  },
+
+  getInternshipStatusChanges: async (internshipId: string): Promise<InternshipStatusChangeView[]> => {
+    return await api.get(`/internships/${internshipId}/status-changes`)
+      .then(response => response.data.map(item => mapApiInternshipStatusChange(item)));
   },
 
   // View CV

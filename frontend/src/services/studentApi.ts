@@ -1,6 +1,10 @@
 import {api} from "@/services/api.ts";
 import {CreateInternshipWeekPayload, EditInternshipWeekPayload, InternshipView} from "@/types/internship.ts";
-import {AcceptInternshipCommandDto, RejectInternshipCommandDto} from "@/types/InternshipCommands.ts";
+import {
+  AcceptInternshipCommandDto,
+  RejectInternshipCommandDto,
+  SubmitJournalCommandDto
+} from "@/types/InternshipCommands.ts";
 
 export const studentQueryApi = {
 
@@ -36,6 +40,11 @@ export const studentCommandsApi = {
   rejectInternship: async(internshipId: string): Promise<void> => {
     let rejectInternshipCommandDto : RejectInternshipCommandDto = { internshipId }
     await api.post(`/student/submitCommand/RejectInternship`, rejectInternshipCommandDto)
+  },
+
+  submitJournal: async(internshipId: string): Promise<void> => {
+    let submitJournalCommandDto : SubmitJournalCommandDto = { internshipId }
+    await api.post(`/student/submitCommand/submitJournal`, submitJournalCommandDto)
   },
 
   createInternshipWeek: async (payload: CreateInternshipWeekPayload): Promise<void> => {
