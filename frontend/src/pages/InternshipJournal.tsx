@@ -59,6 +59,7 @@ const InternshipJournal = () => {
   const [editWeekFormData, setEditWeekFormData] = useState<EditWeekFormData>({});
 
   const [newComment, setNewComment] = useState('');
+  const [commentWeekId, setCommentWeekId] = useState<string | null>(null);
 
   useEffect(() => {
     internshipApi.getInternshipDetails(id)
@@ -207,6 +208,7 @@ const InternshipJournal = () => {
       });
 
       setNewComment("");
+      setCommentWeekId(null)
 
       const data = await internshipApi.getInternshipDetails(payload.internshipId);
       setInternshipDetails(data);
@@ -237,8 +239,6 @@ const InternshipJournal = () => {
   };
 
   const canModifyWeekData = user?.role === 'Student' && internshipDetails?.status == 'ACCEPTED';
-  const canCompanyComment = user?.role === 'Company' && internshipDetails?.status == 'JOURNAL_SUBMITTED'
-  const canCoordinatorComment = user?.role === 'Coordinator' && internshipDetails?.status == 'VALIDATED_BY_COMPANY'
 
   if (loading) return <Loading/>;
 
@@ -362,12 +362,13 @@ const InternshipJournal = () => {
                   <InternshipWeekDescription week={week}/>
                 )}
                 <InternshipWeekComments
+                  user={user}
                   week={week}
                   internshipDetails={internshipDetails}
-                  canCoordinatorComment={canCoordinatorComment}
-                  canCompanyComment={canCompanyComment}
                   newComment={newComment}
                   setNewComment={setNewComment}
+                  commentWeekId={commentWeekId}
+                  setCommentWeekId={setCommentWeekId}
                   handleAddComment={handleAddComment}
                 />
               </CardContent>

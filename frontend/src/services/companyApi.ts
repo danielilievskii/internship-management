@@ -3,6 +3,6 @@ import {api} from "@/services/api.ts";
 
 export const companyCommandsApi = {
   addWeekComment: async (payload: AddWeekCommentPayload): Promise<void> => {
-    await api.post('/company/submitCommand/CompanyAddWeekComment', payload);
+    await api.post('/company/submitCommand/AddWeekComment', payload);
   },
 }

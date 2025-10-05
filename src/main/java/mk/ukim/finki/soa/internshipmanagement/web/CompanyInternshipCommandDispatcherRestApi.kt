@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/company/submitCommand")
+@RequestMapping("/api/company/submitCommand")
 @Tag(
     name = "Company Internship Command API",
     description = "Handles company commands related to internship and journal management."
@@ -85,7 +85,7 @@ class CompanyInternshipCommandDispatcherRestApi(
         summary = "As a Company allows sends a submit command to add a week comment",
         description = "Allows a company to add a comment for a specific week in the internship journal."
     )
-    @PostMapping("/CompanyAddWeekComment")
+    @PostMapping("/AddWeekComment")
     fun companyAddWeekComment(
         @RequestBody commandDto: CompanyAddWeekCommentCommandDto
     ): ResponseEntity<Any> {

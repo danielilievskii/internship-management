@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/internship/submitCommand")
+@RequestMapping("/api/coordinator/submitCommand")
 @Tag(
     name = "Coordinator Internship Command API",
     description = "Handles coordinator commands related to internship journal management."
@@ -29,21 +29,6 @@ import org.springframework.web.bind.annotation.RestController
 class CoordinatorInternshipCommandDispatcherRestApi(
     val coordinatorInternshipService : CoordinatorInternshipService
 ) {
-
-    @Operation(
-        summary = "Submit a command to submit internship",
-        description = "Populates the specified internship by processing the provided details and sets its status to SUBMITTED."
-    )
-    @PostMapping("/SubmitInternship")
-    fun archiveInternship(
-        @RequestBody commandDto: ArchiveInternshipCommandDto
-    ): ResponseEntity<Any> {
-        val command = ArchiveInternshipCommand(
-            internshipId = InternshipId(commandDto.internshipId)
-        )
-
-        return ResponseEntity.ok(coordinatorInternshipService.archiveInternship(command))
-    }
 
     @Operation(
         summary = "Submit a command to add a week comment",

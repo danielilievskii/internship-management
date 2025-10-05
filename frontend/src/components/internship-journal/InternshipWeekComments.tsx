@@ -2,32 +2,53 @@ import React, {useState} from "react";
 import {MessageSquare} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
 import {Textarea} from "@/components/ui/textarea.tsx";
+import {User} from "@/types/internship.ts";
 
 interface CommentsProps {
+  user: User
   week: any;
   internshipDetails: any;
   canCoordinatorComment?: boolean;
   canCompanyComment?: boolean;
   newComment: string;
   setNewComment: (value: string) => void;
+  commentWeekId: string;
+  setCommentWeekId: (value: string) => void;
   handleAddComment: (weekId: string) => void;
 }
 
 const InternshipWeekComments: React.FC<CommentsProps> = ({
+                                                           user,
                                                            week,
                                                            internshipDetails,
-                                                           canCoordinatorComment,
-                                                           canCompanyComment,
                                                            newComment,
                                                            setNewComment,
+                                                           commentWeekId,
+                                                           setCommentWeekId,
                                                            handleAddComment,
                                                          }) => {
 
-  const [addCommentWeekId, setAddCommentWeekId] = useState<string | null>(null);
-  const isAddingComment = addCommentWeekId == week.id
+  const isEditMode = commentWeekId == week.id
 
-  const hasComments = week.companyComment || week.coordinatorComment;
+  const hasCompanyComment = Boolean(week.companyComment);
+  const hasCoordinatorComment = Boolean(week.coordinatorComment);
+  const hasComments = hasCompanyComment || hasCoordinatorComment;
+
+  // TODO: Add validations by user.id
+  const canCompanyComment = user?.role === 'Company'
+    && internshipDetails?.status == 'JOURNAL_SUBMITTED'
+
+  // TODO: Add validations by user.id
+  const canCoordinatorComment = user?.role === 'Coordinator'
+    && internshipDetails?.status == 'VALIDATED_BY_COMPANY'
+
   const canComment = canCoordinatorComment || canCompanyComment;
+
+  const buttonText = (user?.role === 'Company' && hasCompanyComment)
+    ? 'Ажурирај коментар'
+    : (user?.role === 'Coordinator' && hasCoordinatorComment)
+      ? 'Ажурирај коментар'
+      : 'Додај коментар'
 
   return (
     <div className="pt-2">
@@ -62,15 +83,15 @@ const InternshipWeekComments: React.FC<CommentsProps> = ({
         </div>
       )}
 
-      {(canComment) && (
+      {canComment && (
         <div className="pt-2 border-t">
-          {!isAddingComment ? (
+          {!isEditMode ? (
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setAddCommentWeekId(week.id)}
+              onClick={() => setCommentWeekId(week.id)}
             >
-              Додај коментар
+              {buttonText}
             </Button>
           ) : (
             <div className="space-y-2">
@@ -82,14 +103,14 @@ const InternshipWeekComments: React.FC<CommentsProps> = ({
               />
               <div className="flex gap-2">
                 <Button size="sm" onClick={() => handleAddComment(week.id)}>
-                  Додај коментар
+                  Зачувај
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => {
                     setNewComment("")
-                    setAddCommentWeekId(null)
+                    setCommentWeekId(null)
                   }}
                 >
                   Откажи
