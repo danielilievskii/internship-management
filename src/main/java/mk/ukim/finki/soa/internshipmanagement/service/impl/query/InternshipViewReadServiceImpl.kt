@@ -36,7 +36,6 @@ class InternshipViewReadServiceImpl(
         return internships.firstOrNull()
     }
 
-    // TODO: This method is used for testing purposes and should be removed
     override fun findAll(): List<InternshipCompositeView> {
         val internshipViewList = internshipViewJpaRepository.findAll()
 
