@@ -7,9 +7,10 @@ import { internshipApi } from '@/services/api.ts';
 import InternshipFilters from '@/components/internships/InternshipFilters.tsx';
 import InternshipTable from '@/components/internships/InternshipTable.tsx';
 import { useToast } from '@/hooks/use-toast.ts';
+import {matchesSelectOption, matchesTextInput} from "@/util/dataUtils.ts";
+import {Pagination} from "@/components/Pagination.tsx";
 
 const AllInternships = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuthStore();
   const {
@@ -20,15 +21,22 @@ const AllInternships = () => {
     loading,
     filters,
     setInternships,
+    setFilters,
+    resetFilters,
     setCurrentPage,
+    setPageSize,
+    setTotalPages,
     setLoading
   } = useInternshipStore();
 
   const fetchInternships = async () => {
     setLoading(true);
     try {
-      const data = await internshipApi.getInternships(currentPage, pageSize, filters);
-      setInternships(data);
+      const internshipsResponse = await internshipApi.getInternships();
+      const internships = internshipsResponse
+        .filter((item: any) => item.status?.value !== 'SEARCHING')
+
+      setInternships(internships);
     } catch (error) {
       toast({
         title: 'Грешка',
@@ -42,13 +50,28 @@ const AllInternships = () => {
 
   useEffect(() => {
     fetchInternships();
-  }, [currentPage, filters]);
+  }, []);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+  const filteredInternships = internships
+    .filter(internship =>
+      matchesTextInput(internship.studentView.index, filters.studentSearch) &&
+      matchesSelectOption(internship.companyView.name, filters.companyFilter) &&
+      matchesTextInput(internship.coordinatorView.name, filters.coordinatorSearch) &&
+      matchesSelectOption(internship.status, filters.statusFilter))
+    .sort((a, b) => {
+      const dateA = new Date(a.period.fromDate).getTime();
+      const dateB = new Date(b.period.fromDate).getTime();
+      return dateB - dateA;
+    });
 
-  if (!user || user.role !== 'Coordinator') {
+  useEffect(() => {
+    setTotalPages(Math.ceil(filteredInternships.length / pageSize));
+  }, [filteredInternships.length, pageSize]);
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedInternships = filteredInternships.slice(startIndex, startIndex + pageSize);
+
+  if (!user || user.role !== 'Admin') {
     return (
       <div className="text-center py-12">
         <h1 className="text-2xl font-bold mb-4">Неавторизован пристап</h1>
@@ -59,7 +82,7 @@ const AllInternships = () => {
 
   return (
     <div className="space-y-6">
-      <InternshipFilters />
+      <InternshipFilters filters={filters} setFilters={setFilters} setCurrentPage={setCurrentPage} onReset={resetFilters} />
       
       {loading ? (
         <div className="text-center py-12">
@@ -67,67 +90,14 @@ const AllInternships = () => {
         </div>
       ) : (
         <>
-          <InternshipTable internships={internships} />
-
-          {/* Pagination */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handlePageChange(Math.max(0, currentPage - 1))}
-                disabled={currentPage === 0}
-              >
-                Прва
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handlePageChange(Math.max(0, currentPage - 1))}
-                disabled={currentPage === 0}
-              >
-                Претходна
-              </Button>
-              
-              <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const page = i;
-                  return (
-                    <Button
-                      key={page}
-                      variant={page === currentPage ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handlePageChange(page)}
-                      className={page === currentPage ? "bg-primary text-primary-foreground" : ""}
-                    >
-                      {page + 1}
-                    </Button>
-                  );
-                })}
-              </div>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handlePageChange(Math.min(totalPages - 1, currentPage + 1))}
-                disabled={currentPage >= totalPages - 1}
-              >
-                Следна
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handlePageChange(totalPages - 1)}
-                disabled={currentPage >= totalPages - 1}
-              >
-                Последна
-              </Button>
-            </div>
-
-            <div className="text-sm text-muted-foreground">
-              Резултати на страна: {internships.length} / Вкупно: {totalPages * pageSize}
-            </div>
-          </div>
+          <InternshipTable internships={paginatedInternships} fetchInternships={fetchInternships} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            totalItems={filteredInternships.length}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
         </>
       )}
     </div>

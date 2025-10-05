@@ -42,29 +42,11 @@ api.interceptors.request.use((config) => {
 
 export const internshipApi = {
 
-  getInternships: async (
-    page: number = 0,
-    size: number = 5,
-    filters?: {
-      studentSearch?: string;
-      coordinatorSearch?: string;
-      companyFilter?: string;
-      statusFilter?: string;
-    }
-  ): Promise<PaginatedResponse<InternshipView>> => {
-    const params = new URLSearchParams({
-      page: page.toString(),
-      size: size.toString(),
-    });
-
-    if (filters?.studentSearch) params.append('studentSearch', filters.studentSearch);
-    if (filters?.coordinatorSearch) params.append('coordinatorSearch', filters.coordinatorSearch);
-    if (filters?.companyFilter) params.append('companyFilter', filters.companyFilter);
-    if (filters?.statusFilter) params.append('statusFilter', filters.statusFilter);
-
-    // TODO: Check if its /internships/paginated or if its ok
-    const response = await api.get(`/internships?${params}`);
-    return mapPaginatedResponse(response.data, mapApiInternship);
+  getInternships: async (): Promise<InternshipView[]> => {
+    return await api.get(`/internships`)
+      .then(response =>
+        response.data.map(item => mapApiInternship(item))
+      );
   },
 
   getInternshipDetails: async (internshipId: string): Promise<InternshipDetailsView> => {
@@ -74,7 +56,9 @@ export const internshipApi = {
 
   getInternshipStatusChanges: async (internshipId: string): Promise<InternshipStatusChangeView[]> => {
     return await api.get(`/internships/${internshipId}/status-changes`)
-      .then(response => response.data.map(item => mapApiInternshipStatusChange(item)));
+      .then(response =>
+        response.data.map(item => mapApiInternshipStatusChange(item))
+      );
   },
 
   // View CV
