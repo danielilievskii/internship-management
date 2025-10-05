@@ -223,7 +223,6 @@ const StudentInternships = () => {
       <InternshipsFilter
         filters={filters}
         setFilters={setFilters}
-        setCurrentPage={setCurrentPage}
         onReset={resetFilters}
       />
       <InternshipTable internships={paginatedInternships} fetchInternships={fetchStudentData}/>

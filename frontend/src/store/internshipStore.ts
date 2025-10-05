@@ -38,7 +38,8 @@ export const useInternshipStore = create<InternshipState>((set) => ({
     internships: internships,
   }),
   setFilters: (newFilters) => set((state) => ({
-    filters: { ...state.filters, ...newFilters }
+    filters: { ...state.filters, ...newFilters },
+    currentPage: 1
   })),
   resetFilters: () => set({
     filters: {
@@ -47,6 +48,7 @@ export const useInternshipStore = create<InternshipState>((set) => ({
       companyFilter: '',
       statusFilter: '',
     },
+    currentPage: 1
   }),
   setCurrentPage: (page) => set({ currentPage: page }),
   setTotalPages: (page) => set({ totalPages: page }),

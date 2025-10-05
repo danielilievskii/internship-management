@@ -82,7 +82,7 @@ const AllInternships = () => {
 
   return (
     <div className="space-y-6">
-      <InternshipFilters filters={filters} setFilters={setFilters} setCurrentPage={setCurrentPage} onReset={resetFilters} />
+      <InternshipFilters filters={filters} setFilters={setFilters} onReset={resetFilters} />
       
       {loading ? (
         <div className="text-center py-12">

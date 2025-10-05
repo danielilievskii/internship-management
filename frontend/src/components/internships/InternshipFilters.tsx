@@ -15,7 +15,6 @@ import {InternshipState} from "@/store/internshipStore.ts";
 interface InternshipFiltersProps {
   filters: InternshipState['filters'];
   setFilters: (filters: Partial<InternshipState['filters']>) => void;
-  setCurrentPage: (page: number) => void;
   onReset: () => void;
 }
 
@@ -24,7 +23,6 @@ type FilterKey = "studentSearch" | "coordinatorSearch" | "companyFilter" | "stat
 const InternshipFilters: React.FC<InternshipFiltersProps> = ({
                                                                filters,
                                                                setFilters,
-                                                               setCurrentPage,
                                                                onReset
                                                              }) => {
   const {user} = useAuthStore();
@@ -32,7 +30,6 @@ const InternshipFilters: React.FC<InternshipFiltersProps> = ({
 
   const handleFilterChange = (filter: FilterKey, value: string) => {
     setFilters({ [filter]: value });
-    setCurrentPage(1)
   }
 
   return (
