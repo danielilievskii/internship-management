@@ -20,37 +20,36 @@ import InternshipsFilter from "@/components/internships/InternshipFilters.tsx";
 import {mapApiInternship} from "@/services/mappers/internshipMapper.ts";
 import Loading from "@/pages/Loading.tsx";
 import InternshipTable from "@/components/internships/InternshipTable.tsx";
+import {useInternshipStore} from "@/store/internshipStore.ts";
+import {Pagination} from "@/components/Pagination.tsx";
 
 const StudentInternships = () => {
   const {user} = useAuthStore();
   const {toast} = useToast();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    internships,
+    totalPages,
+    currentPage,
+    pageSize,
+    loading,
+    filters,
+    setInternships,
+    setFilters,
+    resetFilters,
+    setCurrentPage,
+    setTotalPages,
+    setLoading
+  } = useInternshipStore();
 
-  const [internships, setInternships] = useState([]);
+  const [error, setError] = useState<string | null>(null);
 
   const [displayedCV, setDisplayedCV] = useState<File | null>(null);
   const [selectedCV, setSelectedCV] = useState<File | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-  const [filterCompany, setFilterCompany] = useState('all');
-  const [filterCoordinator, setFilterCoordinator] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-
-  const filteredInternships = internships
-    .filter(internship =>
-      matchesSelectOption(internship.companyView.name, filterCompany) &&
-      matchesTextInput(internship.coordinatorView.name, filterCoordinator) &&
-      matchesSelectOption(internship.status, filterStatus))
-    .sort((a, b) => {
-      const dateA = new Date(a.period.fromDate).getTime();
-      const dateB = new Date(b.period.fromDate).getTime();
-      return dateB - dateA;
-    });
-
   const fetchStudentData = () => {
-    setIsLoading(true);
+    setLoading(true);
 
     Promise.all([
       studentQueryApi.getInternships(),
@@ -82,13 +81,31 @@ const StudentInternships = () => {
         });
       })
       .finally(() => {
-        setIsLoading(false);
+        setLoading(false);
       });
   };
 
   useEffect(() => {
     fetchStudentData();
   }, []);
+
+  const filteredInternships = internships
+    .filter(internship =>
+      matchesSelectOption(internship.companyView.name, filters.companyFilter) &&
+      matchesTextInput(internship.coordinatorView.name, filters.coordinatorSearch) &&
+      matchesSelectOption(internship.status, filters.statusFilter))
+    .sort((a, b) => {
+      const dateA = new Date(a.period.fromDate).getTime();
+      const dateB = new Date(b.period.fromDate).getTime();
+      return dateB - dateA;
+    });
+
+  useEffect(() => {
+    setTotalPages(Math.ceil(filteredInternships.length / pageSize));
+  }, [filteredInternships.length, pageSize]);
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedInternships = filteredInternships.slice(startIndex, startIndex + pageSize);
 
   const handleUploadCV = () => {
     const input = document.createElement('input');
@@ -173,7 +190,7 @@ const StudentInternships = () => {
     );
   }
 
-  if (isLoading) {
+  if (loading) {
     return <Loading/>
   }
 
@@ -204,30 +221,19 @@ const StudentInternships = () => {
         handleDownloadCV={handleDownloadCV}
       />
       <InternshipsFilter
-        filterCompany={filterCompany}
-        setFilterCompany={setFilterCompany}
-        filterCoordinator={filterCoordinator}
-        setFilterCoordinator={setFilterCoordinator}
-        filterStatus={filterStatus}
-        setFilterStatus={setFilterStatus}
-        onReset={() => {
-          setFilterCompany('all');
-          setFilterCoordinator('');
-          setFilterStatus('all');
-        }}
+        filters={filters}
+        setFilters={setFilters}
+        setCurrentPage={setCurrentPage}
+        onReset={resetFilters}
       />
-      <InternshipTable internships={filteredInternships} fetchInternships={fetchStudentData}/>
-
-      {/*/!* Pagination *!/*/}
-      {/*  <div className="flex justify-between items-center mt-4">*/}
-      {/*    <Button variant="outline" disabled={pagination.page === 0} onClick={() => fetchStudentInternships(pagination.page - 1)}>*/}
-      {/*      Претходна*/}
-      {/*    </Button>*/}
-      {/*    <span>Страница {pagination.page + 1} од {pagination.totalPages}</span>*/}
-      {/*    <Button variant="outline" disabled={pagination.page + 1 >= pagination.totalPages} onClick={() => fetchStudentInternships(pagination.page + 1)}>*/}
-      {/*      Следна*/}
-      {/*    </Button>*/}
-      {/*  </div>*/}
+      <InternshipTable internships={paginatedInternships} fetchInternships={fetchStudentData}/>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        totalItems={filteredInternships.length}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
 
       {/* Confirmation Dialog */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
