@@ -34,13 +34,15 @@ const InternshipWeekComments: React.FC<CommentsProps> = ({
   const hasCoordinatorComment = Boolean(week.coordinatorComment);
   const hasComments = hasCompanyComment || hasCoordinatorComment;
 
-  // TODO: Add validations by user.id
+  // TODO: Add validations by user.id instead of name
   const canCompanyComment = user?.role === 'Company'
     && internshipDetails?.status == 'JOURNAL_SUBMITTED'
+    && user.name.includes(internshipDetails?.companyView?.name)
 
-  // TODO: Add validations by user.id
+  // TODO: Add validations by user.id instead of name
   const canCoordinatorComment = user?.role === 'Coordinator'
     && internshipDetails?.status == 'VALIDATED_BY_COMPANY'
+    && user.name.includes(internshipDetails?.coordinatorView?.name)
 
   const canComment = canCoordinatorComment || canCompanyComment;
 

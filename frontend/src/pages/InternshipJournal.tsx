@@ -26,6 +26,7 @@ import InternshipWeekForm from "@/components/internship-journal/InternshipWeekFo
 import InternshipWeekComments from "@/components/internship-journal/InternshipWeekComments.tsx";
 import InternshipWeekDescription from "@/components/internship-journal/InternshipWeekDescription.tsx";
 import {BackButton} from "@/components/styled/BackButton.tsx";
+import {formatMacedonianDateTime} from "@/util/dateUtils.ts";
 
 interface WeekEntryData {
   fromDate: string;
@@ -326,7 +327,7 @@ const InternshipJournal = () => {
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-5 w-5"/>
-                    Недела {index + 1}: {week.period.fromDate} - {week.period.toDate}
+                    Недела {index + 1}: {formatMacedonianDateTime(week.period.fromDate, false)} - {formatMacedonianDateTime(week.period.toDate, false)}
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary" className="flex items-center gap-1">
