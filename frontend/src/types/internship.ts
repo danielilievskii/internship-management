@@ -45,6 +45,7 @@ export interface InternshipView {
 export interface StudentView {
   id: string;
   index: string;
+  email: string;
   name: string
 }
 

@@ -3,6 +3,8 @@ package mk.ukim.finki.soa.internshipmanagement.web
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipStatus
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StatusType
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipCompositeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipDetailsCompositeView
 import mk.ukim.finki.soa.internshipmanagement.model.view.InternshipStatusChangeView
@@ -55,8 +57,14 @@ class InternshipQueryRestApi(
         description = "Retrieves a list of all internships."
     )
     @GetMapping
-    fun findAll(): List<InternshipCompositeView> {
-        return internshipViewReadService.findAll()
+    fun findAll(@RequestParam("status", required = false) status: String?): List<InternshipCompositeView> {
+
+        if(status != null) {
+            val statusType = StatusType.valueOf(status)
+            return internshipViewReadService.findAll(InternshipStatus(statusType))
+        } else {
+            return internshipViewReadService.findAll(null)
+        }
     }
 
     @GetMapping("/{internshipId}/download-cv")

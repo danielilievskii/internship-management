@@ -36,13 +36,16 @@ class InternshipViewReadServiceImpl(
         return internships.firstOrNull()
     }
 
-    override fun findAll(): List<InternshipCompositeView> {
-        val internshipViewList = internshipViewJpaRepository.findAll()
+    override fun findAll(status: InternshipStatus?): List<InternshipCompositeView> {
+        val internshipViewList =
+            if (status == null) {
+                internshipViewJpaRepository.findAll()
+            }
+            else {
+                internshipViewJpaRepository.findAllByStatus(status)
+            }
 
-        val internshipCompositeViewList: List<InternshipCompositeView> =
-            internshipAssembler.assembleList(internshipViewList)
-
-        return internshipCompositeViewList
+        return internshipAssembler.assembleList(internshipViewList)
     }
 
     override fun findAllByStudentId(studentId: StudentId): List<InternshipCompositeView> {

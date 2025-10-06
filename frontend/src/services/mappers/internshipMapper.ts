@@ -14,6 +14,7 @@ export function mapApiInternship(apiObj: any): InternshipView {
             id: apiObj.studentView?.id.value,
             index: apiObj.studentView?.index.value,
             name: apiObj.studentView?.name.value,
+            email: apiObj.studentView?.email.value,
         },
         coordinatorView: {
             id: apiObj.coordinatorView?.id.value,

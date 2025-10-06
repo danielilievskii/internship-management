@@ -12,7 +12,7 @@ interface InternshipViewReadService {
     fun findById(id: InternshipId): InternshipView?
     fun existsByStatusAndStudentId(status: InternshipStatus, studentId: StudentId): Boolean
     fun findByStatusAndStudentId(status: InternshipStatus, id: StudentId): InternshipView?
-    fun findAll(): List<InternshipCompositeView>
+    fun findAll(status: InternshipStatus?): List<InternshipCompositeView>
     fun findAllByStudentId(studentId: StudentId): List<InternshipCompositeView>
     fun findAllByCoordinatorId(coordinatorId: CoordinatorId): List<InternshipCompositeView>
     fun findAllByCompanyId(companyId: CompanyId): List<InternshipCompositeView>

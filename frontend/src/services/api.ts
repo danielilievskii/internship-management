@@ -42,8 +42,8 @@ api.interceptors.request.use((config) => {
 
 export const internshipApi = {
 
-  getInternships: async (): Promise<InternshipView[]> => {
-    return await api.get(`/internships`)
+  getInternships: async (status: string): Promise<InternshipView[]> => {
+    return await api.get(`/internships${status ? `?status=${status}` : ''}`)
       .then(response =>
         response.data.map(item => mapApiInternship(item))
       );
@@ -61,9 +61,9 @@ export const internshipApi = {
       );
   },
 
-  // View CV
-  viewCV: async (internshipId: string): Promise<Blob> => {
-    const response = await api.get(`/internships/${internshipId}/view-cv`, {
+  // Download CV
+  downloadCv: async (internshipId: string): Promise<Blob> => {
+    const response = await api.get(`/internships/${internshipId}/download-cv`, {
       responseType: 'blob',
     });
     return response.data;

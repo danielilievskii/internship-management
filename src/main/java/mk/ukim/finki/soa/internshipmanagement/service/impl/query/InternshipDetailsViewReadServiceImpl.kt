@@ -43,7 +43,8 @@ class InternshipDetailsViewReadServiceImpl(
     }
 
     override fun getStudentCV(id: InternshipId): StudentCV {
-        val internship: InternshipDetailsView = findById(id)
+        val internship: InternshipDetailsView = internshipDetailsViewJpaRepository.findByIdWithDetails(id)
+            ?: throw InternshipNotFoundException(id)
 
         return internship.studentCV
             ?: throw InternshipStudentCVNotFoundException(id)

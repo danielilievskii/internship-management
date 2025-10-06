@@ -13,6 +13,7 @@ interface InternshipViewJpaRepository : JpaRepository<InternshipView, Internship
     JpaSpecificationExecutor<InternshipView> {
     fun findAllByStatusAndStudentId(status: InternshipStatus, studentId: StudentId): List<InternshipView>
     fun existsByStatusAndStudentId(status: InternshipStatus, studentId: StudentId): Boolean
+    fun findAllByStatus(status: InternshipStatus): List<InternshipView>
 
     @Query(
         """

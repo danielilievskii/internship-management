@@ -1,6 +1,7 @@
 package mk.ukim.finki.soa.internshipmanagement.model.view
 
 import jakarta.persistence.*
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Email
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.Name
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
 import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentIndex
@@ -21,6 +22,10 @@ data class StudentView(
         column = Column(name = "student_index")
     )
     val index: StudentIndex,
+
+    @Embedded
+    @AttributeOverride(name = "value", column = Column(name = "email"))
+    val email: Email,
 
     @Embedded
     @AttributeOverride(name = "value", column = Column(name = "name"))
