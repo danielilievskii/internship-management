@@ -29,7 +29,7 @@ class CoordinatorInternshipQueryRestApi(
     )
     @GetMapping()
     fun findAll(): ResponseEntity<List<InternshipCompositeView>> {
-        val coordinator = authService.getAuthCoordinator()
+            val coordinator = authService.getAuthCoordinator()
         val internships = internshipViewReadService.findAllByCoordinatorId(coordinator.id)
 
         return ResponseEntity.ok(internships)

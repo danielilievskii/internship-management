@@ -112,7 +112,7 @@ const MyApplications = () => {
             {/* Applications Grid */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {filteredApplications.map((application) => (
-                    <Card key={application.id} className="hover:shadow-lg transition-shadow">
+                    <Card key={application.id} className="hover:shadow-lg transition-shadow flex flex-col">
                         <CardHeader className="pb-3">
                             <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-2">
@@ -126,7 +126,7 @@ const MyApplications = () => {
                             </CardDescription>
                         </CardHeader>
 
-                        <CardContent className="space-y-3">
+                        <CardContent className="space-y-3 flex-1">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <MapPin className="h-4 w-4" />
                                 <span>{application.location}</span>

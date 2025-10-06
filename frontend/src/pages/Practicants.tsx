@@ -1,127 +1,123 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
-import { Button } from '@/components/ui/button.tsx';
-import { BookOpen, GraduationCap, Mail } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast.ts';
-
-interface Practicant {
-  id: string;
-  index: string;
-  name: string;
-  email: string;
-  credits: number;
-  internshipId: string;
-}
+import {useAuthStore} from "@/store/authStore.ts";
+import {useEffect} from "react";
+import {useInternshipStore} from "@/store/internshipStore.ts";
+import {companyQueryApi} from "@/services/companyApi.ts";
+import {coordinatorQueryApi} from "@/services/coordinatorApi.ts";
+import {matchesSelectOption, matchesTextInput} from "@/util/dataUtils.ts";
+import InternshipTable from "@/components/internships/InternshipTable.tsx";
+import {Pagination} from "@/components/Pagination.tsx";
+import InternshipFilters from "@/components/internships/InternshipFilters.tsx";
 
 const Practicants = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuthStore();
+  const {
+    internships,
+    totalPages,
+    currentPage,
+    pageSize,
+    loading,
+    filters,
+    setInternships,
+    setFilters,
+    resetFilters,
+    setCurrentPage,
+    setPageSize,
+    setTotalPages,
+    setLoading
+  } = useInternshipStore();
 
-  const mockPracticants: Practicant[] = [
-    {
-      id: '1',
-      index: '223056',
-      name: 'Марија Петровска',
-      email: 'marija.petrovska@students.finki.ukim.mk',
-      credits: 240,
-      internshipId: '1'
-    },
-    {
-      id: '2',
-      index: '223123',
-      name: 'Стефан Николовски',
-      email: 'stefan.nikolovski@students.finki.ukim.mk',
-      credits: 180,
-      internshipId: '2'
-    },
-    {
-      id: '3',
-      index: '223089',
-      name: 'Ана Стојановска',
-      email: 'ana.stojanovska@students.finki.ukim.mk',
-      credits: 220,
-      internshipId: '3'
-    },
-    {
-      id: '4',
-      index: '223247',
-      name: 'Давид Спасовски',
-      email: 'david.spasovski@students.finki.ukim.mk',
-      credits: 120,
-      internshipId: '4'
-    },
-    {
-      id: '5',
-      index: '223174',
-      name: 'Елена Јовановска',
-      email: 'elena.jovanovska@students.finki.ukim.mk',
-      credits: 200,
-      internshipId: '5'
+  const fetchInternships = async ()=> {
+    setLoading(true)
+    try {
+      if(user && user.role === 'Company') {
+        const internshipResponse = await companyQueryApi.getInternships()
+        const internships = internshipResponse
+            .filter((item: any) => item.status !== 'REJECTED')
+        setInternships(internships)
+      }
+      else if(user && user.role === 'Coordinator') {
+        const internshipResponse = await coordinatorQueryApi.getInternships()
+        const internships = internshipResponse
+            .filter((item: any) => item.status !== 'REJECTED')
+        setInternships(internships)
+      }
     }
-  ];
+    catch (error) {
+      toast({
+        title: 'Грешка',
+        description: 'Неможе да се вчитаат податоците',
+        variant: 'destructive',
+      });
+    }
+    finally {
+      setLoading(false)
+    }
+  }
 
-  const handleViewJournal = (practicant: Practicant) => {
-    navigate(`/internship/${practicant.internshipId}/journal`);
-    toast({
-      title: "Дневник се отвора",
-      description: `Дневник на ${practicant.name} се отвора...`
-    });
-  };
+  useEffect(() => {
+    fetchInternships()
+  }, []);
+
+  const filteredInternships = internships
+      .filter(internship =>
+          matchesTextInput(internship.studentView.index, filters.studentSearch) &&
+          matchesSelectOption(internship.companyView.name, filters.companyFilter) &&
+          matchesTextInput(internship.coordinatorView.name, filters.coordinatorSearch) &&
+          matchesSelectOption(internship.status, filters.statusFilter))
+      .sort((a, b) => {
+        const dateA = new Date(a.period.fromDate).getTime();
+        const dateB = new Date(b.period.fromDate).getTime();
+        return dateB - dateA;
+      });
+
+  useEffect(() => {
+    setTotalPages(Math.ceil(filteredInternships.length / pageSize));
+  }, [filteredInternships.length, pageSize]);
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedInternships = filteredInternships.slice(startIndex, startIndex + pageSize);
+
+  if (!user || (user.role !== 'Coordinator' && user.role !== 'Company')) {
+    return (
+        <div className="text-center py-12">
+          <h1 className="text-2xl font-bold mb-4">Неавторизован пристап</h1>
+          <p className="text-muted-foreground">Немате дозвола за пристап до оваа страница.</p>
+        </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Практиканти</h1>
-        <Badge variant="secondary" className="text-sm">
-          {mockPracticants.length} активни практиканти
-        </Badge>
-      </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {mockPracticants.map((practicant, index) => (
-          <Card key={practicant.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-lg">{practicant.name}</CardTitle>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Индекс: {practicant.index}
-                  </p>
-                </div>
-                <Badge variant="outline" className="text-xs">
-                  #{index + 1}
-                </Badge>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <GraduationCap className="h-4 w-4 text-muted-foreground" />
-                  <span>{practicant.credits} кредити</span>
-                </div>
-                
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Mail className="h-4 w-4" />
-                  <span className="truncate">{practicant.email}</span>
-                </div>
-              </div>
+      {loading ? (
+          <div className="text-center py-12">
+            <p>Се вчитува...</p>
+          </div>
+      ) : (
+          <>
+            <div className="flex items-center justify-between">
+              <h1 className="text-3xl font-bold">Практиканти</h1>
+              <Badge variant="secondary" className="text-sm">
+                {internships.length} {internships.length === 1 ? 'активен практикант' : 'активни практиканти'}
+              </Badge>
+            </div>
 
-              <div className="pt-2">
-                <Button 
-                  size="sm" 
-                  className="w-full"
-                  onClick={() => handleViewJournal(practicant)}
-                >
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  Дневник
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            <InternshipFilters filters={filters} setFilters={setFilters} onReset={resetFilters} />
+            <InternshipTable internships={paginatedInternships} fetchInternships={fetchInternships} />
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                totalItems={filteredInternships.length}
+                onPageChange={(page) => setCurrentPage(page)}
+            />
+
+          </>
+      )}
+
     </div>
   );
 };

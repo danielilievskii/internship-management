@@ -1,6 +1,4 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button.tsx';
 import { useInternshipStore } from '@/store/internshipStore.ts';
 import { useAuthStore } from '@/store/authStore.ts';
 import { internshipApi } from '@/services/api.ts';
@@ -37,6 +35,7 @@ const AllInternships = () => {
         .filter((item: any) => item.status?.value !== 'SEARCHING')
 
       setInternships(internships);
+      console.log(internships)
     } catch (error) {
       toast({
         title: 'Грешка',

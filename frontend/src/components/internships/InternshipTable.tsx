@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button.tsx';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx';
-import {FileText, Archive} from 'lucide-react';
+import {FileText, Archive, BookOpen} from 'lucide-react';
 import { InternshipView } from '@/types/internship.ts';
 import StatusBadge from './StatusBadge.tsx';
 import { useAuthStore } from '@/store/authStore.ts';
@@ -75,6 +75,14 @@ const InternshipTable = ({ internships, fetchInternships }: InternshipTableProps
       });
     }
   };
+
+  const handleViewJournal = (internshipId: string) => {
+    navigate(`/internship/${internshipId}/journal`);
+    toast({
+      title: "Дневник се отвора",
+      description: `Дневник на Практикантот се отвора...`
+    });
+  }
 
   return (
     <div className="bg-card rounded-lg border">
@@ -152,6 +160,17 @@ const InternshipTable = ({ internships, fetchInternships }: InternshipTableProps
                         >
                           <Archive className="h-4 w-4" />
                         </Button>
+                      )}
+                      {(user.role === 'Coordinator' || user.role === 'Company') && (
+                          <Button
+                              variant="default"
+                              size="sm"
+                              onClick={() => handleViewJournal(internship.id)}
+                              className="w-full"
+                          >
+                            <BookOpen className="h-4 w-4" />
+                            Дневник
+                          </Button>
                       )}
                     </div>
                   </TableCell>
