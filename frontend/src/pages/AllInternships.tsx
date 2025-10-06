@@ -33,7 +33,7 @@ const AllInternships = () => {
     try {
       const internshipsResponse = await internshipApi.getInternships();
       const internships = internshipsResponse
-        .filter((item: any) => item.status?.value !== 'SEARCHING')
+        .filter((item: any) => item.status !== 'SEARCHING')
 
       setInternships(internships);
       console.log(internships)
@@ -58,11 +58,11 @@ const AllInternships = () => {
       matchesSelectOption(internship.companyView.name, filters.companyFilter) &&
       matchesTextInput(internship.coordinatorView.name, filters.coordinatorSearch) &&
       matchesSelectOption(internship.status, filters.statusFilter))
-    .sort((a, b) => {
-      const dateA = new Date(a.period.fromDate).getTime();
-      const dateB = new Date(b.period.fromDate).getTime();
-      return dateB - dateA;
-    });
+    // .sort((a, b) => {
+    //   const dateA = new Date(a.period.fromDate).getTime();
+    //   const dateB = new Date(b.period.fromDate).getTime();
+    //   return dateB - dateA;
+    // });
 
   useEffect(() => {
     setTotalPages(Math.ceil(filteredInternships.length / pageSize));
