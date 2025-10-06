@@ -96,11 +96,15 @@ const InternshipTable = ({ internships, fetchInternships }: InternshipTableProps
           <Table className="text-lg">
             <TableHeader>
               <TableRow className="border-b">
-                {user.role === 'Admin' && (
+                {user.role !== 'Student' && (
                     <TableHead className="text-left font-medium w-[20%]">Студент</TableHead>
                 )}
-                <TableHead className="text-left font-medium w-[20%]">Координатор</TableHead>
-                <TableHead className="text-left font-medium w-[15%]">Компанија</TableHead>
+                {user.role !== 'Coordinator' && (
+                  <TableHead className="text-left font-medium w-[20%]">Координатор</TableHead>
+                )}
+                {user.role !== 'Company' && (
+                  <TableHead className="text-left font-medium w-[15%]">Компанија</TableHead>
+                )}
                 <TableHead className="text-left font-medium w-[20%]">Период</TableHead>
                 <TableHead className="text-left font-medium w-[20%]">Статус</TableHead>
                 <TableHead className="text-left font-medium w-[10%]">Aкции</TableHead>
@@ -110,7 +114,7 @@ const InternshipTable = ({ internships, fetchInternships }: InternshipTableProps
             <TableBody>
               {internships.map((internship, index) => (
                 <TableRow key={internship.id || index} className="hover:bg-muted/50">
-                  {user.role === 'Admin' && (
+                  {user.role !== 'Student' && (
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <span>{internship.studentView.index} {internship.studentView.name}</span>
@@ -118,19 +122,24 @@ const InternshipTable = ({ internships, fetchInternships }: InternshipTableProps
                     </TableCell>
                   )}
 
-                  <TableCell>
-                    <div className="flex items-center gap-2">
+                  {user.role !== 'Coordinator' && (
+                    <TableCell>
+                      <div className="flex items-center gap-2">
                       <span className="text-muted-foreground">
                         {internship.coordinatorView?.name || "Нема определен координатор"}
                       </span>
-                    </div>
-                  </TableCell>
+                      </div>
+                    </TableCell>
 
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <span className="italic">{internship.companyView?.name || "Нема компанија"}</span>
-                    </div>
-                  </TableCell>
+                  )}
+
+                  {user.role !== 'Company' && (
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <span className="italic">{internship.companyView?.name || "Нема компанија"}</span>
+                      </div>
+                    </TableCell>
+                  )}
 
                   <TableCell>
                     <span>

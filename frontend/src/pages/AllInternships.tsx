@@ -7,6 +7,7 @@ import InternshipTable from '@/components/internships/InternshipTable.tsx';
 import { useToast } from '@/hooks/use-toast.ts';
 import {matchesSelectOption, matchesTextInput} from "@/util/dataUtils.ts";
 import {Pagination} from "@/components/Pagination.tsx";
+import Loading from "@/pages/Loading.tsx";
 
 const AllInternships = () => {
   const { toast } = useToast();
@@ -70,35 +71,21 @@ const AllInternships = () => {
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedInternships = filteredInternships.slice(startIndex, startIndex + pageSize);
 
-  if (!user || user.role !== 'Admin') {
-    return (
-      <div className="text-center py-12">
-        <h1 className="text-2xl font-bold mb-4">Неавторизован пристап</h1>
-        <p className="text-muted-foreground">Немате дозвола за пристап до оваа страница.</p>
-      </div>
-    );
+  if(loading) {
+    return <Loading/>
   }
 
   return (
     <div className="space-y-6">
       <InternshipFilters filters={filters} setFilters={setFilters} onReset={resetFilters} />
-      
-      {loading ? (
-        <div className="text-center py-12">
-          <p>Се вчитува...</p>
-        </div>
-      ) : (
-        <>
-          <InternshipTable internships={paginatedInternships} fetchInternships={fetchInternships} />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            pageSize={pageSize}
-            totalItems={filteredInternships.length}
-            onPageChange={(page) => setCurrentPage(page)}
-          />
-        </>
-      )}
+      <InternshipTable internships={paginatedInternships} fetchInternships={fetchInternships} />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        totalItems={filteredInternships.length}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
     </div>
   );
 };

@@ -14,7 +14,7 @@ const Header = () => {
     { name: 'Огласи', href: '/announcements', roles: ['Student','Company', 'Coordinator', 'Admin'] },
     { name: 'Мои Апликации', href: '/my-applications', roles: ['Student'] },
     { name: 'Кандидати', href: '/candidates', roles: ['Company', 'Admin'] },
-    { name: 'Практиканти', href: '/practicants', roles: ['Company', 'Coordinator'] },
+    { name: 'Практиканти', href: '/interns', roles: ['Company', 'Coordinator'] },
     { name: 'Координатори', href: '/coordinators', roles: ['Admin'] },
   ];
 

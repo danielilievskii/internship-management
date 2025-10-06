@@ -14,7 +14,7 @@ import InternshipJournal from "@/pages/InternshipJournal.tsx";
 import Instructions from "@/pages/Instructions.tsx";
 import Announcements from "@/pages/Announcements.tsx";
 import Candidates from "@/pages/Candidates.tsx";
-import Practicants from "@/pages/Practicants.tsx";
+import Interns from "@/pages/Interns.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import MyApplications from "@/pages/MyApplications.tsx";
 
@@ -114,10 +114,10 @@ const App = () => {
               </ProtectedRoute>
             } />
 
-            <Route path="/practicants" element={
+            <Route path="/interns" element={
               <ProtectedRoute allowedRoles={['Company', 'Coordinator']}>
                 <Layout>
-                  <Practicants />
+                  <Interns />
                 </Layout>
               </ProtectedRoute>
             } />
@@ -136,7 +136,7 @@ const App = () => {
             <Route path="/unauthorized" element={
               <Layout>
                 <div className="text-center py-12">
-                  <h1 className="text-2xl font-bold mb-4">Неавторизован пристап</h1>
+                  <h1 className="text-2xl font-bold mb-4">Неавторизиран пристап</h1>
                   <p className="text-muted-foreground">Немате дозвола за пристап до оваа страница.</p>
                 </div>
               </Layout>

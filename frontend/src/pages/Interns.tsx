@@ -9,8 +9,9 @@ import {matchesSelectOption, matchesTextInput} from "@/util/dataUtils.ts";
 import InternshipTable from "@/components/internships/InternshipTable.tsx";
 import {Pagination} from "@/components/Pagination.tsx";
 import InternshipFilters from "@/components/internships/InternshipFilters.tsx";
+import Loading from "@/pages/Loading.tsx";
 
-const Practicants = () => {
+const Interns = () => {
   const { toast } = useToast();
   const { user } = useAuthStore();
   const {
@@ -80,46 +81,32 @@ const Practicants = () => {
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedInternships = filteredInternships.slice(startIndex, startIndex + pageSize);
 
-  if (!user || (user.role !== 'Coordinator' && user.role !== 'Company')) {
-    return (
-        <div className="text-center py-12">
-          <h1 className="text-2xl font-bold mb-4">Неавторизован пристап</h1>
-          <p className="text-muted-foreground">Немате дозвола за пристап до оваа страница.</p>
-        </div>
-    );
+  if(loading) {
+    return <Loading/>
   }
 
   return (
     <div className="space-y-6">
 
-      {loading ? (
-          <div className="text-center py-12">
-            <p>Се вчитува...</p>
-          </div>
-      ) : (
-          <>
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold">Практиканти</h1>
-              <Badge variant="secondary" className="text-sm">
-                {internships.length} {internships.length === 1 ? 'активен практикант' : 'активни практиканти'}
-              </Badge>
-            </div>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Практиканти</h1>
+        <Badge variant="secondary" className="text-sm">
+          {internships.length} {internships.length === 1 ? 'активен практикант' : 'активни практиканти'}
+        </Badge>
+      </div>
 
-            <InternshipFilters filters={filters} setFilters={setFilters} onReset={resetFilters} />
-            <InternshipTable internships={paginatedInternships} fetchInternships={fetchInternships} />
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                pageSize={pageSize}
-                totalItems={filteredInternships.length}
-                onPageChange={(page) => setCurrentPage(page)}
-            />
-
-          </>
-      )}
+      <InternshipFilters filters={filters} setFilters={setFilters} onReset={resetFilters} />
+      <InternshipTable internships={paginatedInternships} fetchInternships={fetchInternships} />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        totalItems={filteredInternships.length}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
 
     </div>
   );
 };
 
-export default Practicants;
+export default Interns;
