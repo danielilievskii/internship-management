@@ -46,6 +46,7 @@ export interface StudentView {
   id: string;
   index: string;
   email: string;
+  credits: string
   name: string
 }
 
