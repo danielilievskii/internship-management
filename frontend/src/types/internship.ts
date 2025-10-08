@@ -107,6 +107,15 @@ export interface SubmitInternshipCommandPayload {
   contactEmail: String;
 }
 
+export interface SubmitAgreedInternshipPayload {
+  studentIndex: String,
+  description: String,
+  fromDate: String,
+  toDate: String,
+  weeklyHours: number,
+  contactEmail: String,
+}
+
 export interface PaginatedResponse<T> {
   content: T[];
   totalElements: number;

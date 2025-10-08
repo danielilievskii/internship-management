@@ -141,10 +141,7 @@ const Candidates = () => {
       contactEmail: ''
     });
 
-    // TODO: reload by removing student.
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
+    await fetchCandidates()
   };
 
   if(loading) {
