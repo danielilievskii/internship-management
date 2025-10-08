@@ -98,6 +98,15 @@ export interface AddWeekCommentPayload {
   comment: string;
 }
 
+export interface SubmitInternshipCommandPayload {
+  internshipId: String;
+  description: String;
+  fromDate: String;
+  toDate: String;
+  weeklyHours: number;
+  contactEmail: String;
+}
+
 export interface PaginatedResponse<T> {
   content: T[];
   totalElements: number;

@@ -5,15 +5,29 @@ import { Download, UserPlus, GraduationCap, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast.ts';
 import {useAuthStore} from "@/store/authStore.ts";
 import {internshipApi} from "@/services/api.ts";
-import {useEffect} from "react";
-import {matchesSelectOption, matchesTextInput} from "@/util/dataUtils.ts";
+import {useEffect, useState} from "react";
+import {matchesTextInput} from "@/util/dataUtils.ts";
 import {useCandidateStore} from "@/store/candidatesStore.ts";
 import Loading from "@/pages/Loading.tsx";
 import {Pagination} from "@/components/Pagination.tsx";
+import {AddWeekCommentPayload, InternshipView, SubmitInternshipCommandPayload} from "@/types/internship.ts";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {companyCommandsApi} from "@/services/companyApi.ts";
 
 const Candidates = () => {
   const { toast } = useToast();
-
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [selectedStudent, setSelectedStudent] = useState<InternshipView | null>(null)
+  const [formData, setFormData] = useState({
+    description: '',
+    fromDate: '',
+    toDate: '',
+    weeklyHours: '',
+    contactEmail: ''
+  });
   const { user } = useAuthStore();
   const {
     candidates,
@@ -36,7 +50,6 @@ const Candidates = () => {
     try {
       const candidatesResponse = await internshipApi.getInternships('SEARCHING');
       setCandidates(candidatesResponse);
-      console.log(candidatesResponse)
     } catch (error) {
       toast({
         title: 'Грешка',
@@ -93,11 +106,45 @@ const Candidates = () => {
       })
   };
 
-  const handleProposeInternship = (internshipId: string, studentName: string) => {
+  const handleProposeInternship = (student: InternshipView) => {
+    setSelectedStudent(student);
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmitProposal = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedStudent) return;
+
+    const payload: SubmitInternshipCommandPayload = {
+      internshipId: selectedStudent.id,
+      description: formData.description,
+      fromDate: formData.fromDate,
+      toDate: formData.toDate,
+      weeklyHours: Number(formData.weeklyHours),
+      contactEmail: formData.contactEmail
+    };
+
+    await companyCommandsApi.submitInternship(payload)
+
     toast({
-      title: "Предлог за пракса",
-      description: `Предлог за пракса е испратен до ${studentName}.`
+      title: "Предлог за пракса испратен",
+      description: `Предлогот за пракса е успешно испратен до ${selectedStudent.studentView?.name}.`
     });
+
+    setIsDialogOpen(false);
+    setFormData({
+      description: '',
+      fromDate: '',
+      toDate: '',
+      weeklyHours: '',
+      contactEmail: ''
+    });
+
+    // TODO: reload by removing student.
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
   };
 
   if(loading) {
@@ -156,10 +203,10 @@ const Candidates = () => {
                 <Button 
                   size="sm" 
                   className="flex-1"
-                  onClick={() => handleProposeInternship(candidate.id, candidate.studentView.name)}
+                  onClick={() => handleProposeInternship(candidate)}
                 >
                   <UserPlus className="h-4 w-4 mr-1" />
-                  Испрати
+                  Предложи
                 </Button>
               </div>
             </CardContent>
@@ -173,6 +220,85 @@ const Candidates = () => {
         totalItems={filteredCandidates.length}
         onPageChange={(page) => setCurrentPage(page)}
       />
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Предложи пракса за {selectedStudent?.studentView?.name}</DialogTitle>
+            <DialogDescription>
+              Внесете ги деталите за праксата што сакате да ја понудите.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmitProposal}>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="description">Опис на праксата</Label>
+                <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Опишете ги задачите и одговорностите..."
+                    required
+                    rows={4}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="fromDate">Почетен датум</Label>
+                  <Input
+                      id="fromDate"
+                      type="date"
+                      value={formData.fromDate}
+                      onChange={(e) => setFormData({ ...formData, fromDate: e.target.value })}
+                      required
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="toDate">Краен датум</Label>
+                  <Input
+                      id="toDate"
+                      type="date"
+                      value={formData.toDate}
+                      onChange={(e) => setFormData({ ...formData, toDate: e.target.value })}
+                      required
+                  />
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="weeklyHours">Неделни часови</Label>
+                <Input
+                    id="weeklyHours"
+                    type="number"
+                    min="1"
+                    value={formData.weeklyHours}
+                    onChange={(e) => setFormData({ ...formData, weeklyHours: e.target.value })}
+                    placeholder="Број на часови неделно"
+                    required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="contactEmail">Контакт е-пошта</Label>
+                <Input
+                    id="contactEmail"
+                    type="email"
+                    value={formData.contactEmail}
+                    onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
+                    placeholder="email@company.com"
+                    required
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                Откажи
+              </Button>
+              <Button type="submit">
+                Испрати предлог
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
