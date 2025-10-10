@@ -59,7 +59,7 @@ const Interns = () => {
     }
 
     await companyCommandsApi.submitAgreedInternship(payload)
-
+    // Possibly try to fix early fetching (results in no assigned coordinator displaying while there is an assigned coordinator for the new internship)
     await fetchInternships()
 
     toast({

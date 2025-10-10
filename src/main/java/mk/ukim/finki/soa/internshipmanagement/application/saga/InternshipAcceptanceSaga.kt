@@ -2,8 +2,11 @@ package mk.ukim.finki.soa.internshipmanagement.application.saga
 
 import mk.ukim.finki.soa.internshipmanagement.model.command.AssignCoordinatorCommand
 import mk.ukim.finki.soa.internshipmanagement.model.event.CoordinatorAssignedEvent
+import mk.ukim.finki.soa.internshipmanagement.model.event.company.AgreedInternshipSubmittedEvent
 import mk.ukim.finki.soa.internshipmanagement.model.event.student.InternshipAcceptedEvent
 import mk.ukim.finki.soa.internshipmanagement.model.resolver.CoordinatorResolver
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.InternshipId
+import mk.ukim.finki.soa.internshipmanagement.model.valueobject.StudentId
 import mk.ukim.finki.soa.internshipmanagement.service.StudentSnapshotReadService
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.modelling.saga.SagaEventHandler
@@ -30,13 +33,23 @@ class InternshipAcceptanceSaga {
     @StartSaga
     @SagaEventHandler(associationProperty = "internshipId")
     fun on(event: InternshipAcceptedEvent) {
-        val studentSnapshot = studentSnapshotReadService.findById(event.studentId)
+        handleCoordinatorAssignation(event.internshipId, event.studentId)
+    }
+
+    @StartSaga
+    @SagaEventHandler(associationProperty = "internshipId")
+    fun on(event: AgreedInternshipSubmittedEvent) {
+        handleCoordinatorAssignation(event.internshipId, event.studentId)
+    }
+
+    private fun handleCoordinatorAssignation(internshipId: InternshipId, studentId: StudentId) {
+        val studentSnapshot = studentSnapshotReadService.findById(studentId)
 
         val coordinatorId = coordinatorResolver.resolveFromStudentIndex(studentSnapshot.index.value)
 
         commandGateway.send<Void>(
             AssignCoordinatorCommand(
-                internshipId = event.internshipId,
+                internshipId = internshipId,
                 coordinatorId = coordinatorId
             )
         )
