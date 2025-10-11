@@ -116,6 +116,14 @@ export interface SubmitAgreedInternshipPayload {
   contactEmail: String,
 }
 
+export interface ValidateJournalCommandPayload {
+  internshipId: string
+}
+
+export interface InvalidateJournalCommandPayload {
+  internshipId: string
+}
+
 export interface PaginatedResponse<T> {
   content: T[];
   totalElements: number;

@@ -1,8 +1,8 @@
 import {
   AddWeekCommentPayload,
-  InternshipView,
+  InternshipView, InvalidateJournalCommandPayload,
   SubmitAgreedInternshipPayload,
-  SubmitInternshipCommandPayload
+  SubmitInternshipCommandPayload, ValidateJournalCommandPayload
 } from "@/types/internship.ts";
 import {api} from "@/services/api.ts";
 import {mapApiInternship} from "@/services/mappers/internshipMapper.ts";
@@ -28,5 +28,14 @@ export const companyCommandsApi = {
 
   addWeekComment: async (payload: AddWeekCommentPayload): Promise<void> => {
     await api.post('/company/submitCommand/AddWeekComment', payload);
+  },
+
+  validateJournal: async(payload : ValidateJournalCommandPayload): Promise<void> => {
+    console.log(payload)
+    await api.post(`/company/submitCommand/ValidateJournalByCompany`, payload)
+  },
+
+  invalidateJournal: async(payload : InvalidateJournalCommandPayload): Promise<void> => {
+    await api.post(`/company/submitCommand/InvalidateJournalByCompany`, payload)
   },
 }

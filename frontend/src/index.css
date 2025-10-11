@@ -42,8 +42,8 @@
     --status-submitted-foreground: 0 0% 100%;
     --status-accepted: 221.2 83.2% 53.3%;
     --status-accepted-foreground: 0 0% 100%;
-    --status-rejected: 0 85% 55%;
-    --status-rejected-foreground: 0 0% 100%;
+    --status-rejected: 5 45% 55%;
+    --status-rejected-foreground: 0 0% 100%; /* pure white */
     --status-journal-submitted: 173.4 77.9% 43.5%;
     --status-journal-submitted-foreground: 0 0% 100%;
     --status-validated: 142.1 76.2% 36.3%;

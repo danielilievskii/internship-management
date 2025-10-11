@@ -15,7 +15,12 @@ import {
 import StatusBadge from '@/components/internships/StatusBadge.tsx';
 import {useToast} from '@/hooks/use-toast.ts';
 import {internshipApi} from "@/services/api.ts";
-import {InternshipDetailsView, InternshipStatusChangeView} from "@/types/internship.ts";
+import {
+  AddWeekCommentPayload,
+  InternshipDetailsView,
+  InternshipStatusChangeView, InvalidateJournalCommandPayload,
+  ValidateJournalCommandPayload
+} from "@/types/internship.ts";
 import {texts} from "@/constants/texts.ts";
 import Loading from "@/pages/Loading.tsx";
 import {UserRole} from "@/types/internship.ts";
@@ -27,6 +32,10 @@ import {SubmitJournalButton} from "@/components/styled/SubmitJournalButton.tsx";
 import {DownloadCVButton} from "@/components/styled/DownloadCVButton.tsx";
 import {BackButton} from "@/components/styled/BackButton.tsx";
 import {formatMacedonianDateTime} from "@/util/dateUtils.ts";
+import {ValidateButton} from "@/components/styled/ValidateButton.tsx";
+import {InvalidateButton} from "@/components/styled/InvalidateButton.tsx";
+import {companyCommandsApi} from "@/services/companyApi.ts";
+import {coordinatorCommandsApi} from "@/services/coordinatorApi.ts";
 
 const statusTransitions: Record<string, { icon: any; color: string; msg: string; changedBy: UserRole }> = {
   "null-SEARCHING": {
@@ -170,6 +179,66 @@ const InternshipDetail = () => {
       });
     }
   };
+
+  const handleValidateJournal = async (internshipId: string) => {
+    try {
+      const payload: ValidateJournalCommandPayload = {
+        internshipId: internshipId
+      };
+
+      const validateJournalHandlers = {
+        Company: companyCommandsApi.validateJournal,
+        Coordinator: coordinatorCommandsApi.validateJournal,
+      }
+
+      const handler = validateJournalHandlers[user.role]
+      if (handler) {
+        await handler(payload)
+        fetchInternshipData()
+
+        toast({
+          title: 'Дневник одобрен',
+          description: `Успешно го одобривте дневникот на студентот ${internshipDetails.studentView.name}.`,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Грешка при одобрување на дневник!',
+        description: `Се појави проблем при одобрување на дневникот на ${internshipDetails.studentView.name}. Ве молиме обидете се повторно.`,
+        variant: 'destructive'
+      });
+    }
+  }
+
+  const handleInvalidateJournal = async (internshipId: string) => {
+    try {
+      const payload: InvalidateJournalCommandPayload = {
+        internshipId: internshipId
+      };
+
+      const invalidateJournalHandlers = {
+        Company: companyCommandsApi.invalidateJournal,
+        Coordinator: coordinatorCommandsApi.invalidateJournal,
+      }
+
+      const handler = invalidateJournalHandlers[user.role]
+      if (handler) {
+        await handler(payload)
+        fetchInternshipData()
+
+        toast({
+          title: 'Дневник одбиен',
+          description: `Успешно го одбивте дневникот на студентот ${internshipDetails.studentView.name}.`,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Грешка при одбивате на пракса!',
+        description: `Се појави проблем при oдбивање на дневникот на ${internshipDetails.studentView.name}. Ве молиме обидете се повторно.`,
+        variant: 'destructive'
+      });
+    }
+  }
 
   const handleRejectInternship = async (internshipId: string) => {
     try {
@@ -345,6 +414,15 @@ const InternshipDetail = () => {
                   {user.role === 'Student' && internshipDetails?.status === 'ACCEPTED' && (
                     <SubmitJournalButton onClick={() => handleSubmitJournal(internshipDetails.id)}/>
                   )}
+
+                  {((user.role === 'Company' && internshipDetails?.status === 'JOURNAL_SUBMITTED')
+                    || (user.role === 'Coordinator' && internshipDetails?.status === 'VALIDATED_BY_COMPANY'))
+                    && (
+                    <>
+                      <ValidateButton onClick={() => handleValidateJournal(internshipDetails.id)}/>
+                      <InvalidateButton onClick={() => handleInvalidateJournal(internshipDetails.id)}/>
+                    </>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -358,7 +436,7 @@ const InternshipDetail = () => {
               <CardTitle>Историја на промени</CardTitle>
             </CardHeader>
             <CardContent>
-              <div>
+              <div className="flex flex-col gap-7">
                 {internshipStatusChanges?.map((change) => {
                   const key = `${change.previousStatus ?? "null"}-${change.newStatus}`;
                   const config = statusTransitions[key] || {
@@ -370,7 +448,7 @@ const InternshipDetail = () => {
                   const Icon = config.icon;
 
                   return (
-                    <div key={change.id} className="mb-5">
+                    <div key={change.id}>
                       <div className="flex flex-row items-center gap-1.5 mb-3 rounded-lg bg-gray-100 px-3 py-2">
                         <Icon className={`h-6 w-6 ${config.color}`}/>
                         <p className="font-medium">{config.msg}</p>
