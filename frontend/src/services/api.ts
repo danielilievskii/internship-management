@@ -13,7 +13,8 @@ import {
 } from "@/services/mappers/internshipMapper.ts";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
+  // baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/internship-management/api',
   // headers: {
   //   'Content-Type': 'application/json',
   // },
