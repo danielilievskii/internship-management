@@ -16,7 +16,6 @@ import StatusBadge from '@/components/internships/StatusBadge.tsx';
 import {useToast} from '@/hooks/use-toast.ts';
 import {internshipApi} from "@/services/api.ts";
 import {
-  AddWeekCommentPayload,
   InternshipDetailsView,
   InternshipStatusChangeView, InvalidateJournalCommandPayload,
   ValidateJournalCommandPayload
@@ -130,10 +129,11 @@ const InternshipDetail = () => {
         //   .map((item: any) => (mapApiInternshipStatusChange(item)));
 
         setInternshipDetails(internshipDetailsResponse);
-        setInternshipStatusChanges(internshipStatusChangesResponse.reverse())
 
-        console.log(internshipStatusChangesResponse)
-        console.log(internshipStatusChanges)
+        const sortedInternshipStatusChanges: InternshipStatusChangeView[] = internshipStatusChangesResponse.sort(
+          (a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime()
+        )
+        setInternshipStatusChanges(sortedInternshipStatusChanges)
       })
       .catch((error) => {
         console.error(error);

@@ -17,11 +17,30 @@ import Candidates from "@/pages/Candidates.tsx";
 import Interns from "@/pages/Interns.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import MyApplications from "@/pages/MyApplications.tsx";
+import {useEffect} from "react";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, logout } = useAuthStore();
+
+  useEffect(() => {
+
+    const token = localStorage.getItem("auth-token")
+
+    if(token) {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const exp = payload.exp
+
+      const expMilliseconds = exp * 1000
+      const isExpired = Date.now() > expMilliseconds;
+
+      if(isExpired) {
+        localStorage.removeItem("auth-token")
+        logout()
+      }
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

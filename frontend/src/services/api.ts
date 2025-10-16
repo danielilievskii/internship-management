@@ -2,21 +2,17 @@ import axios from 'axios';
 import {
   InternshipView,
   InternshipDetailsView,
-  PaginatedResponse, InternshipStatusChangeView,
+  InternshipStatusChangeView,
 
 } from '@/types/internship.ts';
 import {
   mapApiInternship,
   mapApiInternshipDetails,
-  mapApiInternshipStatusChange,
-  mapPaginatedResponse
+  mapApiInternshipStatusChange
 } from "@/services/mappers/internshipMapper.ts";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
-  // headers: {
-  //   'Content-Type': 'application/json',
-  // },
 });
 
 // Add request interceptor for authentication
@@ -42,7 +38,7 @@ api.interceptors.request.use((config) => {
 
 export const internshipApi = {
 
-  getInternships: async (status: string): Promise<InternshipView[]> => {
+  getInternships: async (status?: string): Promise<InternshipView[]> => {
     return await api.get(`/internships${status ? `?status=${status}` : ''}`)
       .then(response =>
         response.data.map(item => mapApiInternship(item))
@@ -61,7 +57,6 @@ export const internshipApi = {
       );
   },
 
-  // Download CV
   downloadCv: async (internshipId: string): Promise<Blob> => {
     const response = await api.get(`/internships/${internshipId}/download-cv`, {
       responseType: 'blob',
