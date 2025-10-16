@@ -18,9 +18,9 @@ data class InternshipStatus(
             StatusType.SEARCHING -> newStatus == StatusType.SUBMITTED
             StatusType.SUBMITTED -> newStatus == StatusType.ACCEPTED || newStatus == StatusType.REJECTED
             StatusType.ACCEPTED -> newStatus == StatusType.JOURNAL_SUBMITTED
-            StatusType.JOURNAL_SUBMITTED -> newStatus == StatusType.VALIDATED_BY_COMPANY
+            StatusType.JOURNAL_SUBMITTED -> newStatus == StatusType.VALIDATED_BY_COMPANY || newStatus == StatusType.ACCEPTED
             StatusType.VALIDATED_BY_COMPANY -> newStatus == StatusType.VALIDATED_BY_COORDINATOR || newStatus == StatusType.ACCEPTED
-            StatusType.VALIDATED_BY_COORDINATOR -> newStatus == StatusType.ARCHIVED || newStatus == StatusType.ACCEPTED
+            StatusType.VALIDATED_BY_COORDINATOR -> newStatus == StatusType.ARCHIVED
             else -> false
         }
     }
