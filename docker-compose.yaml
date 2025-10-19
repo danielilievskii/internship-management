@@ -13,34 +13,80 @@ services:
     container_name: internship_db
     networks:
       - finki_services_net
-  internship_backend:
-    depends_on:
-      - internship_db
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: always
-    container_name: internship_backend
+
+  broker:
+    image: apache/kafka:latest
+    hostname: broker
+    container_name: broker
     ports:
-      - "8098:8080"
+      - 9092:9092
     environment:
-      SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:postgresql://internship_db:5432/internship
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: admin
-      SPRING_DATASOURCE_SCHEMA: public
-      OPTIMIZE_EVENT_CONSUMPTION: "false"
-      spring.cloud.consul.host: "dev-consul"
-      spring.cloud.discovery.discovery.hostname: "internship_backend"
-      spring.cloud.discovery.discovery.prefer-ip-address=false: "false"
-    volumes:
-      - dms-data:/opt/dms
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:29093
+      KAFKA_LISTENERS: PLAINTEXT://broker:29092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
     networks:
       - finki_services_net
+
+  consul:
+    image: hashicorp/consul
+    container_name: dev-consul
+    ports:
+      - "8500:8500"
+    networks:
+      - finki_services_net
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.2
+    container_name: keycloak
+    command: [ "start-dev", "--import-realm" ]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8001:8080"
+    volumes:
+      - ./keycloak/realms:/opt/keycloak/data/import
+    networks:
+      - finki_services_net
+
+  api-gateway:
+    build:
+      context: api-gateway
+      dockerfile: Dockerfile
+    container_name: api_gateway
+    ports:
+      - "8000:8001"
+    environment:
+      OPTIMIZE_EVENT_CONSUMPTION: "false"
+      spring.cloud.consul.host: "dev-consul"
+      spring.cloud.discovery.discovery.hostname: "api-gateway"
+      spring.cloud.discovery.discovery.prefer-ip-address=false: "false"
+      APP_ALLOWED_ORIGINS: "http://localhost:3000"
+      KEYCLOAK_SERVER_URL: "http://keycloak:8080"
+      KEYCLOAK_REALM: "finki-services"
+      KEYCLOAK_CLIENT_ID: "api-gateway"
+      KEYCLOAK_CLIENT_SECRET: "uiJmTgew4w6ownGJOxxUwh2WYANEmEEY"
+    depends_on:
+      - consul
+      - keycloak
+    networks:
+      - finki_services_net
+
 volumes:
   db-data:
-  dms-data:
-  es-data:
 networks:
   finki_services_net:
-    external: true
+    name: finki_services_net
+    driver: bridge

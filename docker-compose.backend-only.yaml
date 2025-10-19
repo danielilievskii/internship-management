@@ -1,0 +1,30 @@
+services:
+  internship_backend:
+    depends_on:
+      - internship_db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    container_name: internship_backend
+    ports:
+      - "8098:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://internship_db:5432/internship
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+      SPRING_DATASOURCE_SCHEMA: public
+      OPTIMIZE_EVENT_CONSUMPTION: "false"
+      spring.cloud.consul.host: "dev-consul"
+      spring.cloud.discovery.discovery.hostname: "internship_backend"
+      spring.cloud.discovery.discovery.prefer-ip-address=false: "false"
+    volumes:
+      - dms-data:/opt/dms
+    networks:
+      - finki_services_net
+volumes:
+  dms-data:
+networks:
+  finki_services_net:
+    external: true
