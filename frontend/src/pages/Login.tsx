@@ -33,20 +33,18 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const params = new URLSearchParams();
-      params.append("client_secret", "uiJmTgew4w6ownGJOxxUwh2WYANEmEEY")
-      params.append("client_id", "api-gateway")
-      params.append("grant_type", "password")
-      params.append("username", formData.email)
-      params.append("password", formData.password)
-
-      const response = await fetch(`http://localhost:8001/realms/finki-services/protocol/openid-connect/token`, {
-        method: 'POST',
+      const response = await fetch("http://localhost:8000/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          "Content-Type": "application/json"
         },
-        body: params.toString()
-      })
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
+
+      console.log(response)
 
       if(!response.ok) {
         toast({
