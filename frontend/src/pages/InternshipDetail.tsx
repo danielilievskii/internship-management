@@ -35,6 +35,8 @@ import {ValidateButton} from "@/components/styled/ValidateButton.tsx";
 import {InvalidateButton} from "@/components/styled/InvalidateButton.tsx";
 import {companyCommandsApi} from "@/services/companyApi.ts";
 import {coordinatorCommandsApi} from "@/services/coordinatorApi.ts";
+import {adminCommandsApi} from "@/services/adminApi.ts";
+import {ArchiveButton} from "@/components/styled/ArchiveButton.tsx";
 
 const statusTransitions: Record<string, { icon: any; color: string; msg: string; changedBy: UserRole }> = {
   "null-SEARCHING": {
@@ -276,8 +278,26 @@ const InternshipDetail = () => {
         variant: 'destructive'
       });
     }
-
   }
+
+  const handleArchiveInternship = async (internshipId: string) => {
+    try {
+      await adminCommandsApi.archiveInternship(internshipId)
+      fetchInternshipData()
+
+      toast({
+        title: 'Пракса архивирана',
+        description: 'Праксата е успешно архивирана.',
+      });
+
+    } catch (error) {
+      toast({
+        title: 'Грешка при архивирање на пракса!',
+        description: 'Се појави проблем при архивирање на праксата. Ве молиме обидете се повторно.',
+        variant: 'destructive'
+      });
+    }
+  };
 
   if (isLoading) return <Loading/>;
 
@@ -394,6 +414,10 @@ const InternshipDetail = () => {
                   <p className="text-lg">{internshipDetails?.companyContactEmail || texts.notSpecified}</p>
                 </div>
                 <div className="flex gap-2">
+                  {(user.role === 'Admin' && internshipDetails?.status === 'VALIDATED_BY_COORDINATOR') && (
+                    <ArchiveButton onClick={() => handleArchiveInternship(internshipDetails.id)}/>
+                  )}
+
                   <DownloadCVButton onClick={handleDownloadCV}/>
 
                   {internshipDetails?.status !== 'REJECTED' && (

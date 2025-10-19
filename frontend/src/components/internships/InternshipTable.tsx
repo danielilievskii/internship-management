@@ -11,6 +11,8 @@ import {studentCommandsApi} from "@/services/studentApi.ts";
 import {DetailsButton} from "@/components/styled/DetailsButton.tsx";
 import {AcceptButton} from "@/components/styled/AcceptButton.tsx";
 import {RejectButton} from "@/components/styled/RejectButton.tsx";
+import {adminCommandsApi} from "@/services/adminApi.ts";
+import {ArchiveButton} from "@/components/styled/ArchiveButton.tsx";
 
 interface InternshipTableProps {
   internships: InternshipView[];
@@ -40,7 +42,7 @@ const InternshipTable = ({ internships, fetchInternships }: InternshipTableProps
     } catch (error) {
       toast({
         title: 'Грешка при прифаќање на пракса!',
-        description: 'Се појави проблем при прифаќање на праксата. Ве молам обидете се повторно.',
+        description: 'Се појави проблем при прифаќање на праксата. Ве молиме обидете се повторно.',
         variant: 'destructive'
       });
     }
@@ -54,24 +56,32 @@ const InternshipTable = ({ internships, fetchInternships }: InternshipTableProps
       toast({
         title: 'Пракса одбиена',
         description: 'Ја одбивте праксата.',
-        variant: 'destructive',
       });
 
     } catch (error) {
       toast({
         title: 'Грешка при одбивање на пракса!',
-        description: 'Се појави проблем при одбивање на праксата. Ве молам обидете се повторно.',
+        description: 'Се појави проблем при одбивање на праксата. Ве молиме обидете се повторно.',
         variant: 'destructive'
       });
     }
   };
 
-  const handleArchive = (internshipId: string) => {
-    if (confirm('Дали сте сигурни дека сакате да ја архицирате оваа пракса?')) {
+  const handleArchiveInternship = async (internshipId: string) => {
+    try {
+      await adminCommandsApi.archiveInternship(internshipId)
+      fetchInternships()
+
       toast({
         title: 'Пракса архивирана',
         description: 'Праксата е успешно архивирана.',
-        variant: 'destructive',
+      });
+
+    } catch (error) {
+      toast({
+        title: 'Грешка при архивирање на пракса!',
+        description: 'Се појави проблем при архивирање на праксата. Ве молиме обидете се повторно.',
+        variant: 'destructive'
       });
     }
   };
@@ -160,15 +170,8 @@ const InternshipTable = ({ internships, fetchInternships }: InternshipTableProps
                           <RejectButton size="sm" onClick={() => handleRejectInternship(internship.id)}/>
                         </>
                       )}
-                      {user.role === 'Admin' && (
-                        <Button
-                          variant="default"
-                          size="sm"
-                          onClick={() => handleArchive(internship.id)}
-                          className="bg-action-delete text-action-delete-foreground hover:bg-action-delete/90"
-                        >
-                          <Archive className="h-4 w-4" />
-                        </Button>
+                      {(user.role === 'Admin' && internship.status === 'VALIDATED_BY_COORDINATOR') && (
+                        <ArchiveButton size="sm" onClick={() => handleArchiveInternship(internship.id)}/>
                       )}
                       {(user.role === 'Coordinator' || user.role === 'Company') && (
                           <Button

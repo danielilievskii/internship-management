@@ -33,15 +33,15 @@ const StatusBadge = ({ status }: StatusBadgeProps) => {
           label: 'JOURNAL SUBMITTED',
           className: 'bg-status-journal-submitted text-status-journal-submitted-foreground'
         };
-      case 'VALIDATED':
+      case 'VALIDATED_BY_COMPANY':
         return {
-          label: 'VALIDATED',
+          label: 'VALIDATED_BY_COMPANY',
           className: 'bg-status-validated text-status-validated-foreground'
         };
-      case 'INVALIDATED':
+      case 'VALIDATED_BY_COORDINATOR':
         return {
-          label: 'INVALIDATED',
-          className: 'bg-status-rejected text-status-rejected-foreground'
+          label: 'VALIDATED_BY_COORDINATOR',
+          className: 'bg-status-validated text-status-validated-foreground'
         };
       case 'ARCHIVED':
         return {

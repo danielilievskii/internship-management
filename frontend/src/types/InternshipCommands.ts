@@ -11,3 +11,7 @@ export interface RejectInternshipCommandDto {
 export interface SubmitJournalCommandDto {
     internshipId: string
 }
+
+export interface ArchiveInternshipCommandDto {
+    internshipId: string
+}

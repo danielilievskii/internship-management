@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/admin/internship/submitCommand")
+@RequestMapping("/api/admin/submitCommand")
 @Tag(
     name = "Admin Internship Command API",
     description = "Handles admin commands related to internship management."
