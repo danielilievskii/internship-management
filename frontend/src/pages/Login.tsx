@@ -111,13 +111,12 @@ const Login = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="text">Email адреса</Label>
+              <Label htmlFor="text">Корисничко име</Label>
               <Input
                 id="email"
                 type="text"
                 value={formData.email}
                 onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="example@email.com"
                 required
               />
             </div>
@@ -129,7 +128,6 @@ const Login = () => {
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                placeholder="••••••••"
                 required
               />
             </div>
