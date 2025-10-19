@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button.tsx';
 import { Building, MapPin, Clock, Users, ExternalLink } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore.ts';
 
-const Announcements = () => {
+const Advertisements = () => {
   const { user } = useAuthStore();
-  const mockAnnouncements = [
+  const mockAdvertisements = [
     {
       id: '1',
       title: 'Frontend Developer Intern',
@@ -15,7 +15,7 @@ const Announcements = () => {
       type: 'Full-time',
       duration: '3 месеци',
       deadline: '2025-10-15',
-      description: 'Барајме мотивиран студент за работа со React, TypeScript и современи веб технологии...',
+      description: 'Бараме мотивиран студент за работа со React, TypeScript и современи веб технологии...',
       requirements: ['React', 'TypeScript', 'HTML/CSS', 'Git'],
       isActive: true
     },
@@ -50,45 +50,45 @@ const Announcements = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Огласи за пракси</h1>
         <Badge variant="secondary" className="text-sm">
-          {mockAnnouncements.filter(a => a.isActive).length} активни огласи
+          {mockAdvertisements.filter(a => a.isActive).length} активни огласи
         </Badge>
       </div>
 
       <div className="grid gap-6">
-        {mockAnnouncements.map((announcement) => (
-          <Card key={announcement.id} className={!announcement.isActive ? "opacity-60" : ""}>
+        {mockAdvertisements.map((advertisement) => (
+          <Card key={advertisement.id} className={!advertisement.isActive ? "opacity-60" : ""}>
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle className="text-xl">{announcement.title}</CardTitle>
+                  <CardTitle className="text-xl">{advertisement.title}</CardTitle>
                   <CardDescription className="flex items-center gap-4 mt-2">
                     <span className="flex items-center gap-1">
                       <Building className="h-4 w-4" />
-                      {announcement.company}
+                      {advertisement.company}
                     </span>
                     <span className="flex items-center gap-1">
                       <MapPin className="h-4 w-4" />
-                      {announcement.location}
+                      {advertisement.location}
                     </span>
                     <span className="flex items-center gap-1">
                       <Clock className="h-4 w-4" />
-                      {announcement.duration}
+                      {advertisement.duration}
                     </span>
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={announcement.isActive ? "default" : "secondary"}>
-                    {announcement.isActive ? "Активен" : "Истечен"}
+                  <Badge variant={advertisement.isActive ? "default" : "secondary"}>
+                    {advertisement.isActive ? "Активен" : "Истечен"}
                   </Badge>
                   <Badge variant="outline">
-                    {announcement.type}
+                    {advertisement.type}
                   </Badge>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground leading-relaxed">
-                {announcement.description}
+                {advertisement.description}
               </p>
 
               <div>
@@ -97,7 +97,7 @@ const Announcements = () => {
                   Потребни вештини:
                 </h4>
                 <div className="flex flex-wrap gap-2">
-                  {announcement.requirements.map((req) => (
+                  {advertisement.requirements.map((req) => (
                     <Badge key={req} variant="secondary" className="text-xs">
                       {req}
                     </Badge>
@@ -107,7 +107,7 @@ const Announcements = () => {
 
               <div className="flex items-center justify-between pt-4 border-t">
                 <div className="text-sm text-muted-foreground">
-                  Краен рок за аплицирање: <span className="font-medium">{announcement.deadline}</span>
+                  Краен рок за аплицирање: <span className="font-medium">{advertisement.deadline}</span>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm">
@@ -117,7 +117,7 @@ const Announcements = () => {
                   {user?.role === 'Student' && (
                     <Button 
                       size="sm"
-                      disabled={!announcement.isActive}
+                      disabled={!advertisement.isActive}
                       className="bg-action-view text-action-view-foreground hover:bg-action-view/90"
                     >
                       Аплицирај
@@ -133,4 +133,4 @@ const Announcements = () => {
   );
 };
 
-export default Announcements;
+export default Advertisements;

@@ -12,7 +12,7 @@ import StudentInternships from "@/pages/StudentInternships.tsx";
 import InternshipDetail from "@/pages/InternshipDetail.tsx";
 import InternshipJournal from "@/pages/InternshipJournal.tsx";
 import Instructions from "@/pages/Instructions.tsx";
-import Announcements from "@/pages/Announcements.tsx";
+import Advertisements from "@/pages/Advertisements.tsx";
 import Candidates from "@/pages/Candidates.tsx";
 import Interns from "@/pages/Interns.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -81,10 +81,10 @@ const App = () => {
               </ProtectedRoute>
             } />
 
-            <Route path="/announcements" element={
+            <Route path="/advertisements" element={
               <ProtectedRoute allowedRoles={['Student', 'Company', 'Coordinator', 'Admin']}>
                 <Layout>
-                  <Announcements />
+                  <Advertisements />
                 </Layout>
               </ProtectedRoute>
             } />

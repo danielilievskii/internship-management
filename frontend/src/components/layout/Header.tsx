@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import {Link, useLocation, useNavigate} from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { LogOut, User } from 'lucide-react';
@@ -6,13 +6,14 @@ import { LogOut, User } from 'lucide-react';
 const Header = () => {
   const location = useLocation();
   const { user, logout } = useAuthStore();
+  const navigate = useNavigate()
 
   const navigation = [
     { name: 'Инструкции', href: '/instructions', roles: ['Student', 'Company', 'Coordinator', 'Admin'] },
     { name: 'Мои Пракси', href: '/internships', roles: ['Student'] },
     { name: 'Сите Пракси', href: '/all-internships', roles: ['Admin'] },
-    { name: 'Огласи', href: '/announcements', roles: ['Student','Company', 'Coordinator', 'Admin'] },
-    { name: 'Мои Апликации', href: '/my-applications', roles: ['Student'] },
+    // { name: 'Огласи', href: '/advertisements', roles: ['Student','Company', 'Coordinator', 'Admin'] },
+    // { name: 'Мои Апликации', href: '/my-applications', roles: ['Student'] },
     { name: 'Кандидати', href: '/candidates', roles: ['Company', 'Admin'] },
     { name: 'Практиканти', href: '/interns', roles: ['Company', 'Coordinator'] },
     { name: 'Координатори', href: '/coordinators', roles: ['Admin'] },
@@ -52,7 +53,10 @@ const Header = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={logout}
+                  onClick={() => {
+                    logout()
+                    navigate("/login")
+                  }}
                   className="text-primary-foreground hover:text-white hover:bg-primary-foreground/10"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
