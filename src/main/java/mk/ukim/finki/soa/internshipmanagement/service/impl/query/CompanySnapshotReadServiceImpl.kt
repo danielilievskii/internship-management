@@ -22,4 +22,8 @@ class CompanySnapshotReadServiceImpl(
     override fun findByName(name: String): CompanySnapshot? {
         return companyRepository.findByNameIgnoreCase(name).firstOrNull()
     }
+
+    override fun findAll(): List<CompanySnapshot?> {
+        return companyRepository.findAll()
+    }
 }

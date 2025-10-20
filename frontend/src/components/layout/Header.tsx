@@ -16,7 +16,7 @@ const Header = () => {
     // { name: 'Мои Апликации', href: '/my-applications', roles: ['Student'] },
     { name: 'Кандидати', href: '/candidates', roles: ['Company', 'Admin'] },
     { name: 'Практиканти', href: '/interns', roles: ['Company', 'Coordinator'] },
-    { name: 'Координатори', href: '/coordinators', roles: ['Admin'] },
+    { name: 'Статистики', href: '/coordinators', roles: ['Admin'] },
   ];
 
   const visibleNavigation = navigation.filter(item => 

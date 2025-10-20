@@ -46,6 +46,7 @@ interface StudentSnapshotReadService {
 interface CompanySnapshotReadService {
     fun findByEmail(email: String): CompanySnapshot
     fun findByName(name: String): CompanySnapshot?
+    fun findAll(): List<CompanySnapshot?>
 }
 
 interface CoordinatorSnapshotReadService {

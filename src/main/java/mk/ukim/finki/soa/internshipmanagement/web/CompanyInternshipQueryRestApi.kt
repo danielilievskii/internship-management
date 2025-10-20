@@ -27,7 +27,7 @@ class CompanyInternshipQueryRestApi(
         summary = "Fetches all internships for the currently logged company",
         description = "Retrieves a list of all internships."
     )
-    @GetMapping()
+    @GetMapping
     fun findAll(): ResponseEntity<List<InternshipCompositeView>> {
         val company = authService.getAuthCompany()
         val internships = internshipViewReadService.findAllByCompanyId(company.id)

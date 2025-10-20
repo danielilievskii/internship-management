@@ -10,10 +10,10 @@ import mk.ukim.finki.soa.internshipmanagement.service.AdminInternshipService
 import mk.ukim.finki.soa.internshipmanagement.web.dto.ArchiveInternshipCommandDto
 import mk.ukim.finki.soa.internshipmanagement.web.dto.admin.ChangeCoordinatorCommandDto
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 
 @RestController
 @RequestMapping("/api/admin/submitCommand")
@@ -39,6 +39,10 @@ class AdminInternshipCommandDispatcherRestApi(
         return ResponseEntity.ok(adminInternshipService.archiveInternship(command))
     }
 
+    @Operation(
+        summary = "Changes the coordinator",
+        description = "Sends a command to change the coordinator for a specified internships. Takes in internshipId and the ID of the new coordinator"
+    )
     @PostMapping("/changeCoordinator")
     fun changeCoordinator(@RequestBody dto: ChangeCoordinatorCommandDto): ResponseEntity<Any> {
         val command = ChangeCoordinatorCommand(

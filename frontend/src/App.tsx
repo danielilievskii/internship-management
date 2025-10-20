@@ -18,6 +18,7 @@ import Interns from "@/pages/Interns.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import MyApplications from "@/pages/MyApplications.tsx";
 import {useEffect} from "react";
+import CoordinatorStatistics from "@/pages/CoordinatorStatistics.tsx";
 
 const queryClient = new QueryClient();
 
@@ -144,10 +145,7 @@ const App = () => {
             <Route path="/coordinators" element={
               <ProtectedRoute allowedRoles={['Admin']}>
                 <Layout>
-                  <div className="text-center py-12">
-                    <h1 className="text-2xl font-bold mb-4">Координатори</h1>
-                    <p className="text-muted-foreground">Управување со координатори</p>
-                  </div>
+                  <CoordinatorStatistics />
                 </Layout>
               </ProtectedRoute>
             } />
