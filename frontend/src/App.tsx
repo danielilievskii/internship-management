@@ -19,6 +19,7 @@ import NotFound from "./pages/NotFound.tsx";
 import MyApplications from "@/pages/MyApplications.tsx";
 import {useEffect} from "react";
 import CoordinatorStatistics from "@/pages/CoordinatorStatistics.tsx";
+import LoginCallback from "@/pages/LoginCallback.tsx";
 
 const queryClient = new QueryClient();
 
@@ -50,10 +51,13 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
+
             <Route path="/login" element={
               isAuthenticated ? <Navigate to={user?.role === 'Admin' ? '/all-internships' : '/instructions'} replace /> : <Login />
             } />
-            
+
+            <Route path="/callback" element={<LoginCallback />} />
+
             <Route path="/" element={
               <Navigate to={isAuthenticated ? '/instructions' : '/login'} replace />
             } />

@@ -1,4 +1,4 @@
-import {Link, useLocation, useNavigate} from 'react-router-dom';
+import {Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { LogOut, User } from 'lucide-react';
@@ -6,7 +6,6 @@ import { LogOut, User } from 'lucide-react';
 const Header = () => {
   const location = useLocation();
   const { user, logout } = useAuthStore();
-  const navigate = useNavigate()
 
   const navigation = [
     { name: 'Инструкции', href: '/instructions', roles: ['Student', 'Company', 'Coordinator', 'Admin'] },
@@ -22,6 +21,11 @@ const Header = () => {
   const visibleNavigation = navigation.filter(item => 
     !user || item.roles.includes(user.role)
   );
+
+  const handleLogout = () => {
+    localStorage.removeItem("auth-token");
+    logout()
+  }
 
   return (
     <header className="bg-primary text-primary-foreground sticky top-0 z-10">
@@ -53,10 +57,7 @@ const Header = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => {
-                    logout()
-                    navigate("/login")
-                  }}
+                  onClick={handleLogout}
                   className="text-primary-foreground hover:text-white hover:bg-primary-foreground/10"
                 >
                   <LogOut className="h-4 w-4 mr-2" />

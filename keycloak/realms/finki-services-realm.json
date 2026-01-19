@@ -595,20 +595,6 @@
     "notBefore" : 0,
     "groups" : [ ]
   }, {
-    "id" : "c3f862e9-4677-4344-b1e5-315f19b18f68",
-    "username" : "service-account-api-gateway",
-    "emailVerified" : false,
-    "createdTimestamp" : 1756047406093,
-    "enabled" : true,
-    "totp" : false,
-    "serviceAccountClientId" : "api-gateway",
-    "credentials" : [ ],
-    "disableableCredentialTypes" : [ ],
-    "requiredActions" : [ ],
-    "realmRoles" : [ "default-roles-finki-services" ],
-    "notBefore" : 0,
-    "groups" : [ ]
-  }, {
     "id" : "3388b1c4-e2c1-4e6c-aaad-d48cbec646be",
     "username" : "vesna.dimitrievska",
     "firstName" : "Vesna",
@@ -763,8 +749,7 @@
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "secret" : "uiJmTgew4w6ownGJOxxUwh2WYANEmEEY",
-    "redirectUris" : [ "/*" ],
+    "redirectUris" : [ "http://localhost:3000/callback", "/*" ],
     "webOrigins" : [ "/*", "http://localhost:3000" ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -772,18 +757,26 @@
     "standardFlowEnabled" : true,
     "implicitFlowEnabled" : false,
     "directAccessGrantsEnabled" : true,
-    "serviceAccountsEnabled" : true,
-    "publicClient" : false,
+    "serviceAccountsEnabled" : false,
+    "publicClient" : true,
     "frontchannelLogout" : true,
     "protocol" : "openid-connect",
     "attributes" : {
-      "oidc.ciba.grant.enabled" : "false",
       "client.secret.creation.time" : "1756047406",
-      "backchannel.logout.session.required" : "true",
-      "post.logout.redirect.uris" : "+",
+      "login_theme" : "keycloak",
+      "post.logout.redirect.uris" : "http://localhost:3000/login",
       "oauth2.device.authorization.grant.enabled" : "false",
+      "backchannel.logout.revoke.offline.tokens" : "false",
+      "use.refresh.tokens" : "true",
+      "oidc.ciba.grant.enabled" : "false",
+      "client.use.lightweight.access.token.enabled" : "false",
+      "backchannel.logout.session.required" : "true",
+      "client_credentials.use_refresh_token" : "false",
+      "tls.client.certificate.bound.access.tokens" : "false",
+      "require.pushed.authorization.requests" : "false",
+      "acr.loa.map" : "{}",
       "display.on.consent.screen" : "false",
-      "backchannel.logout.revoke.offline.tokens" : "false"
+      "token.response.type.bearer.lower-case" : "false"
     },
     "authenticationFlowBindingOverrides" : { },
     "fullScopeAllowed" : true,
@@ -1537,7 +1530,7 @@
       "subType" : "authenticated",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-usermodel-property-mapper", "saml-user-attribute-mapper", "oidc-full-name-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-address-mapper", "saml-role-list-mapper", "oidc-usermodel-attribute-mapper", "saml-user-property-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-usermodel-property-mapper", "oidc-full-name-mapper", "saml-role-list-mapper", "saml-user-property-mapper", "saml-user-attribute-mapper", "oidc-address-mapper", "oidc-usermodel-attribute-mapper", "oidc-sha256-pairwise-sub-mapper" ]
       }
     }, {
       "id" : "1bffa294-f320-4805-b8b9-66ff84cbc781",
@@ -1556,7 +1549,7 @@
       "subType" : "anonymous",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-usermodel-attribute-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-usermodel-property-mapper", "saml-user-property-mapper", "saml-role-list-mapper", "oidc-full-name-mapper", "oidc-address-mapper", "saml-user-attribute-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-usermodel-property-mapper", "oidc-full-name-mapper", "oidc-usermodel-attribute-mapper", "saml-role-list-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-user-property-mapper", "saml-user-attribute-mapper", "oidc-address-mapper" ]
       }
     }, {
       "id" : "dec66d97-a6a4-45be-9a5e-88c67d108866",
@@ -2175,7 +2168,7 @@
     "oauth2DeviceCodeLifespan" : "600",
     "parRequestUriLifespan" : "60",
     "clientSessionMaxLifespan" : "0",
-    "frontendUrl" : "http://keycloak:8080",
+    "frontendUrl" : "http://localhost:8001",
     "acr.loa.map" : "{}",
     "shortVerificationUri" : "",
     "actionTokenGeneratedByUserLifespan.reset-credentials" : ""
